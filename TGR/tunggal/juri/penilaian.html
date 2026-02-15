@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="robots" content="noindex" />
+  <link rel="shortcut icon" href="../../../assets/img/LogoIPSI.png" />
+  <link rel="stylesheet prefetch" href="../../../assets/bootstrap/dist/css/bootstrap.min.css" />
+  <style>
+    #openfull,
+    #exitfull {
+      background: 0 0;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      width: 30px;
+      height: 55px;
+      line-height: 55px;
+      float: left;
+    }
+
+    #openfull:active,
+    #exitfull:active,
+    #openfull:focus,
+    #exitfull:focus {
+      outline: 0;
+    }
+
+    #openfull svg,
+    #exitfull svg {
+      vertical-align: middle;
+    }
+
+    #exitfull {
+      display: none;
+    }
+
+    .button-active {
+      background-color: #198754 !important;
+      color: white !important;
+      border-color: #198754 !important;
+    }
+
+    .btn-next-jurus {
+      font-size: 30px !important;
+      padding: 15px !important;
+    }
+
+    .progress-jurus {
+      height: 20px;
+      margin-bottom: 10px;
+    }
+
+    .current-jurus-active {
+      background-color: #ffc107;
+      color: black;
+      font-weight: bold;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    /* Styling untuk modal ready yang lebih menarik */
+    .modal-ready .modal-content {
+      border: 5px solid #28a745;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .modal-ready .modal-header {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      text-align: center;
+    }
+
+    .modal-ready .modal-body {
+      background-color: #f8f9fa;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .modal-ready .btn-ready {
+      font-size: 24px;
+      padding: 15px 40px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #28a745, #20c997);
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .modal-ready .btn-ready:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    .modal-ready .countdown {
+      font-size: 48px;
+      font-weight: bold;
+      color: #28a745;
+      margin: 20px 0;
+    }
+
+    .instruction-box {
+      background-color: #e9f7ef;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    .jurus-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      background-color: #198754;
+      color: white;
+      border-radius: 20px;
+      font-size: 14px;
+      margin: 5px;
+    }
+
+    .total-wrong-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #dc3545;
+      margin-top: 10px;
+    }
+
+    .btn-control-group {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    /* Menghilangkan backdrop modal yang tertinggal */
+    .modal-backdrop {
+      z-index: 1040 !important;
+    }
+
+    .modal {
+      z-index: 1050 !important;
+    }
+  </style>
+
+  <title>JURI - IPSI Kota Dumai</title>
+</head>
+
+<body class="bg-light bg-gradient">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <!-- Tabel Header -->
+        <table width="100%" class="table mt-1">
+          <tr>
+            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-4 text-white" colspan="3">
+              <b id="juri"></b> ( Kategori : <b class="kategori"></b>/<b class="kelas"></b>)
+              <div class="btn-control-group d-inline-flex align-items-center ms-3">
+                <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#ffffff"
+                      d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                  </svg>
+                </button>
+                <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#ffffff"
+                      d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
+                  </svg>
+                </button>
+                <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="konfirmasiKeluar()">
+                  KELUAR
+                </button>
+                <a href="#" class="btn btn-light bg-gradient btn-sm reload-btn small"
+                  onclick="konfirmasiRefresh(event)">
+                  Refresh
+                </a>
+                <b id="timer"
+                  style="font-size: 17px; font-weight: bold; background-color: black;color: white;padding:4px 8px;border:2px solid white;border-radius: 5px;margin-left: 10px;">
+                  ⏱️ 00:00
+                </b>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-uppercase text-primary fw-bold" width="40%">
+              <b class="nm"></b>
+            </td>
+            <td class="text-uppercase text-center" width="20%">
+              <!-- Kosongkan bagian tengah -->
+            </td>
+            <td class="text-uppercase text-danger fw-bold text-end" width="40%">
+              Kontingen<br><small class="kontingen"></small>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Tabel Kesalahan & Jurus -->
+        <table class="table table-bordered bg-white">
+          <tr>
+            <td colspan="2">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <!-- Progress Bar -->
+                  <div class="progress progress-jurus">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" id="progress-status"
+                      role="progressbar" style="width: 0%">
+                      <span id="progress-text">Menunggu...</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="text-center">
+                    <div class="fs-1 text-danger fw-bold"><b id="kesalahan">0</b></div>
+                    <div class="small">TOTAL WRONG</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Tombol Wrong Move & Submit -->
+          <tr>
+            <td colspan="2">
+              <div class="row g-1">
+                <div class="col-12 text-center">
+                  <button class="btn btn-danger big-btn w-100 py-5 border border-5 rounded-5 border-dark" id="btn-wrong"
+                    disabled>
+                    <b style="font-size: 50px;">WRONG MOVE</b>
+                    <br><small>Tekan setiap terjadi kesalahan</small>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- STAMINA -->
+          <tr class="bg-light align-middle">
+            <td colspan="4">
+              <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="flex-grow-1 text-center bg-light text-dark fs-5 fw-bold">STAMINA: <span
+                    id="stamina-value">+0.00</span></div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Tombol Stamina -->
+          <tr>
+            <td colspan="4" class="text-center bg-light fs-6">
+              <div class="d-flex flex-wrap justify-content-center mt-2" id="stamina-buttons-container">
+                <!-- Tombol stamina dibuat otomatis JS -->
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal READY - Dimodifikasi tampilannya -->
+  <div class="modal fade modal-ready" id="modalReady" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="modalReadyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <h5 class="modal-title w-100 text-center" id="modalReadyLabel">SIAP MENILAI</h5> -->
+        </div>
+        <!-- <div class="modal-body">
+          <div class="countdown">READY</div>
+          <p class="fw-bold">Selamat datang, <span id="nama-juri-ready"></span>!</p>
+          <p>Anda akan menilai:</p>
+          <div class="jurus-badge">
+            <i class="fas fa-user"></i> <span id="nama-peserta-ready"></span>
+          </div>
+          <div class="jurus-badge" style="background-color: #0d6efd;">
+            <i class="fas fa-tag"></i> <span id="kategori-ready"></span>
+          </div>
+          <div class="jurus-badge" style="background-color: #6f42c1;">
+            <i class="fas fa-layer-group"></i> <span id="kelas-ready"></span>
+          </div>
+
+          <div class="instruction-box mt-3">
+            <h6><i class="fas fa-info-circle"></i> Petunjuk Penilaian:</h6>
+            <ol class="text-start small mb-0">
+              <li>Tekan tombol <strong>WRONG MOVE</strong> setiap terjadi kesalahan</li>
+              <li>Pilih bonus <strong>STAMINA</strong> di akhir penampilan</li>
+              <li>Skor akan otomatis terhitung</li>
+              <li>Sistem akan mengirim skor ke server</li>
+            </ol>
+          </div>
+        </div> -->
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-ready text-white btn-lg px-5 btnReady" data-bs-dismiss="modal">
+            <i class="fas fa-play-circle"></i> READY
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="../../../assets/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    // ======== KONSTANTA & VAR GLOBAL ========
+    const baseUrl = "http://localhost/DARUNNAJAH";
+
+    // ======= STATE =======
+    let wrongCount = 0;
+    let selectedStamina = 0.00;
+    let isReady = false;
+    let isStarted = false;
+    let currentPartaiData = null;
+    let modalReadyInstance = null;
+    let isModalShowing = false;
+
+    // ======= FUNGSI UTAMA ========
+    function loadDataFromLocalStorage() {
+      // Load data juri
+      const namaJuri = localStorage.getItem('nama_juri');
+      if (namaJuri) {
+        $('#juri').text(namaJuri);
+      }
+
+      // Cek login
+      if (localStorage.getItem('is_login') < 1) {
+        console.log('❌ Tidak login, redirect ke halaman login');
+        localStorage.clear();
+        document.location.href = "http://localhost/DARUNNAJAH/TGR/tunggal/juri";
+        return false;
+      }
+
+      // Load data partai dari localStorage jika ada
+      const savedPartaiData = localStorage.getItem('currentPartai');
+      if (savedPartaiData) {
+        try {
+          currentPartaiData = JSON.parse(savedPartaiData);
+          console.log('✅ Data partai dimuat dari localStorage:', currentPartaiData.peserta.nama);
+
+          // Tampilkan data partai
+          updatePartaiDisplay();
+
+          // Cek apakah penilaian sedang berjalan
+          const isStartedFromStorage = localStorage.getItem('is_started') === 'true';
+          if (isStartedFromStorage) {
+            isStarted = true;
+            $('#btn-wrong').prop('disabled', false);
+            $('#progress-status')
+              .removeClass('bg-primary')
+              .addClass('bg-success');
+            $('#progress-text').text('Sedang berjalan...');
+          }
+
+        } catch (e) {
+          console.error('❌ Error parsing saved partai data:', e);
+        }
+      }
+
+      // Load wrong count
+      const savedWrongCount = localStorage.getItem('wrong_count');
+      if (savedWrongCount) {
+        wrongCount = parseInt(savedWrongCount);
+      }
+
+      // Load stamina
+      const savedStamina = localStorage.getItem('selected_stamina');
+      if (savedStamina) {
+        selectedStamina = parseFloat(savedStamina);
+      }
+
+      // Load status ready
+      isReady = localStorage.getItem('is_ready') === 'true' || false;
+
+      return true;
+    }
+
+    function updatePartaiDisplay() {
+      if (currentPartaiData) {
+        $('.nm').text(currentPartaiData.peserta.nama);
+        $('.kontingen').text(currentPartaiData.peserta.kontingen);
+        $('.kategori').text(currentPartaiData.kategori);
+        $('.kelas').text(currentPartaiData.kelas);
+      }
+    }
+
+    function updateDisplay() {
+      // Update wrong count
+      $('#kesalahan').text(wrongCount);
+      $('#stamina-value').text(`+${selectedStamina.toFixed(2)}`);
+    }
+
+    function hitungSkorAkhir() {
+      const pengurangan = wrongCount * 0.01;
+      const skorAkhir = Math.max(0, 9.90 - pengurangan + selectedStamina);
+      return {
+        wrong: wrongCount,
+        pengurangan: pengurangan,
+        stamina: selectedStamina,
+        skorAkhir: skorAkhir
+      };
+    }
+
+    function kirimDataKeServer() {
+      if (!currentPartaiData) {
+        console.log('❌ Tidak ada data partai');
+        return;
+      }
+
+      const rekap = hitungSkorAkhir();
+
+      // Kirim ke server via WebSocket
+      if (ws.readyState === WebSocket.OPEN) {
+        const dataToSend = {
+          type: 'simpan_data_seni_tunggal',
+          id_jadwal: localStorage.getItem('partai'),
+          id_juri: localStorage.getItem('juri'),
+          sudut: currentPartaiData.peserta.sudut,
+          wrong: rekap.wrong,
+          stamina: rekap.stamina,
+          skor_akhir: rekap.skorAkhir.toFixed(2),
+          timestamp: new Date().toISOString()
+        };
+
+        ws.send(JSON.stringify(dataToSend));
+        console.log(`📤 Data dikirim: Wrong=${rekap.wrong}, Stamina=${rekap.stamina}`);
+      } else {
+        console.log('❌ WebSocket tidak terbuka, data disimpan lokal');
+        localStorage.setItem('last_skor', JSON.stringify({
+          wrong: rekap.wrong,
+          stamina: rekap.stamina,
+          skor_akhir: rekap.skorAkhir.toFixed(2),
+          timestamp: new Date().toISOString()
+        }));
+      }
+    }
+
+    function buatTombolStamina() {
+      const container = document.getElementById("stamina-buttons-container");
+      container.innerHTML = "";
+
+      console.log('Membuat tombol stamina...');
+
+      for (let i = 0; i <= 10; i++) {
+        const val = (i / 100).toFixed(2);
+        const btn = document.createElement("button");
+        btn.className = "btn btn-outline-dark stamina-btn m-1";
+        btn.textContent = `+${val}`;
+        btn.setAttribute("data-stamina", val);
+        btn.title = `Stamina: +${val}`;
+
+        // Tombol khusus untuk 0.00
+        if (i === 0) {
+          btn.textContent = "0.00";
+          btn.title = "Tidak ada bonus stamina";
+        }
+
+        // Tandai tombol aktif jika sesuai
+        if (parseFloat(val) === selectedStamina) {
+          btn.classList.add("button-active");
+        }
+
+        btn.onclick = function () {
+          // Hapus aktif dari semua tombol
+          document.querySelectorAll(".stamina-btn").forEach(b => {
+            b.classList.remove("button-active");
+          });
+          // Tambahkan aktif ke tombol ini
+          this.classList.add("button-active");
+
+          // Update nilai stamina
+          selectedStamina = parseFloat(val);
+          localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+
+          console.log(`🎯 Stamina dipilih: +${selectedStamina.toFixed(2)}`);
+
+          // Kirim update ke server
+          kirimDataKeServer();
+
+          // Update tampilan
+          updateDisplay();
+        };
+
+        container.appendChild(btn);
+      }
+
+      updateDisplay();
+    }
+
+    function resetPenilaian() {
+      wrongCount = 0;
+      selectedStamina = 0.00;
+
+      localStorage.setItem('wrong_count', wrongCount);
+      localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+
+      // Reset tombol stamina
+      document.querySelectorAll(".stamina-btn").forEach(b => {
+        b.classList.remove("button-active");
+      });
+
+      // Aktifkan tombol 0.00
+      const zeroBtn = document.querySelector('.stamina-btn[data-stamina="0.00"]');
+      if (zeroBtn) {
+        zeroBtn.classList.add("button-active");
+      }
+
+      updateDisplay();
+      console.log('🔄 Penilaian direset');
+    }
+
+    // FUNGSI UNTUK MENUTUP MODAL SEBELUM MEMBUKA YANG BARU
+    function closeExistingModal() {
+      if (isModalShowing && modalReadyInstance) {
+        console.log('🔒 Menutup modal yang sedang terbuka...');
+        modalReadyInstance.hide();
+
+        // Force remove backdrop jika ada
+        const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+        existingBackdrops.forEach(backdrop => {
+          backdrop.parentNode.removeChild(backdrop);
+        });
+
+        // Force remove modal jika ada
+        const existingModals = document.querySelectorAll('.modal');
+        existingModals.forEach(modal => {
+          if (modal.classList.contains('show')) {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+          }
+        });
+
+        // Hapus class dari body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+
+        isModalShowing = false;
+        modalReadyInstance = null;
+      }
+    }
+
+    function showModalReady() {
+      // Tutup modal yang sedang terbuka terlebih dahulu
+      closeExistingModal();
+
+      // Tunggu sebentar sebelum membuka modal baru
+      setTimeout(() => {
+        console.log('🎬 Membuka modal READY...');
+
+        // Update data di modal
+        const namaJuri = localStorage.getItem('nama_juri') || 'Juri';
+        $('#nama-juri-ready').text(namaJuri);
+
+        if (currentPartaiData) {
+          $('#nama-peserta-ready').text(currentPartaiData.peserta.nama);
+          $('#kategori-ready').text(currentPartaiData.kategori);
+          $('#kelas-ready').text(currentPartaiData.kelas);
+        }
+
+        // Buat instance modal baru
+        const modalElement = document.getElementById('modalReady');
+        modalReadyInstance = new bootstrap.Modal(modalElement, {
+          backdrop: 'static',
+          keyboard: false
+        });
+
+        // Event listener untuk modal
+        modalElement.addEventListener('show.bs.modal', function () {
+          console.log('Modal READY akan ditampilkan');
+        });
+
+        modalElement.addEventListener('shown.bs.modal', function () {
+          console.log('Modal READY ditampilkan');
+          isModalShowing = true;
+        });
+
+        modalElement.addEventListener('hidden.bs.modal', function () {
+          console.log('Modal READY ditutup, mengirim status READY ke server');
+          isModalShowing = false;
+          isReady = true;
+          localStorage.setItem('is_ready', 'true');
+
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: "ready",
+              id_juri: localStorage.getItem('juri'),
+              nama_juri: localStorage.getItem('nama_juri'),
+              timestamp: new Date().toISOString()
+            }));
+          }
+        });
+
+        // Tampilkan modal
+        modalReadyInstance.show();
+      }, 100); // Delay 100ms untuk memastikan modal lama sudah tertutup
+    }
+
+    // ======= EVENT LISTENERS =======
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('DOM loaded, inisialisasi aplikasi...');
+
+      // Load data dari localStorage terlebih dahulu
+      if (loadDataFromLocalStorage()) {
+        // Inisialisasi tombol stamina
+        buatTombolStamina();
+
+        // Update tampilan awal
+        updateDisplay();
+      }
+
+      // Event untuk tombol WRONG MOVE
+      $('#btn-wrong').on('click', function () {
+        if (!isStarted) {
+          console.log('❌ Penilaian belum dimulai');
+          return;
+        }
+
+        wrongCount++;
+        localStorage.setItem('wrong_count', wrongCount);
+
+        console.log(`✗ WRONG MOVE: Total ${wrongCount} wrong`);
+
+        // Update tampilan
+        updateDisplay();
+
+        // Kirim data ke server
+        kirimDataKeServer();
+      });
+    });
+
+    // ======= WEBSOCKET HANDLERS =======
+    let ws;
+
+    function initWebSocket() {
+      ws = new WebSocket('ws://localhost:3000');
+
+      ws.onopen = function () {
+        console.log('✅ WebSocket connected to server');
+
+        // Kirim status koneksi
+        ws.send(JSON.stringify({
+          type: "juri_connected",
+          id_juri: localStorage.getItem('juri'),
+          nama_juri: localStorage.getItem('nama_juri')
+        }));
+      };
+
+      ws.onmessage = function (event) {
+        try {
+          const message = JSON.parse(event.data);
+          console.log(`📥 Pesan dari server: ${message.type}`);
+
+          switch (message.type) {
+            case 'partai_data_tunggal':
+              handlePartaiData(message.data);
+              break;
+
+            case 'tick':
+              updateTimer(message.remaining);
+              break;
+
+            case 'started':
+              handleStarted();
+              break;
+
+            case 'stopped':
+              handleStopped();
+              break;
+
+            case 'reset':
+              handleReset();
+              break;
+
+            case 'data_saved':
+              console.log('✅ Server konfirmasi data tersimpan');
+              break;
+
+            case 'connection_ack':
+              console.log('✅ Terhubung ke server');
+              break;
+
+            default:
+              console.log(`📨 Pesan tidak dikenali: ${message.type}`);
+          }
+        } catch (e) {
+          console.log(`❌ Error parsing message: ${e.message}`);
+        }
+      };
+
+      ws.onclose = function () {
+        console.log('❌ WebSocket disconnected');
+        // Coba reconnect setelah 3 detik
+        setTimeout(initWebSocket, 3000);
+      };
+
+      ws.onerror = function (error) {
+        console.log(`❌ WebSocket error: ${error}`);
+      };
+    }
+
+    // Inisialisasi WebSocket
+    initWebSocket();
+
+    // ======= HANDLER FUNCTIONS =======
+    function handlePartaiData(data) {
+      console.log('🔄 Menerima data partai baru dari server');
+
+      currentPartaiData = data;
+
+      // Simpan data baru ke localStorage
+      localStorage.setItem('partai', data.partai);
+      localStorage.setItem('currentPartai', JSON.stringify(data));
+
+      // Reset state untuk partai baru
+      resetPenilaian();
+
+      // Update tampilan
+      updatePartaiDisplay();
+
+      // Update progress bar
+      $('#progress-status').css('width', '0%');
+      $('#progress-text').text('Menunggu mulai...');
+
+      // Nonaktifkan tombol sampai mulai
+      $('#btn-wrong').prop('disabled', true);
+      isStarted = false;
+      localStorage.setItem('is_started', 'false');
+
+      // Tampilkan modal ready menggunakan fungsi baru
+      showModalReady();
+
+      console.log(`📋 Partai baru: ${data.peserta.nama} (${data.kategori}/${data.kelas})`);
+    }
+
+    function updateTimer(seconds) {
+      const timerElement = document.getElementById("timer");
+      if (timerElement) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        timerElement.textContent = `⏱️ ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+        // Update progress bar berdasarkan waktu
+        if (seconds <= 180) { // Maksimal 3 menit
+          const progressPercent = ((180 - seconds) / 180) * 100;
+          $('#progress-status').css('width', `${progressPercent}%`);
+
+          if (seconds > 0) {
+            $('#progress-text').text(`Berjalan: ${m}:${String(s).padStart(2, '0')}`);
+          }
+        }
+      }
+    }
+
+    function handleStarted() {
+      console.log('▶️ PENILAIAN DIMULAI');
+      $('#btn-wrong').prop('disabled', false);
+      isStarted = true;
+      localStorage.setItem('is_started', 'true');
+
+      $('#progress-status')
+        .removeClass('bg-primary')
+        .addClass('bg-success')
+        .css('width', '0%');
+      $('#progress-text').text('Sedang berjalan...');
+
+      // Tutup modal jika masih terbuka
+      if (isModalShowing && modalReadyInstance) {
+        modalReadyInstance.hide();
+      }
+    }
+
+    function handleStopped() {
+      console.log('⏹️ PENILAIAN DIHENTIKAN');
+      $('#btn-wrong').prop('disabled', true);
+      isStarted = false;
+      localStorage.setItem('is_started', 'false');
+
+      $('#progress-status')
+        .removeClass('bg-success')
+        .addClass('bg-danger')
+        .css('width', '100%');
+      $('#progress-text').text('Selesai');
+
+      // Kirim data final
+      kirimDataKeServer();
+    }
+
+    function handleReset() {
+      console.log('🔄 RESET dari server');
+      resetPenilaian();
+
+      // Reset tampilan
+      $('#progress-status')
+        .removeClass('bg-danger bg-success')
+        .addClass('bg-primary')
+        .css('width', '0%');
+      $('#progress-text').text('Menunggu partai baru...');
+
+      // Tampilkan modal ready untuk partai baru
+      if (currentPartaiData) {
+        showModalReady();
+      }
+    }
+
+    // ======= FUNGSI TAMBAHAN =======
+    function konfirmasiKeluar() {
+      const rekap = hitungSkorAkhir();
+      const yakin = confirm(
+        "Apakah Anda yakin ingin keluar?\n\n" +
+        `Wrong: ${rekap.wrong}\n` +
+        `Stamina: +${rekap.stamina.toFixed(2)}\n\n` +
+        "Data akan dikirim sebelum keluar."
+      );
+
+      if (yakin) {
+        console.log('👋 Keluar dari aplikasi juri');
+        kirimDataKeServer(); // Kirim data terakhir
+
+        // Tutup modal jika terbuka
+        if (isModalShowing && modalReadyInstance) {
+          modalReadyInstance.hide();
+        }
+
+        localStorage.clear();
+        window.location.href = 'index.html';
+      }
+    }
+
+    function konfirmasiRefresh(event) {
+      event.preventDefault();
+      const yakin = confirm("Refresh halaman?\nData akan disimpan sebelum refresh.");
+      if (yakin) {
+        console.log('🔄 Me-refresh halaman');
+        kirimDataKeServer(); // Kirim data sebelum refresh
+
+        // Tutup modal jika terbuka
+        if (isModalShowing && modalReadyInstance) {
+          modalReadyInstance.hide();
+        }
+
+        window.location.href = 'penilaian.html';
+      }
+    }
+
+    // Fungsi fullscreen
+    window.openFullscreen = () => {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      $("#openfull").hide();
+      $("#exitfull").show();
+      console.log('📺 Masuk mode fullscreen');
+
+      // Tutup modal jika terbuka saat masuk fullscreen
+      if (isModalShowing && modalReadyInstance) {
+        modalReadyInstance.hide();
+      }
+    };
+
+    window.closeFullscreen = () => {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      $("#openfull").show();
+      $("#exitfull").hide();
+      console.log('📱 Keluar dari fullscreen');
+    };
+  </script>
+</body>
+
+</html>

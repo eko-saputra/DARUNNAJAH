@@ -1,0 +1,377 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Monitor Seni Ganda | IPSI Kota Dumai</title>
+    <link
+      rel="stylesheet"
+      href="../../../assets/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link rel="shortcut icon" href="../../../assets/img/LogoIPSI.png" />
+    <script src="../../../assets/jquery/jquery.min.js"></script>
+    <script src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      /* Gaya untuk tombol fullscreen di sudut kiri bawah */
+      .fullscreen-buttons {
+        position: fixed;
+        left: 10px;
+        bottom: 50px;
+        z-index: 1000;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        padding: 5px;
+      }
+
+      #openfull,
+      #exitfull {
+        background: 0 0;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+      }
+
+      #openfull:active,
+      #exitfull:active,
+      #openfull:focus,
+      #exitfull:focus {
+        outline: 0;
+      }
+
+      #openfull svg,
+      #exitfull svg {
+        vertical-align: middle;
+      }
+
+      #exitfull {
+        display: none;
+      }
+
+      /* Gaya lainnya tetap sama */
+      #tabelnilai {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1.2rem;
+      }
+
+      #tabelnilai td {
+        padding: 10px 12px;
+        text-align: center;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      #tabelnilai tr:first-child td {
+        font-weight: bold;
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      .judge-header {
+        min-width: 70px;
+      }
+
+      .bg-secondary {
+        background-color: #6c757d !important;
+        color: white;
+      }
+
+      .bg-primary {
+        background-color: #0d6efd !important;
+        color: white;
+      }
+
+      .footer-marquee {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #212529;
+        color: white;
+        padding: 10px 0;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .marquee-content {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 20s linear infinite;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Container untuk tombol fullscreen -->
+    <div class="fullscreen-buttons">
+      <button
+        aria-label="Open Fullscreen"
+        id="openfull"
+        onclick="openFullscreen();"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path
+            fill="#fff"
+            d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Exit Fullscreen"
+        id="exitfull"
+        onclick="closeFullscreen();"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path
+            fill="#fff"
+            d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Konten utama tetap sama -->
+    <div
+      class="container-fluid shadow-sm"
+      style="background-color: rgb(118, 144, 191)"
+    >
+      <div class="container-fluid">
+        <div class="row">
+          <div
+            class="col-6 m-auto bg-gradient bg-dark text-center fw-bold py-2 text-white rounded-bottom-5"
+          >
+            <h4>PENCAK SILAT</h4>
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col-2">
+            <img src="../../../assets/img/LogoIPSI.png" width="32%" />
+          </div>
+          <div
+            class="col-2 text-white justify-content-center fw-bold text-uppercase d-flex align-items-center"
+          >
+            <h5 id="gelanggang">A : 1</h5>
+          </div>
+          <div
+            class="col-2 justify-content-center fw-bold text-uppercase text-white d-flex align-items-center"
+          >
+            <h5 id="bbk">PENYISIHAN</h5>
+          </div>
+          <div
+            class="col-4 justify-content-center fw-bold text-uppercase text-white d-flex align-items-center"
+          >
+            <h5 id="kelas">REMAJA</h5>
+          </div>
+          <div class="col-2 text-end">
+            <img src="../../../assets/img/Lambang_Kota_Dumai.png" width="25%" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="my-3" style="width: 97%; margin: 0 auto">
+      <div class="row">
+        <div class="col-8 text-start text-uppercase fw-bold">
+          <div class="row">
+            <div
+              class="col-1 p-1 d-flex align-items-center"
+              style="position: relative"
+            >
+              <img
+                src="../../../assets/img/bendera.gif"
+                width="100"
+                style="position: absolute; z-index: -1; margin-right: 30px"
+              />
+            </div>
+            <div class="col-11 ps-5 d-flex align-items-center">
+              <div class="">
+                <h3 class="text-muted nm_biru">JOKO & ANDI</h3>
+                <h6 class="text-danger fw-bold text-uppercase kontingen_biru">
+                  Kontingen : Srimulat
+                </h6>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-4 text-center fw-bold">
+          <h1
+            id="timer"
+            class="bg-dark bg-gradient text-white rounded py-2"
+            style="font-size: 50px"
+          >
+            00:00
+          </h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-4 mt-5">
+      <div class="row">
+        <div class="col text-dark fw-bold py-1">
+          <table id="tabelnilai" class="table table-bordered">
+            <thead>
+              <tr id="judgeHeaders"></tr>
+              <tr id="judgeScores"></tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Smooth Marquee Footer -->
+    <div class="footer-marquee">
+      <div class="marquee-content">
+        APLIKASI DigitalScore Pencak Silat Kota Dumai &copy; 2023 - IPSI Kota
+        Dumai - Kejuaraan Pencak Silat Tingkat Nasional
+      </div>
+    </div>
+
+    <script>
+      // Variabel untuk menyimpan status juri
+      const judgeStatus = Array(10).fill(false); // Awalnya semua juri tidak ready
+      let judgeElements = []; // Untuk menyimpan elemen juri
+
+      // Fungsi untuk membuat tabel juri
+      function generateJudgeTable() {
+        const judgeHeaders = document.getElementById("judgeHeaders");
+        const judgeScores = document.getElementById("judgeScores");
+
+        // Kosongkan konten yang ada
+        judgeHeaders.innerHTML = "";
+        judgeScores.innerHTML = "";
+        judgeElements = [];
+
+        // Buat header kolom (Juri 1-10)
+        for (let i = 1; i <= 10; i++) {
+          const headerCell = document.createElement("td");
+          headerCell.textContent = `Juri ${i}`;
+          headerCell.className = "judge-header bg-secondary text-light";
+          judgeHeaders.appendChild(headerCell);
+
+          // Buat sel nilai (9.00 untuk setiap juri)
+          const scoreCell = document.createElement("td");
+          scoreCell.textContent = "9.00";
+          scoreCell.className = "bg-secondary text-light";
+          judgeScores.appendChild(scoreCell);
+
+          // Simpan referensi elemen juri
+          judgeElements.push({
+            header: headerCell,
+            score: scoreCell,
+          });
+        }
+      }
+
+      // Fungsi untuk mengupdate tampilan juri berdasarkan status
+      function updateJudgeDisplay() {
+        judgeStatus.forEach((isReady, index) => {
+          const judge = judgeElements[index];
+          if (judge) {
+            const bgClass = isReady
+              ? "bg-primary text-light"
+              : "bg-secondary text-light";
+            judge.header.className = `judge-header ${bgClass}`;
+            judge.score.className = bgClass;
+          }
+        });
+      }
+
+      // Fungsi untuk simulasi perubahan status juri secara acak
+      function simulateJudgeActivity() {
+        // Acak beberapa juri menjadi ready
+        const readyCount = Math.floor(Math.random() * 3) + 1; // 1-3 juri ready
+        const newReadyJudges = [];
+
+        // Reset semua status juri
+        judgeStatus.fill(false);
+
+        // Pilih juri yang akan ready secara acak
+        for (let i = 0; i < readyCount; i++) {
+          const randomJudge = Math.floor(Math.random() * 10);
+          judgeStatus[randomJudge] = true;
+          newReadyJudges.push(randomJudge + 1); // +1 karena array dimulai dari 0
+        }
+
+        // Update tampilan
+        updateJudgeDisplay();
+
+        console.log(`Juri yang ready: ${newReadyJudges.join(", ")}`);
+
+        // Atur waktu untuk simulasi berikutnya (3-8 detik)
+        const nextInterval = Math.floor(Math.random() * 5000) + 3000;
+        setTimeout(simulateJudgeActivity, nextInterval);
+      }
+
+      // Fungsi untuk membuat marquee yang halus
+      function createSmoothMarquee() {
+        const marqueeContent = document.querySelector(".marquee-content");
+        const contentWidth = marqueeContent.scrollWidth;
+        const containerWidth =
+          document.querySelector(".footer-marquee").offsetWidth;
+
+        // Duplikat konten untuk perulangan mulus
+        marqueeContent.innerHTML += " &nbsp; " + marqueeContent.innerHTML;
+
+        // Sesuaikan durasi animasi berdasarkan panjang konten
+        const duration = Math.max(20, contentWidth / 50);
+        marqueeContent.style.animationDuration = duration + "s";
+      }
+
+      // Fungsi untuk mode layar penuh
+      var elem = document.documentElement;
+
+      function openFullscreen() {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
+        }
+        document.getElementById("openfull").style.display = "none";
+        document.getElementById("exitfull").style.display = "block";
+      }
+
+      function closeFullscreen() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+        document.getElementById("openfull").style.display = "block";
+        document.getElementById("exitfull").style.display = "none";
+      }
+
+      // Inisialisasi saat halaman dimuat
+      window.onload = function () {
+        generateJudgeTable();
+        createSmoothMarquee();
+
+        // Mulai simulasi perubahan status juri setelah 2 detik
+        setTimeout(() => {
+          simulateJudgeActivity();
+        }, 2000);
+
+        // Assign fungsi ke window untuk akses tombol
+        window.openFullscreen = openFullscreen;
+        window.closeFullscreen = closeFullscreen;
+      };
+    </script>
+  </body>
+</html>

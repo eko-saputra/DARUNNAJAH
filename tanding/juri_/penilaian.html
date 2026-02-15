@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="robots" content="noindex" />
+  <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png" />
+  <link rel="stylesheet prefetch" href="../../assets/bootstrap/dist/css/bootstrap.min.css" />
+  <style>
+    #openfull,
+    #exitfull {
+      background: 0 0;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      width: 30px;
+      height: 55px;
+      line-height: 55px;
+      float: left;
+    }
+
+    #openfull:active,
+    #exitfull:active,
+    #openfull:focus,
+    #exitfull:focus {
+      outline: 0;
+    }
+
+    #openfull svg,
+    #exitfull svg {
+      vertical-align: middle;
+    }
+
+    #exitfull {
+      display: none;
+    }
+
+    .button-active {
+      background-color: #198754 !important;
+      color: white !important;
+      border-color: #198754 !important;
+    }
+  </style>
+
+  <title>JURI - IPSI Kota Dumai</title>
+</head>
+
+<body class="bg-light bg-gradient">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <table width="100%" class="table mt-1">
+          <tr>
+            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-4 text-white" colspan="3">
+              <b id="juri"></b> ( Gelanggang : <b id="gelanggang"></b>)
+              <b id="timer" style="
+                    font-size: 17px;
+                    font-weight: bold;
+                    background-color: black;
+                    color: white;
+                    padding: 2px;
+                    border: 2px solid white;
+                  ">⏱️ 00:00</b>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-uppercase text-primary fw-bold" width="40%">
+              <b class="nm_biru"></b><br /><small class="kontingen_biru"></small>
+            </td>
+            <td class="text-uppercase text-center" width="20%">
+              <!-- Wrapper untuk center -->
+              <div class="d-flex justify-content-center align-items-center">
+                <!-- Konten yang sebelumnya -->
+                <div class="d-flex flex-column align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#2d2d2d"
+                          d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                      </svg>
+                    </button>
+                    <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#2d2d2d"
+                          d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="d-flex gap-2 mt-2">
+                    <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="konfirmasiKeluar()">
+                      KELUAR
+                    </button>
+                    <a href="#" class="btn btn-light border border-1 btn-sm reload-btn small"
+                      onclick="konfirmasiRefresh(event)">
+                      Refresh
+                    </a>
+                  </div>
+                  <script>
+                    function konfirmasiKeluar() {
+                      const yakin = confirm(
+                        "Apakah Anda yakin ingin keluar?"
+                      );
+                      if (yakin) {
+                        // Pindah halaman logout
+                        window.location.href = "index.html"; // ganti sesuai kebutuhan
+                      }
+                    }
+                    function konfirmasiRefresh(event) {
+                      event.preventDefault();
+                      const yakin = confirm(
+                        "Apakah Anda yakin ingin me-refresh halaman ini ?"
+                      );
+                      if (yakin) {
+                        window.location.href = "penilaian.html";
+                      }
+                    }
+                  </script>
+                </div>
+              </div>
+            </td>
+            <td class="text-uppercase text-danger fw-bold text-end" width="40%">
+              <b class="nm_merah"></b><br /><small class="kontingen_merah"></small>
+            </td>
+          </tr>
+        </table>
+        <table class="table border" width="100%">
+          <thead>
+            <tr>
+              <td width="40%" class="bg-primary text-white text-center">
+                Score
+              </td>
+              <td width="20%" class="text-center fw-bold">Round</td>
+              <td width="40%" class="bg-danger text-white text-center">
+                Score
+              </td>
+            </tr>
+          </thead>
+          <tbody id="babakBody">
+            <!-- Baris babak akan dibuat dinamis di sini -->
+          </tbody>
+        </table>
+
+        <table width="100%">
+          <tr>
+            <td width="25%">
+              <div class="d-grid gap-1">
+                <button class="btn btn-primary bg-gradient mb-2 border-5 border-dark p-2 rounded-5 fw-bold button_nilai"
+                  type="button" onclick="button_nilai('1','BIRU')">
+                  <img src="../../assets/img/pukulan (1).png" width="50" />
+                </button>
+                <button class="btn btn-primary border-5 border-dark p-2 rounded-5 fw-bold button_nilai" type="button"
+                  onclick="button_nilai('2','BIRU')">
+                  <img src="../../assets/img/tendangan (1).png" width="50" />
+                </button>
+              </div>
+            </td>
+            <td class="text-center" valign="middle" width="25%">
+              <button class="btn btn-primary bg-gradient border-5 border-dark p-2 rounded-5 fw-bold hapus-skor"
+                onclick="button_hapus('BIRU')" type="button">
+                <img src="../../assets/img/trash.png" width="50" />
+              </button>
+            </td>
+            <td class="text-center" valign="middle" width="25%">
+              <button class="btn btn-danger bg-gradient border-5 border-dark p-2 rounded-5 fw-bold hapus-skor"
+                onclick="button_hapus('MERAH')" type="button">
+                <img src="../../assets/img/trash.png" width="50" />
+              </button>
+            </td>
+            <td width="25%">
+              <div class="d-grid gap-1">
+                <button class="btn btn-danger bg-gradient mb-2 border-5 border-dark p-2 rounded-5 fw-bold button_nilai"
+                  type="button" onclick="button_nilai('1','MERAH')">
+                  <img src="../../assets/img/pukulan (1).png" width="50" />
+                </button>
+                <button class="btn btn-danger bg-gradient border-5 border-dark p-2 rounded-5 fw-bold button_nilai"
+                  type="button" onclick="button_nilai('2','MERAH')">
+                  <img src="../../assets/img/tendangan (1).png" width="50" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container border">
+            <div class="row">
+              <div class="col text-center fw-bold text-uppercase my-2 judul_verifikasi"></div>
+            </div>
+            <div class="row">
+              <div class="col bg-info text-dark fw-bold text-center text-uppercase py-2"></div>
+            </div>
+            <div class="row">
+              <div class="col bg-light text-dark fw-bold text-center text-uppercase m-2 rounded-5 p-2"
+                id="verifikasi-status">
+                Waiting response...
+              </div>
+            </div>
+          </div>
+
+          <div class="container my-2 text-center">
+            <div class="row">
+              <div class="col text-center">
+                <button class="btn btn-primary bg-gradient text-white fw-bold"
+                  onclick="updateVerification('BIRU', 'bg-primary')">
+                  BIRU
+                </button>
+              </div>
+              <div class="col text-center">
+                <button class="btn btn-danger bg-gradient text-white fw-bold"
+                  onclick="updateVerification('MERAH', 'bg-danger')">
+                  MERAH
+                </button>
+              </div>
+              <div class="col text-center">
+                <button class="btn btn-warning bg-gradient text-dark fw-bold"
+                  onclick="updateVerification('NETRAL', 'bg-warning')">
+                  TIDAK SAH
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="../../assets/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // =====================[ KONSTANTA & VARIABEL GLOBAL ]=====================
+    const baseUrl = "http://192.168.20.254/skordigital";
+    const url_api = `${baseUrl}/backend/api/api_juri.php`;
+    const url_juri = `${baseUrl}/juri`;
+
+    if (localStorage.getItem("is_login") < 1) {
+      localStorage.clear();
+      document.location.href = "http://192.168.20.254/skordigital/juri";
+    }
+
+    const id_juri = localStorage.getItem("juri");
+    const id_partai = localStorage.getItem("partai");
+    const babak = localStorage.getItem("babak");
+
+    const elem = document.documentElement;
+
+    let autoCloseTimeout = null;
+
+    const ws = new WebSocket("ws://192.168.20.254:3000");
+
+    function updateVerification(pilihan, warnaClass) {
+      const statusEl = document.getElementById("verifikasi-status");
+
+      // Hapus semua class background dulu
+      statusEl.classList.remove("bg-primary", "bg-danger", "bg-warning");
+
+      // Tambahkan class warna yang dipilih
+      statusEl.classList.add(warnaClass);
+
+      // Ubah teks status
+      statusEl.textContent = `Juri memilih : ${pilihan}`;
+
+      // Reset timer jika klik ulang dalam 5 detik
+      if (autoCloseTimeout) clearTimeout(autoCloseTimeout);
+
+      // Mulai ulang timer untuk menutup modal dalam 5 detik
+      autoCloseTimeout = setTimeout(() => {
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("myModal")
+        );
+        // Kirim hasil ke server (jika perlu)
+        ws.send(
+          JSON.stringify({
+            type: "verifikasi_juri",
+            data: {
+              pilihan: pilihan,
+              id_juri: localStorage.getItem("juri"),
+            },
+          })
+        );
+        modal.hide();
+      });
+    }
+
+    function renderBabakJuri() {
+      const jumlahBabak = parseInt(localStorage.getItem("jumlahBabak")) || 3;
+      const tbody = document.getElementById("babakBody");
+      tbody.innerHTML = ""; // Kosongkan dulu
+
+      for (let i = 1; i <= jumlahBabak; i++) {
+        tbody.innerHTML += `
+      <tr>
+        <td class="text-center border fw-bold">
+          <h6 class="history-biru${i}"></h6>
+        </td>
+        <td class="text-center border">
+          <div class="d-grid gap-1">
+            <button class="badge bg-outline-light text-dark border button-babak${i} babak" onclick="history_babak(${i})">
+              ${i}
+            </button>
+          </div>
+        </td>
+        <td class="text-center border fw-bold">
+          <h6 class="history-merah${i}"></h6>
+        </td>
+      </tr>
+    `;
+      }
+    }
+
+    // Fungsi untuk mengubah detik menjadi format mm:ss
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    function babakUI(babak) {
+      // Reset semua tombol babak ke style default
+      for (let i = 1; i <= 3; i++) {
+        $(".button-babak" + i)
+          .removeClass("bg-success text-light")
+          .addClass("bg-outline-light text-dark");
+      }
+      // Aktifkan tombol sesuai babak saat ini
+      if (babak >= 1 && babak <= 3) {
+        $(".button-babak" + babak)
+          .removeClass("bg-success text-dark")
+          .addClass("bg-success text-light").re;
+      }
+    }
+
+    $(document).ready(function () {
+      const myModal = new bootstrap.Modal(document.getElementById("myModal"));
+      if (localStorage.getItem("is_login") === "0") {
+        window.location.href = url_juri;
+      }
+      renderBabakJuri();
+
+      ws.onopen = function () {
+        console.log("Server connected");
+        $(".button_nilai").prop("disabled", true);
+        $(".hapus-skor").prop("disabled", true);
+
+        ws.send(
+          JSON.stringify({
+            type: "get_history_nilai_juri",
+            partai: localStorage.getItem("partai"),
+            juri: localStorage.getItem("juri"),
+            bbk: localStorage.getItem("bbk"),
+          })
+        );
+
+        function renderPartaiFromStorage() {
+          const raw = localStorage.getItem("currentPartai");
+          if (!raw) return; // belum ada data tersimpan
+
+          try {
+            const p = JSON.parse(raw);
+            // Render UI sama seperti di handler partai_data
+            $(".nm_biru").text(p.biru.nama);
+            $(".kontingen_biru").text(p.biru.kontingen);
+            $(".nm_merah").text(p.merah.nama);
+            $(".kontingen_merah").text(p.merah.kontingen);
+
+            $("#juri").text(localStorage.getItem("nama_juri"));
+            $("#gelanggang").text(p.gelanggang + " - Partai " + p.partai);
+            $(".gelanggang").text(p.gelanggang);
+
+            if (p.partai === "?") {
+              $(".button_nilai, .hapus-skor").prop("disabled", true);
+            }
+
+            babakUI(p.babak);
+          } catch (e) {
+            console.warn("Gagal parse currentPartai di storage", e);
+          }
+        }
+
+        // Panggil segera saat load halaman
+        renderPartaiFromStorage();
+        babakUI(localStorage.getItem("babak"));
+
+        myModal.hide();
+      };
+
+      ws.onmessage = function (event) {
+        try {
+          const message = JSON.parse(event.data);
+          // console.log(message);
+
+          // Partai
+          if (message.type === "partai_data") {
+            const p = message.data;
+            console.log("Data partai diterima:", p);
+            localStorage.setItem("partai", p.partai);
+            localStorage.setItem("bbk", p.bbk);
+            // localStorage.setItem('babak', 0);
+            localStorage.setItem("currentPartai", JSON.stringify(p));
+            // Tampilkan ke DOM
+            $(".nm_biru").text(p.biru.nama);
+            $(".kontingen_biru").text(p.biru.kontingen);
+            $(".nm_merah").text(p.merah.nama);
+            $(".kontingen_merah").text(p.merah.kontingen);
+
+            $("#juri").text(localStorage.getItem("nama_juri"));
+            $("#gelanggang").text(p.gelanggang + " - Partai " + p.partai);
+
+            $(".gelanggang").text(p.gelanggang);
+            if (p.partai === "?") {
+              localStorage.setItem("babak", 0);
+              $(".button_nilai").prop("disabled", true);
+              $(".hapus-skor").prop("disabled", true);
+            }
+            babakUI(localStorage.getItem("babak"));
+          }
+
+          if (message.type === "set_jumlah_babak") {
+            console.log(message.jumlah);
+            localStorage.setItem("jumlahBabak", message.jumlah);
+            renderBabakJuri();
+            babakUI(localStorage.getItem("babak"));
+          }
+
+          if (message.type === "history_nilai") {
+            const currentJuri = localStorage.getItem("juri"); // pastikan ini adalah "id_juri"
+
+            // Filter berdasarkan id_juri
+            const filteredData = message.data.filter(
+              (item) => item.id_juri == currentJuri
+            );
+            // localStorage.setItem('filterData', JSON.stringify(filtered));
+
+            // Reset isi history semua babak dan sudut
+            for (let babak = 1; babak <= 3; babak++) {
+              ["biru", "merah"].forEach((sudut) => {
+                $(`.history-${sudut}${babak}`).html("");
+              });
+            }
+
+            // Kelompokkan data: { [babak]: { BIRU: [], MERAH: [] } }
+            const grouped = {};
+
+            filteredData.forEach((item) => {
+              const babak = item.babak;
+              const sudut = item.sudut.toUpperCase();
+
+              if (!grouped[babak]) grouped[babak] = { BIRU: [], MERAH: [] };
+              grouped[babak][sudut].push(item.nilai || "");
+            });
+
+            // Tampilkan ke HTML
+            Object.keys(grouped).forEach((babak) => {
+              ["BIRU", "MERAH"].forEach((sudut) => {
+                const hasil = grouped[babak][sudut].join("");
+                $(`.history-${sudut.toLowerCase()}${babak}`).html(hasil);
+              });
+            });
+          }
+
+          // Verifikasi
+          if (message.type === "verifikasi_masuk") {
+            // tampilkan notifikasi atau update UI
+            // Isi modal dinamis jika perlu
+            $(".judul_verifikasi").html(
+              `Verifikasi, <b>${message.data.jenis}?</b>`
+            );
+
+            // Reset status
+            const statusEl = document.getElementById("verifikasi-status");
+            statusEl.textContent = "Menunggu keputusan juri...";
+            statusEl.className =
+              "col bg-light text-dark fw-bold text-center text-uppercase m-2 rounded-5 p-2";
+
+            // Tampilkan modal (menggunakan Bootstrap 5)
+            myModal.show();
+          }
+
+          if (message.type === "verifikasi_tutup") {
+            myModal.hide();
+          }
+
+          // Babak
+          if (message.type === "babak_data") {
+            // console.log("Babak sekarang:", message.round);
+            localStorage.setItem("babak", message.round);
+            babakUI(message.round);
+          }
+
+          // Timer
+          if (message.type === "tick") {
+            console.log("tick");
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent =
+                "⏱️ " + formatTime(message.remaining);
+            }
+
+            $(".button_nilai").prop("disabled", false);
+            $(".hapus-skor").prop("disabled", false);
+          }
+
+          if (message.type === "stopped") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = "02:00";
+            }
+            $(".button_nilai").prop("disabled", true);
+            $(".hapus-skor").prop("disabled", true);
+            ws.send(
+              JSON.stringify({
+                type: "set_status_stop",
+                partai: localStorage.getItem("partai"),
+              })
+            );
+          }
+
+          if (message.type === "paused") {
+            $(".button_nilai").prop("disabled", true);
+            $(".hapus-skor").prop("disabled", true);
+          }
+
+          if (message.type === "resume") {
+            $(".button_nilai").prop("disabled", false);
+            $(".hapus-skor").prop("disabled", false);
+          }
+
+          if (message.type === "ended") {
+            setTimeout(() => {
+              $(".button_nilai").prop("disabled", true);
+            }, 10000);
+            $(".hapus-skor").prop("disabled", true);
+            console.log(message.type);
+          }
+
+          if (message.type === "status_partai") {
+            console.log(message.type);
+            setTimeout(() => {
+              $(".button_nilai").prop("disabled", true);
+            }, 10000);
+          }
+
+          // Optional: bisa juga tampilkan ketika mulai atau dihentikan
+          if (
+            message.type === "started" ||
+            message.type === "paused" ||
+            message.type === "resumed" ||
+            message.type === "stopped" ||
+            message.type === "ended"
+          ) {
+            console.log(
+              "Timer state:",
+              message.type,
+              "remaining:",
+              message.remaining
+            );
+          }
+        } catch (e) {
+          console.error("Error parsing message:", event.data);
+        }
+      };
+
+      ws.onclose = function () {
+        console.log("WebSocket disconnected");
+      };
+    });
+
+    function keluar() {
+      console.log("keluar");
+      localStorage.clear(); // Hapus semua data localStorage
+      window.location.href = url_juri; // Redirect ke halaman juri
+    }
+
+    // ================ Kirim Nilai =================== //
+    function button_nilai(nilai, sudut) {
+      console.log(localStorage.getItem("partai"));
+      const data = {
+        type: "nilai",
+        nilai: nilai,
+        sudut: sudut,
+        id_juri: localStorage.getItem("juri"),
+        id_jadwal: localStorage.getItem("partai"),
+        babak: localStorage.getItem("babak"),
+        bbk: localStorage.getItem("bbk"),
+        waktu: new Date().toISOString(),
+      };
+
+      // Kirim data melalui WebSocket
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(data));
+        console.log("Nilai dikirim:", data);
+      } else {
+        console.error("WebSocket tidak terhubung!");
+        alert("Koneksi ke server terputus!");
+      }
+    }
+
+    // ================ Hapus Nilai =================== //
+    function button_hapus(sudut) {
+      const data = {
+        type: "hapus_nilai",
+        sudut: sudut,
+        id_juri: localStorage.getItem("juri"),
+        id_jadwal: localStorage.getItem("partai"),
+        babak: localStorage.getItem("babak"),
+        bbk: localStorage.getItem("bbk"),
+      };
+
+      // Kirim data melalui WebSocket
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(data));
+        console.log("Perintah hapus dikirim:", data);
+      } else {
+        console.error("WebSocket tidak terhubung!");
+        alert("Koneksi ke server terputus!");
+      }
+    }
+
+    window.openFullscreen = () => {
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      $("#openfull").hide();
+      $("#exitfull").show();
+    };
+
+    window.closeFullscreen = () => {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      $("#openfull").show();
+      $("#exitfull").hide();
+    };
+  </script>
+</body>
+
+</html>

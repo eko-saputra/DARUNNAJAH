@@ -1,0 +1,572 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Monitor Seni Ganda | IPSI Kota Dumai</title>
+  <link rel="stylesheet" href="../../../assets/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="shortcut icon" href="../../../assets/img/LogoIPSI.png" />
+  <script src="../../../assets/jquery/jquery.min.js"></script>
+  <script src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    /* Gaya untuk tombol fullscreen di sudut kiri bawah */
+    .fullscreen-buttons {
+      position: fixed;
+      left: 10px;
+      bottom: 50px;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      padding: 5px;
+    }
+
+    #openfull,
+    #exitfull {
+      background: 0 0;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+    }
+
+    #openfull:active,
+    #exitfull:active,
+    #openfull:focus,
+    #exitfull:focus {
+      outline: 0;
+    }
+
+    #openfull svg,
+    #exitfull svg {
+      vertical-align: middle;
+    }
+
+    #exitfull {
+      display: none;
+    }
+
+    /* Gaya lainnya tetap sama */
+    #tabelnilai {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.2rem;
+    }
+
+    #tabelnilai td {
+      padding: 10px 12px;
+      text-align: center;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    #tabelnilai tr:first-child td {
+      font-weight: bold;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .judge-header {
+      min-width: 70px;
+    }
+
+    .bg-secondary {
+      background-color: #6c757d !important;
+      color: white;
+    }
+
+    .bg-primary {
+      background-color: #0d6efd !important;
+      color: white;
+    }
+
+    .footer-marquee {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #212529;
+      color: white;
+      padding: 10px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-content {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 20s linear infinite;
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Container untuk tombol fullscreen -->
+  <div class="fullscreen-buttons">
+    <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();">
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <path fill="#fff" d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+      </svg>
+    </button>
+    <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();">
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <path fill="#fff" d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Konten utama tetap sama -->
+  <div class="container-fluid shadow-sm" style="background-color: rgb(118, 144, 191)">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-6 m-auto bg-gradient bg-dark text-center fw-bold py-2 text-white rounded-bottom-5">
+          <h4>PENCAK SILAT</h4>
+        </div>
+      </div>
+      <div class="row py-2">
+        <div class="col-2">
+          <img src="../../../assets/img/LogoIPSI.png" width="32%" />
+        </div>
+        <div class="col-2 text-white justify-content-center fw-bold text-uppercase d-flex align-items-center">
+          <h5 class="kategori"></h5>
+        </div>
+        <div class="col-2 justify-content-center fw-bold text-uppercase text-white d-flex align-items-center">
+          <h5 class="babak"></h5>
+        </div>
+        <div class="col-4 justify-content-center fw-bold text-uppercase text-white d-flex align-items-center">
+          <h5 class="kelas"></h5>
+        </div>
+        <div class="col-2 text-end">
+          <img src="../../../assets/img/Lambang_Kota_Dumai.png" width="25%" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="my-3" style="width: 97%; margin: 0 auto">
+    <div class="row">
+      <div class="col-8 text-start text-uppercase fw-bold">
+        <div class="row">
+          <div class="col-1 p-1 d-flex align-items-center" style="position: relative">
+            <img src="../../../assets/img/bendera.gif" width="100"
+              style="position: absolute; z-index: -1; margin-right: 30px" />
+          </div>
+          <div class="col-11 ps-5 d-flex align-items-center">
+            <div class="">
+              <h3 class="text-muted nm">?</h3>
+              <h6 class="text-danger fw-bold text-uppercase kontingen">
+                Kontingen : ?
+              </h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-4 text-center fw-bold">
+        <h1 id="timer" class="bg-dark bg-gradient text-white rounded py-2" style="font-size: 50px">
+          00:00
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <div id="statistik-wrapper" style="display: none;">
+    <table class="table border w-50 ms-auto me-3">
+      <tr>
+        <td class="bg-success bg-gradient text-light text-center fw-bold">Median</td>
+        <td class="bg-success bg-gradient text-light text-center fw-bold">Penalty</td>
+        <td class="bg-success bg-gradient text-light text-center fw-bold">Time Performance</td>
+        <td class="bg-success bg-gradient text-light text-center fw-bold">Total</td>
+      </tr>
+      <tr>
+        <td class="text-center fw-bold" id="median-value">0</td>
+        <td class="text-center fw-bold" id="penalty-value">0</td>
+        <td class="text-center fw-bold" id="time-value">180</td>
+        <td class="text-center fw-bold" id="total-value">0</td>
+      </tr>
+      <tr>
+        <td colspan="4" class="text-center bg-success bg-gradient text-light">Standart Deviation</td>
+      </tr>
+      <tr>
+        <td colspan="4" class="text-center fw-bold" id="stdev-value">0</td>
+      </tr>
+    </table>
+  </div>
+
+
+  <div class="mx-4 mt-5">
+    <div class="row">
+      <div class="col text-dark fw-bold py-1">
+        <table id="tabelnilai" class="table table-bordered">
+          <thead>
+            <tr id="judgeHeaders"></tr>
+            <tr id="judgeScores"></tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smooth Marquee Footer -->
+  <div class="footer-marquee">
+    <div class="marquee-content">
+      APLIKASI DigitalScore Pencak Silat Kota Dumai &copy; 2023 - IPSI Kota
+      Dumai - Kejuaraan Pencak Silat Tingkat Kota
+    </div>
+  </div>
+
+  <script>
+    // Variabel untuk menyimpan status juri
+    const judgeStatus = Array(10).fill(false); // Awalnya semua juri tidak ready
+    let judgeElements = []; // Untuk menyimpan elemen juri
+
+    // WebSocket
+    const ws = new WebSocket('ws://192.168.100.133:3000'); // Ganti alamat jika perlu
+
+    // Fungsi untuk membuat tabel juri
+    function generateJudgeTable() {
+      const judgeHeaders = document.getElementById("judgeHeaders");
+      const judgeScores = document.getElementById("judgeScores");
+
+      // Kosongkan konten yang ada
+      judgeHeaders.innerHTML = "";
+      judgeScores.innerHTML = "";
+      judgeElements = [];
+
+      // Buat header kolom (Juri 1-10)
+      for (let i = 1; i <= 10; i++) {
+        const headerCell = document.createElement("td");
+        headerCell.textContent = `Juri ${i}`;
+        headerCell.className = "judge-header bg-secondary text-light";
+        judgeHeaders.appendChild(headerCell);
+
+        // Buat sel nilai (9.00 untuk setiap juri)
+        const scoreCell = document.createElement("td");
+        scoreCell.textContent = "9.90";
+        scoreCell.className = "bg-secondary text-light";
+        judgeScores.appendChild(scoreCell);
+
+        // Simpan referensi elemen juri
+        judgeElements.push({
+          header: headerCell,
+          score: scoreCell,
+        });
+      }
+    }
+
+    // Fungsi untuk mengupdate tampilan juri berdasarkan status
+    function updateJudgeDisplay() {
+      judgeStatus.forEach((isReady, index) => {
+        const judge = judgeElements[index];
+        if (judge) {
+          const bgClass = isReady
+            ? "bg-primary text-light"
+            : "bg-secondary text-light";
+          judge.header.className = `judge-header ${bgClass}`;
+          judge.score.className = bgClass;
+        }
+      });
+    }
+
+    // Ambil status juri READY dari localStorage saat load
+    const storedReady = JSON.parse(localStorage.getItem('juri_ready') || '[]');
+    storedReady.forEach((id_juri) => {
+      if (id_juri >= 1 && id_juri <= 10) {
+        judgeStatus[id_juri - 1] = true;
+      }
+    });
+    updateJudgeDisplay(); // Tampilkan ulang berdasarkan status
+
+    // Fungsi untuk membuat marquee yang halus
+    function createSmoothMarquee() {
+      const marqueeContent = document.querySelector(".marquee-content");
+      const contentWidth = marqueeContent.scrollWidth;
+      const containerWidth = document.querySelector(".footer-marquee").offsetWidth;
+      marqueeContent.innerHTML += " &nbsp; " + marqueeContent.innerHTML;
+      const duration = Math.max(20, contentWidth / 50);
+      marqueeContent.style.animationDuration = duration + "s";
+    }
+
+    $(document).ready(function () {
+
+      const storedTotalNilai = JSON.parse(localStorage.getItem('total_nilai_juri') || '[]');
+      storedTotalNilai.forEach((item) => {
+        const juriIndex = item.juri - 1;
+        if (judgeElements[juriIndex]) {
+          judgeElements[juriIndex].score.textContent = item.total;
+        }
+      });
+
+      const juri = localStorage.getItem('juri');
+      const nama_juri = localStorage.getItem('nama_juri');
+      const is_login = localStorage.getItem('is_login');
+
+      ws.onopen = function () {
+        console.log('Server connected');
+
+        const dataString = localStorage.getItem('currentPartai');
+        if (dataString) {
+          try {
+            const data = JSON.parse(dataString);
+            $('.nm').text(data.peserta.nama);
+            $('.kontingen').text(data.peserta.kontingen);
+            $('.babak').text(data.babak);
+            $('.kategori').text(data.kategori);
+            $('.kelas').text(data.kelas);
+          } catch (e) {
+            console.error("Gagal parsing data dari localStorage:", e);
+          }
+        }
+      };
+
+      function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      function calculateStats(penalty = 0) {
+        const data = JSON.parse(localStorage.getItem('total_nilai_juri') || '[]');
+
+        if (data.length === 0) return;
+
+        const totalNilai = data.map(d => d.total).sort((a, b) => a - b);
+
+        // Hitung Median
+        let median = 0;
+        const mid = Math.floor(totalNilai.length / 2);
+        if (totalNilai.length % 2 === 0) {
+          median = (totalNilai[mid - 1] + totalNilai[mid]) / 2;
+        } else {
+          median = totalNilai[mid];
+        }
+        // median = parseFloat(median.toFixed(3));
+        median = median;
+
+        // Total akhir
+        // const totalAkhir = parseFloat((median - penalty).toFixed(2));
+        const totalAkhir = parseFloat((median - Math.abs(penalty)).toFixed(2));
+
+
+        // Time performance default
+        const timePerformance = 180;
+
+        // Standar Deviasi
+        const mean = totalNilai.reduce((a, b) => a + b, 0) / totalNilai.length;
+        const variance = totalNilai.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / totalNilai.length;
+        const stdDev = parseFloat(Math.sqrt(variance).toFixed(10));
+
+        // Tampilkan ke tabel HTML
+        document.querySelector("#median-value").textContent = median;
+        document.querySelector("#penalty-value").textContent = penalty;
+        document.querySelector("#time-value").textContent = timePerformance;
+        document.querySelector("#total-value").textContent = totalAkhir;
+        document.querySelector("#stdev-value").textContent = stdDev;
+      }
+
+
+      function updateTotalNilaiJuriStorage(newData) {
+        let currentData = JSON.parse(localStorage.getItem('total_nilai_juri') || '[]');
+
+        newData.forEach(newItem => {
+          const index = currentData.findIndex(item => item.juri === newItem.juri);
+          if (index !== -1) {
+            currentData[index] = newItem; // Update nilai juri
+          } else {
+            currentData.push(newItem); // Tambah nilai baru
+          }
+        });
+
+        localStorage.setItem('total_nilai_juri', JSON.stringify(currentData));
+      }
+
+      calculateStats(localStorage.getItem('penalty'));
+
+      ws.onmessage = function (event) {
+        try {
+          const message = JSON.parse(event.data);
+
+          if (message.type === 'partai_data_tunggal') {
+            localStorage.removeItem('juri_ready');
+            console.log(message.data);
+            localStorage.removeItem('skor_per_jurus');
+            localStorage.removeItem('jurus_aktif');
+            localStorage.removeItem('hasil_per_gerakan');
+            localStorage.removeItem('selected_stamina');
+
+            judgeStatus.fill(false);       // Reset status READY juri
+            generateJudgeTable();          // Regenerasi tabel juri dengan nilai awal
+            updateJudgeDisplay();
+            // updateJudgeDisplay();
+            localStorage.clear('jurus_aktif');
+            const p = message.data;
+            console.log(p);
+
+            localStorage.setItem('partai', p.partai);
+            localStorage.setItem('currentPartai', JSON.stringify(p));
+            $('.nm').text(p.peserta.nama);
+            $('.babak').text(p.babak);
+            console.log(p.babak);
+            $('.kontingen').text(p.peserta.kontingen);
+            $('.kategori').text(p.kategori);
+            $('.kelas').text(p.kelas);
+            // Sembunyikan tabel statistik saat ganti partai
+            document.getElementById("statistik-wrapper").style.display = "none";
+
+          }
+
+          if (message.type === 'update_total_nilai') {
+            console.log("📡 Update total nilai dari server:", message.data);
+
+            // Gabungkan data lama dan baru, simpan ke localStorage
+            updateTotalNilaiJuriStorage(message.data);
+            calculateStats(localStorage.getItem('penalty'));
+
+            // Ambil data terbaru dari localStorage
+            const mergedData = JSON.parse(localStorage.getItem('total_nilai_juri') || '[]');
+
+            // Tampilkan ke tabel
+            mergedData.forEach((item) => {
+              const juriIndex = item.juri - 1;
+              if (judgeElements[juriIndex]) {
+                judgeElements[juriIndex].score.textContent = item.total;
+              }
+            });
+          }
+
+          if (message.type === 'broadcast_selesai_seni_regu') {
+            const data = message.data.rekap_nilai;
+            const penalty = message.data.penalty || 0;
+            localStorage.setItem('penalty', penalty);
+
+            // Ubah struktur data agar cocok dengan localStorage
+            const transformed = data.map(item => ({
+              juri: parseInt(item.id_juri),
+              rata_rata_jurus: item.rata_rata_jurus,
+              stamina: item.stamina,
+              total: item.total,
+              penalty: message.data.penalty,
+            }));
+
+            // Gabungkan data lama dan baru, simpan ke localStorage
+            updateTotalNilaiJuriStorage(transformed);
+            calculateStats(penalty);
+
+            // Ambil data terbaru dari localStorage
+            const mergedData = JSON.parse(localStorage.getItem('total_nilai_juri') || '[]');
+
+            // Tampilkan ke tabel (pastikan judgeElements sudah ada)
+            mergedData.forEach((item) => {
+              const juriIndex = item.juri - 1;
+              if (judgeElements[juriIndex]) {
+                judgeElements[juriIndex].score.textContent = item.total;
+              }
+            });
+            // Tampilkan tabel statistik saat selesai_seni
+            document.getElementById("statistik-wrapper").style.display = "block";
+
+          }
+
+          if (message.type === "juri_ready") {
+            const id_juri = parseInt(message.id_juri);
+            if (!isNaN(id_juri) && id_juri >= 1 && id_juri <= 10) {
+              // Ambil array juri_ready dari localStorage
+              let readyList = JSON.parse(localStorage.getItem('juri_ready') || '[]');
+
+              // Cegah duplikat
+              if (!readyList.includes(id_juri)) {
+                readyList.push(id_juri);
+                localStorage.setItem('juri_ready', JSON.stringify(readyList));
+              }
+
+              judgeStatus[id_juri - 1] = true;
+              updateJudgeDisplay();
+              console.log(`✅ Juri ${id_juri} READY`);
+            }
+          }
+
+          if (message.type === "tick") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = formatTime(message.remaining);
+            }
+            ws.send(JSON.stringify({
+              type: 'set_status',
+              partai: localStorage.getItem('partai')
+            }));
+          }
+
+          if (message.type === "stopped") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = '02:00';
+            }
+            ws.send(JSON.stringify({
+              type: 'set_status_stop',
+              partai: localStorage.getItem('partai')
+            }));
+          }
+
+        } catch (e) {
+          console.error('Error parsing message:', event.data);
+        }
+      };
+
+      ws.onclose = function () {
+        console.log('WebSocket disconnected');
+      };
+    });
+
+    // Fungsi untuk mode layar penuh
+    var elem = document.documentElement;
+
+    function openFullscreen() {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+      document.getElementById("openfull").style.display = "none";
+      document.getElementById("exitfull").style.display = "block";
+    }
+
+    function closeFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+      document.getElementById("openfull").style.display = "block";
+      document.getElementById("exitfull").style.display = "none";
+    }
+
+    // Inisialisasi saat halaman dimuat
+    window.onload = function () {
+      generateJudgeTable();
+      createSmoothMarquee();
+      updateJudgeDisplay(); // Pastikan tampilan awal sesuai status default
+      window.openFullscreen = openFullscreen;
+      window.closeFullscreen = closeFullscreen;
+    };
+  </script>
+
+</body>
+
+</html>

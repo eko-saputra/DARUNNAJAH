@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="robots" content="noindex" />
+  <link rel="shortcut icon" href="../../../assets/img/LogoIPSI.png" />
+  <link rel="stylesheet prefetch" href="../../../assets/bootstrap/dist/css/bootstrap.min.css" />
+  <style>
+    #openfull,
+    #exitfull {
+      background: 0 0;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      width: 30px;
+      height: 55px;
+      line-height: 55px;
+      float: left;
+    }
+
+    #openfull:active,
+    #exitfull:active,
+    #openfull:focus,
+    #exitfull:focus {
+      outline: 0;
+    }
+
+    #openfull svg,
+    #exitfull svg {
+      vertical-align: middle;
+    }
+
+    #exitfull {
+      display: none;
+    }
+
+    .button-active {
+      background-color: #198754 !important;
+      color: white !important;
+      border-color: #198754 !important;
+    }
+  </style>
+
+  <title>JURI - IPSI Kota Dumai</title>
+</head>
+
+<body class="bg-light bg-gradient">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <!-- Tabel Header -->
+        <table width="100%" class="table mt-1">
+          <tr>
+            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-4 text-white" colspan="3">
+              <b id="juri"></b> ( Kategori : <b class="kategori"></b>/<b class="kelas"></b>) <b id="timer"
+                style="font-size: 17px; font-weight: bold; background-color: black;color: white;padding:2px;border:2px solid white">⏱️
+                00:00</b>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-uppercase text-primary fw-bold" width="40%">
+              <b class="nm"></b>
+            </td>
+            <td class="text-uppercase text-center" width="20%">
+              <div class="d-flex justify-content-center align-items-center">
+                <div class="d-flex flex-column align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#2d2d2d"
+                          d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                      </svg>
+                    </button>
+                    <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#2d2d2d"
+                          d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="d-flex gap-2 mt-2">
+                    <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="konfirmasiKeluar()">
+                      KELUAR
+                    </button>
+                    <a href="#" class="btn btn-light border border-1 btn-sm reload-btn small"
+                      onclick="konfirmasiRefresh(event)">
+                      Refresh
+                    </a>
+                  </div>
+                  <script>
+                    function konfirmasiKeluar() {
+                      const yakin = confirm("Apakah Anda yakin ingin keluar?");
+                      if (yakin) {
+                        window.location.href = 'index.html';
+                        localStorage.clear();
+                      }
+                    }
+                    function konfirmasiRefresh(event) {
+                      // event.preventDefault();
+                      // const yakin = confirm("Apakah Anda yakin ingin me-refresh halaman ini?");
+                      // if (yakin) {
+                      window.location.href = 'penilaian.html';
+                      // }
+                    }
+                  </script>
+                </div>
+              </div>
+            </td>
+            <td class="text-uppercase text-danger fw-bold text-end" width="40%">
+              Kontingen<br><small class="kontingen"></small>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Tabel Kesalahan & Jurus -->
+        <table class="table table-bordered bg-white">
+          <tr>
+            <td class="2">
+              <div class="row">
+                <div class="col text-center text-danger fw-bold"><b class="kesalahan">0</b></div>
+                <div class="col">
+                  <div class="text-uppercase fw-bold fs-6 text-center text-dark">
+                    JURUS <span class="current-jurus">-</span>
+                  </div>
+                </div>
+                <div class="col text-center text-primary fw-bold"><b class="kebenaran">0</b></div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Tombol Wrong & Move -->
+          <tr>
+            <td colspan="2">
+              <div class="row g-1">
+                <div class="col-6">
+                  <button class="btn btn-danger big-btn w-100 py-3 border border-5 rounded-5 border-dark wrong"><b
+                      style="font-size: 50px;">WRONG MOVE</b></button>
+                </div>
+                <div class="col-6">
+                  <button class="btn btn-primary big-btn w-100 py-3 border border-5 rounded-5 border-dark move"><b
+                      style="font-size: 50px;">NEXT MOVE</b></button>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- FLOW OF MOVEMENT / STAMINA -->
+          <tr class="bg-light align-middle">
+            <td colspan="4">
+              <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="flex-grow-1 text-center bg-light text-dark small">FLOW OF MOVEMENT / STAMINA</div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Tombol Score -->
+          <!-- -->
+
+          <!-- Tombol Stamina -->
+          <tr>
+            <td colspan="4" class="text-center bg-light fs-6">
+              <div class="d-flex flex-wrap justify-content-center mt-2" id="stamina-buttons-container">
+                <!-- Tombol stamina dibuat otomatis JS -->
+              </div>
+            </td>
+          </tr>
+
+          <!-- Score, Stamina & Total -->
+          <!-- <tr>
+            <td colspan="4" class="text-center bg-light fs-6 text-uppercase fw-bold total">
+              Score : <b class="score">0.00</b> - Stamina : <b class="stamina">0.00</b> = Total Score: <span
+                class="text-dark total-score">0.00</span>
+            </td>
+          </tr> -->
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal READY -->
+  <div class="modal fade" id="modalReady" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="modalReadyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border border-success border-3">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="modalReadyLabel">Konfirmasi Kesiapan</h5>
+        </div>
+        <div class="modal-body text-center">
+          <p>Silakan tekan tombol <strong>READY</strong> jika Anda siap menilai.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-success btn-lg px-5 btnReady" data-bs-dismiss="modal">READY</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script type="text/javascript" src="../../../assets/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ======== KONSTANTA & VAR GLOBAL ========
+    const baseUrl = "http://192.168.100.133/skordigital";
+    const url_api = `${baseUrl}/backend/api/api_juri.php`;
+    const url_juri = `${baseUrl}/juri`;
+
+    $('#juri').text(localStorage.getItem('nama_juri'));
+
+    // $('.wrong').prop('disabled', true);
+    // $('.move').prop('disabled', true);
+
+    if (localStorage.getItem('is_login') < 1) {
+      localStorage.clear();
+      document.location.href = "http://192.168.100.133/skordigital/TGR/tunggal/juri";
+    }
+
+    const ws = new WebSocket('ws://192.168.100.133:3000');
+    const elem = document.documentElement;
+
+    // ======= STATE =======
+    let jurusAktif = parseInt(localStorage.getItem('jurus_aktif')) || 1;
+    let hasilPerGerakan = JSON.parse(localStorage.getItem('hasil_per_gerakan')) || [];
+    let skorPerJurus = JSON.parse(localStorage.getItem('skor_per_jurus')) || {};
+
+    let selectedStamina = parseFloat(localStorage.getItem('selected_stamina')) || 0.00;
+
+    function hitungDanSimpanSkorJurus() {
+      const totalSalah = hasilPerGerakan.filter(val => val === 1).length;
+      // const skor = Math.max(0, (9.90 - (totalSalah * 0.01)) - selectedStamina);
+      const skor = Math.max(0, totalSalah * 0.01);
+      skorPerJurus[`jurus${jurusAktif}`] = parseFloat(skor.toFixed(2));
+
+      // Simpan skor dan update jurus
+      localStorage.setItem('skor_per_jurus', JSON.stringify(skorPerJurus));
+      jurusAktif++;
+
+      const dataString = localStorage.getItem('currentPartai');
+      const data = JSON.parse(dataString);
+
+      // Kirim data ke server WebSocket
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'simpan_data_seni_tunggal',
+          id_jadwal: localStorage.getItem('partai'),
+          juri: localStorage.getItem('juri'),
+          sudut: data.peserta.sudut,
+          selectedStamina: selectedStamina.toFixed(2),
+          skorPerJurus: JSON.stringify(skorPerJurus)
+        }));
+      }
+      localStorage.setItem('jurus_aktif', jurusAktif);
+
+      hasilPerGerakan = [];
+      localStorage.setItem('hasil_per_gerakan', JSON.stringify([])); // <== PENTING!
+
+      if (jurusAktif >= 15) {
+        // $('.wrong').prop('disabled', true);
+        // $('.move').prop('disabled', true);
+      }
+    }
+
+    // ======= FUNGSI SIMPAN DATA =======
+    function simpanData() {
+      localStorage.setItem('hasil_per_gerakan', JSON.stringify(hasilPerGerakan));
+      localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+    }
+
+
+    const jumlahGerakanPerJurus = [null, 7, 6, 5, 7, 6, 8, 11, 7, 6, 12, 6, 5, 5, 9];
+
+
+    // ======= FUNGSI UPDATE DISPLAY =======
+    function updateDisplay() {
+      const totalKesalahan = hasilPerGerakan.filter(val => val === 1).length;
+      const totalKebenaran = hasilPerGerakan.filter(val => val === 0).length;
+      const totalGerakan = hasilPerGerakan.length;
+
+      // const skorSetelahKesalahan = 9.90 - (totalKesalahan * 0.01);
+      const skorSetelahKesalahan = totalKesalahan * 0.01;
+      let total = skorSetelahKesalahan + selectedStamina;
+      if (total < 0) total = 0;
+
+      $('.kebenaran').text(totalKebenaran);
+      $('.kesalahan').text(totalKesalahan);
+      $('.score').text(skorSetelahKesalahan.toFixed(2));
+      $('.stamina').text(selectedStamina.toFixed(2));
+      $('.total-score').text(total.toFixed(2));
+
+      // ========== HITUNG JURUS BERDASARKAN TOTAL GERAKAN ==========
+      const jumlahGerakanPerJurus = [null, 7, 6, 5, 7, 6, 8, 11, 7, 6, 12, 6, 5, 5, 9];
+      const namaJurus = [
+        null,                 // index 0 (dummy)
+        "Tangan Kosong",      // jurus 1
+        "Tangan Kosong",      // jurus 2
+        "Tangan Kosong",      // jurus 3
+        "Tangan Kosong",      // jurus 4
+        "Tangan Kosong",      // jurus 5
+        "Tangan Kosong",      // jurus 6
+        "Tangan Kosong",      // jurus 7
+        "Golok / Parang",     // jurus 8
+        "Golok / Parang",     // jurus 9
+        "Golok / Parang",     // jurus 10
+        "Tongkat",            // jurus 11
+        "Tongkat",            // jurus 12
+        "Tongkat",            // jurus 13
+        "Tongkat"             // jurus 14
+      ];
+
+      let jurusKe = "SELESAI";
+      let labelJurus = "-";
+      let sum = 0;
+
+      console.log(jumlahGerakanPerJurus.length);
+
+      for (let i = 1; i <= 14; i++) {
+        sum += jumlahGerakanPerJurus[i];
+        if (totalGerakan <= sum) {
+          jurusKe = i;
+          labelJurus = namaJurus[i];
+          break;
+        }
+      }
+      if (jurusAktif == 15) {
+        $('.wrong').prop('disabled', true);
+        $('.move').prop('disabled', true);
+      } else {
+        $('.current-jurus').text(`${jurusAktif} - ${namaJurus[jurusAktif]}`);
+      }
+
+    }
+
+    // ======= BIKIN TOMBOL STAMINA =======
+    function buatTombolStamina() {
+      const container = document.getElementById("stamina-buttons-container");
+      container.innerHTML = "";
+
+      for (let i = 1; i <= 10; i++) {
+        const val = (i / 100).toFixed(2);
+        const btn = document.createElement("button");
+        btn.className = "btn btn-outline-dark btn-sm stamina-btn m-1";
+        btn.textContent = val;
+        btn.setAttribute("data-stamina", val);
+
+        // Tandai tombol stamina aktif jika sesuai
+        if (parseFloat(val) === selectedStamina) {
+          btn.classList.add("button-active");
+        }
+
+        btn.onclick = function () {
+          document.querySelectorAll(".stamina-btn").forEach(b => {
+            b.classList.remove("button-active");
+          });
+          this.classList.add("button-active");
+
+          selectedStamina = parseFloat(val);
+
+          simpanData();
+          updateDisplay();
+        };
+
+        container.appendChild(btn);
+      }
+
+      updateDisplay();
+    }
+
+    // ======= EVENT HANDLER =======
+    document.addEventListener('DOMContentLoaded', function () {
+      // Tampilkan modal saat halaman pertama kali dimuat
+      const modal = new bootstrap.Modal(document.getElementById('modalReady'));
+      // modal.show();
+
+      document.getElementById("modalReady").addEventListener('hidden.bs.modal', function () {
+        console.log("🟢 Modal ditutup. Juri siap.");
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: "ready",
+            id_juri: localStorage.getItem('juri')
+          }));
+          console.log("✅ READY terkirim ke server WebSocket.");
+        } else {
+          console.error("❌ WebSocket belum terbuka saat tombol READY ditekan.");
+        }
+      });
+
+      buatTombolStamina();
+      updateDisplay();
+
+      $('.move').on('click', function () {
+        hasilPerGerakan.push(0);
+        simpanData();
+
+        if (hasilPerGerakan.length >= jumlahGerakanPerJurus[jurusAktif]) {
+          hitungDanSimpanSkorJurus();
+        }
+
+        updateDisplay();
+      });
+
+      // Saat tombol WRONG diklik
+      $('.wrong').on('click', function () {
+        hasilPerGerakan.push(1);
+        simpanData();
+
+        if (hasilPerGerakan.length >= jumlahGerakanPerJurus[jurusAktif]) {
+          hitungDanSimpanSkorJurus();
+        }
+
+        updateDisplay();
+      });
+    });
+
+    function buatTombolStamina() {
+      const container = document.getElementById("stamina-buttons-container");
+      container.innerHTML = "";
+
+      // Ambil stamina dari localStorage jika ada
+      const staminaTersimpan = localStorage.getItem('selected_stamina');
+      if (staminaTersimpan) {
+        selectedStamina = parseFloat(staminaTersimpan);
+      }
+
+      for (let i = 1; i <= 10; i++) {
+        const val = (i / 100).toFixed(2);
+        const btn = document.createElement("button");
+        btn.className = "btn btn-outline-dark btn-sm stamina-btn m-1";
+        btn.textContent = val;
+        btn.setAttribute("data-stamina", val);
+
+        // Jika stamina tersimpan cocok dengan nilai tombol ini, tandai aktif
+        if (parseFloat(val) === selectedStamina) {
+          btn.classList.add("button-active");
+        }
+
+        btn.onclick = function () {
+          // Highlight tombol stamina aktif
+          document.querySelectorAll(".stamina-btn").forEach(b => {
+            b.classList.remove("button-active");
+          });
+          this.classList.add("button-active");
+
+
+          selectedStamina = parseFloat(val);
+          localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+          const dataString = localStorage.getItem('currentPartai');
+          const data = JSON.parse(dataString);
+
+          // Kirim data ke server WebSocket
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'simpan_data_seni_regu',
+              id_jadwal: localStorage.getItem('partai'),
+              juri: localStorage.getItem('juri'),
+              sudut: data.peserta.sudut,
+              selectedStamina: localStorage.getItem('selected_stamina'),
+              skorPerJurus: JSON.stringify(skorPerJurus)
+            }));
+          }
+          updateDisplay();
+        };
+
+        container.appendChild(btn);
+      }
+
+      updateDisplay();
+    }
+
+
+    // ======= WebSocket (bisa kamu sesuaikan sendiri) =======
+    $(document).ready(function () {
+      let modalReady = null;
+      // $('.wrong').prop('disabled', true);
+      // $('.move').prop('disabled', true);
+      const juri = localStorage.getItem('juri');
+      const nama_juri = localStorage.getItem('nama_juri');
+      const is_login = localStorage.getItem('is_login');
+
+      ws.onopen = function () {
+        console.log('Server connected');
+
+        const dataString = localStorage.getItem('currentPartai');
+        if (dataString) {
+          try {
+            const data = JSON.parse(dataString);
+            $('.nm').text(data.peserta.nama);
+            $('.kontingen').text(data.peserta.kontingen);
+            $('.kategori').text(data.kategori);
+            $('.kelas').text(data.kelas);
+
+            if (data.partai === '?') {
+              $('.wrong').prop('disabled', true);
+              $('.move').prop('disabled', true);
+            } else {
+              $('.wrong').prop('disabled', false);
+              $('.move').prop('disabled', false);
+            }
+          } catch (e) {
+            console.error("Gagal parsing data dari localStorage:", e);
+          }
+        }
+      };
+
+      function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      ws.onmessage = function (event) {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'partai_data_tunggal') {
+            // Jika modal sudah pernah dibuat, sembunyikan dulu
+            if (modalReady) {
+              modalReady.hide();
+            }
+            localStorage.removeItem('selected_stamina');
+
+            document.querySelectorAll(".stamina-btn").forEach(b => {
+              b.classList.remove("button-active");
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('modalReady'));
+            modalReady = new bootstrap.Modal(document.getElementById('modalReady'));
+            modalReady.show();
+            localStorage.removeItem('skor_per_jurus');
+            localStorage.removeItem('jurus_aktif');
+            localStorage.removeItem('hasil_per_gerakan');
+            localStorage.removeItem('selected_stamina');
+            $('.current-jurus').text('1 - Tangan Kosong');
+            const p = message.data;
+            localStorage.setItem('juri', juri);
+            localStorage.setItem('nama_juri', nama_juri);
+            localStorage.setItem('is_login', is_login);
+
+            localStorage.setItem('partai', p.partai);
+            localStorage.setItem('currentPartai', JSON.stringify(p));
+            $('.nm').text(p.peserta.nama);
+            $('.kontingen').text(p.peserta.kontingen);
+            $('.kategori').text(p.kategori);
+            $('.kelas').text(p.kelas);
+            $('.kesalahan').text(0);
+            $('.kebenaran').text(0);
+
+            // if (p.partai === '?') {
+            //   $('.wrong').prop('disabled', true);
+            //   $('.move').prop('disabled', true);
+            // } else {
+            //   $('.wrong').prop('disabled', false);
+            //   $('.move').prop('disabled', false);
+            // }
+
+            $('.wrong').prop('disabled', true);
+            $('.move').prop('disabled', true);
+          }
+
+          if (message.type === "tick") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = '⏱️ ' + formatTime(message.remaining);
+            }
+            ws.send(JSON.stringify({
+              type: 'set_status',
+              partai: localStorage.getItem('partai')
+            }));
+          }
+
+          if (message.type === "stopped") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = '02:00';
+            }
+            ws.send(JSON.stringify({
+              type: 'set_status_stop',
+              partai: localStorage.getItem('partai')
+            }));
+          }
+
+          if (message.type === 'started') {
+            console.log('start');
+            $('.wrong').prop('disabled', false);
+            $('.move').prop('disabled', false);
+          }
+
+          if (message.type === 'stopped') {
+            console.log('stop');
+
+            $('.wrong').prop('disabled', true);
+            $('.move').prop('disabled', true);
+          }
+
+        } catch (e) {
+          console.error('Error parsing message:', event.data);
+        }
+      };
+
+      ws.onclose = function () {
+        console.log('WebSocket disconnected');
+      };
+    });
+
+    // Fungsi fullscreen
+    window.openFullscreen = () => {
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      $("#openfull").hide();
+      $("#exitfull").show();
+    };
+
+    window.closeFullscreen = () => {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      $("#openfull").show();
+      $("#exitfull").hide();
+    };
+  </script>
+</body>
+
+</html>

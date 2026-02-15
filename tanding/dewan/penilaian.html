@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png" />
+  <link rel="stylesheet prefetch" href="../../assets/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Mencegah zoom otomatis di fullscreen */
+    html {
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body.bg-dark {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%) !important;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      padding: 10px;
+      transform-origin: top left;
+      width: 100%;
+    }
+
+    /* HEADER IMPROVEMENT */
+    .header-cell {
+      background: linear-gradient(135deg, #2c3e50 0%, #4a235a 100%) !important;
+      border: 2px solid #3498db !important;
+      border-radius: 10px !important;
+      padding: 15px !important;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .header-cell b {
+      color: white !important;
+      font-size: 1.2rem !important;
+      font-weight: 700 !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* PLAYER NAME IMPROVEMENT - SEMUA RATA TENGAH */
+    .player-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .player-name-box {
+      background: rgba(30, 30, 40, 0.9) !important;
+      border: 2px solid !important;
+      border-radius: 10px !important;
+      padding: 15px !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+      transition: all 0.3s ease !important;
+      width: 100%;
+      text-align: center !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .player-name-box:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .player-name-box.biru {
+      border-color: #3498db !important;
+      border-left: 5px solid #2980b9 !important;
+      border-right: 5px solid #2980b9 !important;
+    }
+
+    .player-name-box.merah {
+      border-color: #e74c3c !important;
+      border-left: 5px solid #c0392b !important;
+      border-right: 5px solid #c0392b !important;
+    }
+
+    h5.text-primary,
+    h5.text-danger {
+      font-size: 1.4rem !important;
+      font-weight: 800 !important;
+      margin-bottom: 8px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.8px !important;
+      text-align: center !important;
+      width: 100%;
+    }
+
+    h5.text-primary {
+      color: #4dabff !important;
+      text-shadow: 0 2px 8px rgba(77, 171, 255, 0.4) !important;
+    }
+
+    h5.text-danger {
+      color: #ff6b6b !important;
+      text-shadow: 0 2px 8px rgba(255, 107, 107, 0.4) !important;
+    }
+
+    .kontingen_biru,
+    .kontingen_merah {
+      font-size: 1.1rem !important;
+      color: #adb5bd !important;
+      font-weight: 600 !important;
+      text-align: center !important;
+      width: 100%;
+    }
+
+    /* TIMER IMPROVEMENT */
+    .timer-box {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+      border: 3px solid #3498db !important;
+      border-radius: 10px !important;
+      padding: 15px !important;
+      box-shadow: 0 0 20px rgba(52, 152, 219, 0.3) !important;
+      text-align: center !important;
+    }
+
+    #timer {
+      font-family: 'Courier New', monospace !important;
+      font-size: 2.2rem !important;
+      font-weight: 900 !important;
+      color: #00e5ff !important;
+      text-shadow: 0 0 12px rgba(0, 229, 255, 0.8) !important;
+      background: rgba(0, 0, 0, 0.7) !important;
+      padding: 12px 24px !important;
+      border-radius: 10px !important;
+      border: 3px solid rgba(0, 229, 255, 0.4) !important;
+      display: inline-block !important;
+      min-width: 140px !important;
+      margin-bottom: 12px !important;
+    }
+
+    /* FULLSCREEN BUTTONS IMPROVEMENT */
+    #openfull,
+    #exitfull {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 8px !important;
+      width: 44px !important;
+      height: 44px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.3s ease !important;
+      cursor: pointer !important;
+      margin: 0 5px !important;
+    }
+
+    #openfull:hover,
+    #exitfull:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+      border-color: #00e5ff !important;
+      transform: scale(1.1) !important;
+    }
+
+    #openfull svg path,
+    #exitfull svg path {
+      fill: #e0e0e0 !important;
+    }
+
+    #exitfull {
+      display: none !important;
+    }
+
+    /* CONTROL BUTTONS IMPROVEMENT */
+    .control-buttons {
+      margin-top: 15px !important;
+    }
+
+    .btn.keluar,
+    .btn.reload-btn {
+      border-radius: 50px !important;
+      font-weight: 600 !important;
+      padding: 10px 20px !important;
+      font-size: 0.95rem !important;
+      transition: all 0.3s ease !important;
+      border: none !important;
+      min-width: 110px !important;
+    }
+
+    .btn.keluar {
+      background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+      color: white !important;
+    }
+
+    .btn.reload-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      color: white !important;
+    }
+
+    .btn.keluar:hover,
+    .btn.reload-btn:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* TABLE IMPROVEMENT - ANGGKA DIPERBESAR */
+    .table.shadow {
+      background: rgba(30, 30, 40, 0.9) !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* PERBAIKAN: TH MERAH BUKAN ORANGE */
+    .bg-primary {
+      background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%) !important;
+    }
+
+    .bg-danger {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+      color: white !important;
+    }
+
+    .bg-secondary {
+      background: linear-gradient(135deg, #7f8c8d 0%, #616a6b 100%) !important;
+    }
+
+    thead td,
+    thead th {
+      font-weight: 700 !important;
+      text-align: center !important;
+      padding: 14px 5px !important;
+      font-size: 0.9rem !important;
+      border: none !important;
+    }
+
+    tbody td {
+      background: rgba(40, 40, 50, 0.9) !important;
+      color: #e0e0e0 !important;
+      text-align: center !important;
+      padding: 12px 5px !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      vertical-align: middle !important;
+      min-height: 50px;
+    }
+
+    /* TOMBOL BABAK YANG AKTIF */
+    .button-babak {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+      color: white !important;
+      border: none !important;
+      font-weight: 800 !important;
+      padding: 12px 20px !important;
+      margin: 3px !important;
+      border-radius: 10px !important;
+      transition: all 0.3s ease !important;
+      font-size: 1.1rem !important;
+      width: 100%;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .button-babak.active {
+      background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
+      box-shadow: 0 0 20px rgba(25, 135, 84, 0.6) !important;
+      transform: scale(1.05);
+      border: 2px solid #20c997 !important;
+    }
+
+    .button-babak:hover:not(.active) {
+      background: linear-gradient(135deg, #5a6268 0%, #495057 100%) !important;
+      transform: translateY(-2px) !important;
+    }
+
+    /* ACTION BUTTONS IMPROVEMENT */
+    .container-fluid .row.text-center {
+      background: rgba(30, 30, 40, 0.9) !important;
+      border-radius: 12px !important;
+      padding: 20px !important;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+      margin-bottom: 20px !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .button_nilai {
+      border-radius: 12px !important;
+      font-weight: 800 !important;
+      padding: 15px 10px !important;
+      margin: 6px 0 !important;
+      border: 3px solid !important;
+      transition: all 0.3s ease !important;
+      font-size: 1rem !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.8px !important;
+    }
+
+    .button_nilai:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .button_nilai:active {
+      transform: translateY(-1px) !important;
+    }
+
+    .btn-primary.bg-gradient {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+      border-color: #007bff !important;
+      color: white !important;
+    }
+
+    .btn-danger.bg-gradient {
+      background: linear-gradient(135deg, #8b0000 0%, #dc3545 100%) !important;
+      border-color: #dc3545 !important;
+      color: white !important;
+    }
+
+    .py-3.rounded-5 {
+      font-size: 1rem !important;
+      padding: 18px 12px !important;
+    }
+
+    .hapus-skor {
+      background: linear-gradient(135deg, #495057 0%, #6c757d 100%) !important;
+      border-color: #6c757d !important;
+      color: white !important;
+      padding: 15px !important;
+      font-size: 1rem !important;
+    }
+
+    .verifikasi,
+    .pemenang {
+      font-weight: 900 !important;
+      border-radius: 12px !important;
+      padding: 18px 12px !important;
+      font-size: 1.1rem !important;
+    }
+
+    .verifikasi {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+      border-color: #ffc107 !important;
+      color: #212529 !important;
+    }
+
+    .pemenang {
+      background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
+      border-color: #198754 !important;
+      color: white !important;
+    }
+
+    /* MODAL IMPROVEMENTS */
+    .modal-content {
+      background: rgba(30, 30, 40, 0.95) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 15px !important;
+      backdrop-filter: blur(10px) !important;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #2c3e50 0%, #4a235a 100%) !important;
+      border-bottom: 2px solid #3498db !important;
+      border-radius: 15px 15px 0 0 !important;
+    }
+
+    .modal-title {
+      color: white !important;
+      font-weight: 800 !important;
+    }
+
+    .btn-close {
+      filter: invert(1) !important;
+    }
+
+    .modal-body {
+      color: #e0e0e0 !important;
+    }
+
+    .tombol-send {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 10px !important;
+      padding: 18px !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .tombol-send:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* WINNER MODAL IMPROVEMENT - SEMUA ANGGKA DIPERJELAS */
+    #pemenangModal .modal-header {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%) !important;
+    }
+
+    .modal-body.bg-dark {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%) !important;
+    }
+
+    .modal-body.bg-dark h5 {
+      font-size: 1.5rem !important;
+      font-weight: 800 !important;
+      margin-bottom: 30px !important;
+      color: #00e5ff !important;
+      text-shadow: 0 2px 8px rgba(0, 229, 255, 0.4) !important;
+    }
+
+    .table {
+      background: rgba(30, 30, 40, 0.9) !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+      margin-bottom: 30px !important;
+    }
+
+    .table-primary thead th {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+      font-size: 1.3rem !important;
+      padding: 20px 15px !important;
+    }
+
+    .table-danger thead th {
+      background: linear-gradient(135deg, #8b0000 0%, #dc3545 100%) !important;
+      font-size: 1.3rem !important;
+      padding: 20px 15px !important;
+    }
+
+    .table tbody td {
+      padding: 18px 15px !important;
+      font-size: 1.3rem !important;
+      font-weight: 700 !important;
+      background: rgba(40, 40, 50, 0.7) !important;
+    }
+
+    .table tbody td.text-start,
+    .table tbody td.text-end {
+      font-size: 1.2rem !important;
+      font-weight: 700 !important;
+    }
+
+    /* SKOR AKHIR DIPERBESAR LAGI */
+    #nilai_akhir_biru,
+    #nilai_akhir_merah {
+      font-size: 5rem !important;
+      font-weight: 900 !important;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7) !important;
+      padding: 30px 15px !important;
+    }
+
+    #nilai_akhir_biru {
+      color: #4dabff !important;
+      background: rgba(30, 60, 114, 0.3) !important;
+    }
+
+    #nilai_akhir_merah {
+      color: #ff6b6b !important;
+      background: rgba(139, 0, 0, 0.3) !important;
+    }
+
+    .winner-biru,
+    .winner-merah {
+      border-radius: 15px !important;
+      padding: 25px !important;
+      font-size: 1.5rem !important;
+      font-weight: 900 !important;
+      border: 4px solid !important;
+      transition: all 0.3s ease !important;
+      margin: 15px !important;
+      min-width: 220px !important;
+      min-height: 120px !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .winner-biru {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+      border-color: #007bff !important;
+      color: white !important;
+    }
+
+    .winner-merah {
+      background: linear-gradient(135deg, #8b0000 0%, #dc3545 100%) !important;
+      border-color: #dc3545 !important;
+      color: white !important;
+    }
+
+    .winner-biru:hover,
+    .winner-merah:hover {
+      transform: scale(1.08) !important;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .winner-biru h1,
+    .winner-merah h1 {
+      font-size: 2rem !important;
+      margin-top: 10px !important;
+      margin-bottom: 0 !important;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .header-cell b {
+        font-size: 1rem !important;
+      }
+
+      h5.text-primary,
+      h5.text-danger {
+        font-size: 1.2rem !important;
+      }
+
+      #timer {
+        font-size: 1.8rem !important;
+        min-width: 120px !important;
+      }
+
+      .button_nilai {
+        padding: 12px 8px !important;
+        font-size: 0.9rem !important;
+      }
+
+      .py-3.rounded-5 {
+        padding: 15px 10px !important;
+        font-size: 0.9rem !important;
+      }
+
+      .winner-biru,
+      .winner-merah {
+        padding: 20px !important;
+        font-size: 1.3rem !important;
+        min-width: 180px !important;
+      }
+
+      #nilai_akhir_biru,
+      #nilai_akhir_merah {
+        font-size: 3.5rem !important;
+      }
+
+      .table tbody td {
+        font-size: 1.1rem !important;
+        padding: 14px 10px !important;
+      }
+
+      tbody td {
+        font-size: 1rem !important;
+        padding: 10px 3px !important;
+      }
+
+      .button-babak {
+        padding: 10px 15px !important;
+        font-size: 1rem !important;
+      }
+    }
+
+    /* FIX untuk mencegah zoom di fullscreen */
+    :fullscreen,
+    ::backdrop {
+      transform: scale(1) !important;
+    }
+
+    :-webkit-full-screen {
+      transform: scale(1) !important;
+    }
+
+    :-moz-full-screen {
+      transform: scale(1) !important;
+    }
+
+    :-ms-fullscreen {
+      transform: scale(1) !important;
+    }
+
+    /* ANIMATIONS */
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .timer-pulse {
+      animation: pulse 1s infinite;
+    }
+
+    /* UTILITY */
+    .text-glow {
+      text-shadow: 0 0 10px currentColor;
+    }
+  </style>
+
+  <title>DEWAN - IPSI Kota Dumai</title>
+</head>
+
+<body class="bg-dark">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <!-- HEADER -->
+        <table width="100%" class="table mb-3">
+          <tr>
+            <td class="text-uppercase fw-bold text-center header-cell" colspan="3">
+              <b id="juri"></b> ( Gelanggang : <b id="gelanggang"></b>)
+            </td>
+          </tr>
+          <tr>
+            <!-- BIRU - RATA TENGAH -->
+            <td class="bg-dark bg-gradient" width="40%">
+              <div class="player-container">
+                <div class="player-name-box biru">
+                  <h5 class="text-primary fw-bold text-uppercase nm_biru mb-2"></h5>
+                  <h6 class="kontingen_biru text-light"></h6>
+                </div>
+              </div>
+            </td>
+
+            <!-- TIMER & CONTROLS -->
+            <td class="text-uppercase text-center bg-secondary bg-gradient" width="20%">
+              <div class="timer-box">
+                <div class="mt-2">
+                  <b id="timer">⏱️ 02:00</b>
+                </div>
+                <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
+                  <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                      <path
+                        d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                    </svg>
+                  </button>
+                  <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();"
+                    class="btn p-0 d-none">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                      <path d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="control-buttons d-flex gap-2 justify-content-center mt-3">
+                  <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="keluar()">
+                    <i class="fas fa-sign-out-alt me-1"></i>Keluar
+                  </button>
+                  <a href="penilaian.html" class="btn btn-light border border-1 btn-sm reload-btn">
+                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                  </a>
+                </div>
+              </div>
+            </td>
+
+            <!-- MERAH - RATA TENGAH -->
+            <td class="bg-dark bg-gradient" width="40%">
+              <div class="player-container">
+                <div class="player-name-box merah">
+                  <h5 class="text-danger fw-bold text-uppercase nm_merah mb-2"></h5>
+                  <h6 class="kontingen_merah text-light"></h6>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- SCORING TABLE -->
+        <table class="table shadow" width="100%">
+          <thead>
+            <tr>
+              <td width="10%" class="bg-primary text-white text-center">
+                <small>TEGURAN</small>
+              </td>
+              <td width="10%" class="bg-primary text-white text-center">
+                <small>PERINGATAN</small>
+              </td>
+              <td width="10%" class="bg-primary text-white text-center">
+                <small>BINAAN</small>
+              </td>
+              <td width="10%" class="bg-primary text-white text-center">
+                <small>JATUHAN</small>
+              </td>
+              <td width="20%" class="text-center fw-bold bg-secondary text-light">
+                BABAK
+              </td>
+              <td width="10%" class="bg-danger text-white text-center">
+                <small>JATUHAN</small>
+              </td>
+              <td width="10%" class="bg-danger text-white text-center">
+                <small>BINAAN</small>
+              </td>
+              <td width="10%" class="bg-danger text-white text-center">
+                <small>PERINGATAN</small>
+              </td>
+              <td width="10%" class="bg-danger text-white text-center">
+                <small>TEGURAN</small>
+              </td>
+            </tr>
+          </thead>
+          <tbody id="tbody-babak">
+            <!-- baris babak akan di-generate disini -->
+          </tbody>
+        </table>
+
+        <!-- ACTION BUTTONS -->
+        <div class="container-fluid">
+          <div class="row text-center mb-3">
+            <!-- BIRU -->
+            <div class="col-2">
+              <button
+                class="btn btn-primary bg-gradient py-3 rounded-5 fw-bold w-100 mb-2 button_nilai border border-5 border-dark"
+                onclick="button_nilai('1','BIRU')">
+                <b>JATUHAN</b>
+              </button>
+              <button
+                class="btn btn-primary bg-gradient py-3 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('2','BIRU')">
+                <b>BINAAN</b>
+              </button>
+            </div>
+
+            <div class="col-1">
+              <button
+                class="btn btn-primary bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('5','BIRU')">
+                P1
+              </button>
+              <button
+                class="btn btn-primary bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('6','BIRU')">
+                P2
+              </button>
+              <button
+                class="btn btn-primary bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('7','BIRU')">
+                X
+              </button>
+            </div>
+
+            <div class="col-1">
+              <button
+                class="btn btn-primary bg-gradient p-2 m-1 small rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('3','BIRU')">
+                T1
+              </button>
+              <button
+                class="btn btn-primary bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('4','BIRU')">
+                T2
+              </button>
+            </div>
+
+            <div class="col-2">
+              <div class="">
+                <button
+                  class="btn btn-primary bg-gradient p-2 rounded-5 fw-bold hapus-skor button_nilai border border-5 border-dark"
+                  onclick="button_hapus('BIRU')" data-sudut="BIRU">
+                  <i class="fas fa-trash-alt me-1"></i>Hapus
+                </button>
+                <br /><br />
+                <button type="button"
+                  class="btn btn-warning bg-gradient rounded-5 py-3 my-0 verifikasi border border-5 border-dark fw-bold"
+                  data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  VERIFIKASI
+                </button>
+              </div>
+            </div>
+
+            <div class="col-2">
+              <div class="">
+                <button class="btn btn-danger bg-gradient p-2 rounded-5 fw-bold hapus-skor border border-5 border-dark"
+                  onclick="button_hapus('MERAH')" data-sudut="MERAH">
+                  <i class="fas fa-trash-alt me-1"></i>Hapus
+                </button>
+                <br /><br />
+                <button
+                  class="btn btn-success text-light bg-gradient my-0 rounded-5 py-3 pemenang border border-5 border-dark fw-bold"
+                  data-bs-toggle="modal" data-bs-target="#pemenangModal">
+                  PEMENANG
+                </button>
+              </div>
+            </div>
+
+            <div class="col-1">
+              <button
+                class="btn btn-danger bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('3','MERAH')">
+                T1
+              </button>
+              <button
+                class="btn btn-danger bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('4','MERAH')">
+                T2
+              </button>
+            </div>
+
+            <div class="col-1">
+              <button
+                class="btn btn-danger bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('5','MERAH')">
+                P1
+              </button>
+              <button
+                class="btn btn-danger bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('6','MERAH')">
+                P2
+              </button>
+              <button
+                class="btn btn-danger bg-gradient p-2 m-1 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('7','MERAH')">
+                X
+              </button>
+            </div>
+
+            <!-- MERAH -->
+            <div class="col-2">
+              <button
+                class="btn btn-danger bg-gradient py-3 rounded-5 fw-bold w-100 mb-2 button_nilai border border-5 border-dark"
+                onclick="button_nilai('1','MERAH')">
+                <b>JATUHAN</b>
+              </button>
+              <button
+                class="btn btn-danger bg-gradient py-3 rounded-5 fw-bold w-100 button_nilai border border-5 border-dark"
+                onclick="button_nilai('2','MERAH')">
+                <b>BINAAN</b>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VERIFIKASI -->
+  <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h6 class="text-center text-uppercase fw-bold mb-4">Verifikasi Juri</h6>
+          <div class="row mb-3">
+            <div class="col text-center bg-primary bg-gradient pt-2 rounded-start">
+              <h6 class="text-white">BIRU</h6>
+            </div>
+            <div class="col text-center bg-danger bg-gradient pt-2">
+              <h6 class="text-white">MERAH</h6>
+            </div>
+            <div class="col text-center bg-warning bg-gradient pt-2 rounded-end">
+              <h6 class="text-dark">TIDAK SAH</h6>
+            </div>
+          </div>
+          <div class="row border border-secondary rounded mb-4" id="verifikasi-row">
+            <div class="col text-center bg-dark bg-gradient border-end p-3" id="verifikasi-biru"></div>
+            <div class="col text-center bg-dark bg-gradient border-end p-3" id="verifikasi-merah"></div>
+            <div class="col text-center bg-dark bg-gradient p-3" id="verifikasi-netral"></div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div id="dewan-actions" class="text-center mt-3" style="display: none">
+                <h6 id="judul_keputusan" class="text-warning mb-3"></h6>
+                <hr class="border-secondary" />
+                <button class="btn btn-primary me-2" onclick="putusanDewan('BIRU')">
+                  BIRU
+                </button>
+                <button class="btn btn-danger me-2" onclick="putusanDewan('MERAH')">
+                  MERAH
+                </button>
+                <button class="btn btn-warning text-dark" onclick="putusanDewan('NETRAL')">
+                  TIDAK SAH
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="verif-container position-relative">
+            <div class="my-4 text-center">
+              <button class="btn btn-primary bg-gradient p-3 tombol-send w-100" data-jenis="jatuhan">
+                <i class="fas fa-user-fall me-2"></i>Kirim Verifikasi Jatuhan
+              </button>
+            </div>
+            <div class="my-4 text-center">
+              <button class="btn btn-danger bg-gradient p-3 tombol-send w-100" data-jenis="pelanggaran">
+                <i class="fas fa-exclamation-triangle me-2"></i>Kirim Verifikasi Pelanggaran
+              </button>
+            </div>
+
+            <div id="verifOverlay"
+              class="verif-overlay bg-dark rounded d-none align-items-center justify-content-center"
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+              <div class="text-center">
+                <div class="spinner-border text-light mb-3" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <h4 id="verifStatus" class="text-white">Mengirim...</h4>
+                <button id="verifCancel" class="btn btn-link text-white mt-2">
+                  <i class="fas fa-times me-1"></i>Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary tutup" data-bs-dismiss="modal" data-jenis="tutup">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PEMENANG -->
+  <div class="modal fade" id="pemenangModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header bg-dark bg-gradient">
+          <h3 class="modal-title fw-bold text-center text-light w-100" id="exampleModalLabel">
+            <i class="fas fa-trophy me-2"></i>PENENTUAN PEMENANG
+          </h3>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body bg-dark">
+          <h5 class="text-center text-uppercase fw-bold mb-4">
+            PENENTUAN PEMENANG
+          </h5>
+          <div class="container-fluid">
+            <div class="row">
+              <!-- SUDUT BIRU -->
+              <div class="col text-center">
+                <table class="table text-center mb-4">
+                  <thead class="table-primary">
+                    <tr>
+                      <th colspan="2" class="bg-primary text-light text-uppercase">
+                        <i class="fas fa-user-shield me-2"></i>Sudut Biru
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Pukulan
+                      </td>
+                      <td id="pukulan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Tendangan
+                      </td>
+                      <td id="tendangan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Jatuhan
+                      </td>
+                      <td id="jatuhan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Binaan
+                      </td>
+                      <td id="binaan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Teguran 1
+                      </td>
+                      <td id="teguran1_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Teguran 2
+                      </td>
+                      <td id="teguran2_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Peringatan 1
+                      </td>
+                      <td id="peringatan1_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-start fw-bold text-uppercase">
+                        Peringatan 2
+                      </td>
+                      <td id="peringatan2_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;">
+                      </td>
+                    </tr>
+                    <tr class="table-primary">
+                      <td id="nilai_akhir_biru" colspan="2" class="fw-bold text-primary py-4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button class="btn winner-biru" onclick="set_winner('biru')">
+                  🏆
+                  <h1>WINNER</h1>
+                </button>
+              </div>
+
+              <!-- SUDUT MERAH -->
+              <div class="col text-center">
+                <table class="table text-center mb-4">
+                  <thead class="table-danger">
+                    <tr>
+                      <th colspan="2" class="bg-danger text-light text-uppercase">
+                        <i class="fas fa-user-shield me-2"></i>Sudut Merah
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="pukulan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;"></td>
+                      <td class="text-end fw-bold text-uppercase">Pukulan</td>
+                    </tr>
+                    <tr>
+                      <td id="tendangan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      </td>
+                      <td class="text-end fw-bold text-uppercase">
+                        Tendangan
+                      </td>
+                    </tr>
+                    <tr>
+                      <td id="jatuhan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;"></td>
+                      <td class="text-end fw-bold text-uppercase">Jatuhan</td>
+                    </tr>
+                    <tr>
+                      <td id="binaan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;"></td>
+                      <td class="text-end fw-bold text-uppercase">Binaan</td>
+                    </tr>
+                    <tr>
+                      <td id="teguran1_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      </td>
+                      <td class="text-end fw-bold text-uppercase">
+                        Teguran 1
+                      </td>
+                    </tr>
+                    <tr>
+                      <td id="teguran2_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      </td>
+                      <td class="text-end fw-bold text-uppercase">
+                        Teguran 2
+                      </td>
+                    </tr>
+                    <tr>
+                      <td id="peringatan1_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      </td>
+                      <td class="text-end fw-bold text-uppercase">
+                        Peringatan 1
+                      </td>
+                    </tr>
+                    <tr>
+                      <td id="peringatan2_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      </td>
+                      <td class="text-end fw-bold text-uppercase">
+                        Peringatan 2
+                      </td>
+                    </tr>
+                    <tr class="table-danger">
+                      <td id="nilai_akhir_merah" class="fw-bold text-danger py-4" colspan="2"></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button class="btn winner-merah" onclick="set_winner('merah')">
+                  🏆
+                  <h1>WINNER</h1>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEMUA SCRIPT FUNGSIONAL -->
+  <script type="text/javascript" src="../../assets/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // PERBAIKAN FUNGSI BABAK UI
+    function babakUI(babak) {
+      // Hapus class active dari semua tombol babak
+      $(".button-babak").removeClass("active").addClass("bg-light text-dark");
+
+      // Tambah class active ke tombol babak yang aktif
+      if (babak >= 1 && babak <= 3) {
+        $(`.button-babak${babak}`)
+          .removeClass("bg-light text-dark")
+          .addClass("active");
+      }
+    }
+
+    // FUNGSI FULLSCREEN DIPERBAIKI UNTUK MENCEGAH ZOOM
+    window.openFullscreen = function () {
+      const elem = document.documentElement;
+
+      // Mencegah zoom otomatis
+      document.body.style.zoom = "1";
+      document.body.style.transform = "scale(1)";
+      document.body.style.transformOrigin = "top left";
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+
+      $("#openfull").hide();
+      $("#exitfull").show().removeClass('d-none');
+    };
+
+    window.closeFullscreen = function () {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+
+      $("#openfull").show();
+      $("#exitfull").hide().addClass('d-none');
+    };
+
+    // EVENT LISTENER UNTUK FULLSCREEN CHANGE
+    document.addEventListener('fullscreenchange', function () {
+      if (document.fullscreenElement) {
+        // Saat masuk fullscreen, fix scaling
+        document.body.style.transform = "scale(1)";
+        document.body.style.zoom = "1";
+        $("#openfull").hide();
+        $("#exitfull").show().removeClass('d-none');
+      } else {
+        document.body.style.transform = "";
+        document.body.style.zoom = "";
+        $("#openfull").show();
+        $("#exitfull").hide().addClass('d-none');
+      }
+    });
+
+    document.addEventListener('webkitfullscreenchange', function () {
+      if (document.webkitFullscreenElement) {
+        document.body.style.transform = "scale(1)";
+        document.body.style.zoom = "1";
+        $("#openfull").hide();
+        $("#exitfull").show().removeClass('d-none');
+      } else {
+        document.body.style.transform = "";
+        document.body.style.zoom = "";
+        $("#openfull").show();
+        $("#exitfull").hide().addClass('d-none');
+      }
+    });
+
+    // FUNGSI generateBabakRows DIPERBAIKI
+    function generateBabakRows(jumlahBabak) {
+      const tbody = document.getElementById("tbody-babak");
+      tbody.innerHTML = "";
+
+      for (let i = 1; i <= jumlahBabak; i++) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="text-center fw-bold">
+            <div style="font-size: 1.2rem;">
+              <span class="history-teguran1-biru${i}"></span>
+              <span class="history-teguran2-biru${i}"></span>
+            </div>
+          </td>
+          <td class="text-center fw-bold">
+            <div style="font-size: 1.2rem;">
+              <span class="history-peringatan1-biru${i}"></span>
+              <span class="history-peringatan2-biru${i}"></span>
+              <span class="history-peringatan3-biru${i} text-danger"></span>
+            </div>
+          </td>
+          <td class="text-center fw-bold">
+            <div class="history-binaan-biru${i} text-success" style="font-size: 1.2rem;"></div>
+          </td>
+          <td class="text-center fw-bold">
+            <div class="history-jatuhan-biru${i}" style="font-size: 1.2rem;"></div>
+          </td>
+          <td class="text-center">
+            <div class="d-grid gap-1">
+              <button class="btn button-babak button-babak${i}">
+                ${i}
+              </button>
+            </div>
+          </td>
+          <td class="text-center fw-bold">
+            <div class="history-jatuhan-merah${i}" style="font-size: 1.2rem;"></div>
+          </td>
+          <td class="text-center fw-bold">
+            <div class="history-binaan-merah${i} text-success" style="font-size: 1.2rem;"></div>
+          </td>
+          <td class="text-center fw-bold">
+            <div style="font-size: 1.2rem;">
+              <span class="history-peringatan1-merah${i}"></span>
+              <span class="history-peringatan2-merah${i}"></span>
+              <span class="history-peringatan3-merah${i} text-danger"></span>
+            </div>
+          </td>
+          <td class="text-center fw-bold">
+            <div style="font-size: 1.2rem;">
+              <span class="history-teguran1-merah${i}"></span>
+              <span class="history-teguran2-merah${i}"></span>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      // Set active babak setelah generate
+      const currentBabak = localStorage.getItem("babak");
+      if (currentBabak) {
+        babakUI(parseInt(currentBabak));
+      }
+    }
+
+    // KODE JAVASCRIPT ASLI (Dengan perbaikan babak)
+    const id_juri = localStorage.getItem("juri");
+    const id_partai = localStorage.getItem("partai");
+    let babak_active = localStorage.getItem("babak");
+
+    $(".nama_juri").html(localStorage.getItem("nama_juri"));
+
+    $(".keluar").on("click", function () {
+      localStorage.clear();
+      document.location.href = "http://localhost/DARUNNAJAH/tanding/dewan";
+    });
+
+    if (localStorage.getItem("is_login") < 1) {
+      localStorage.clear();
+      document.location.href = "http://localhost/DARUNNAJAH/tanding/dewan";
+    }
+
+    const elem = document.documentElement;
+
+    function updatePartaiUI(data) {
+      if (data.status != "kosong") {
+        $("#gelanggang").html("| Gelanggang : " + data.gelanggang + " - " + data.partai);
+        window.localStorage.setItem("partai", data.partai);
+        window.localStorage.setItem("bbk", data.bbk);
+        $(".nm_merah").html(data.nm_merah);
+        $(".nm_biru").html(data.nm_biru);
+        $(".kontingen_merah").html(data.kontingen_merah);
+        $(".kontingen_biru").html(data.kontingen_biru);
+        renderHistory();
+      } else {
+        $("#gelanggang").html("| Gelanggang :  - ");
+        $(".nm_merah").html("");
+        $(".nm_biru").html("");
+        $(".kontingen_merah").html("");
+        $(".kontingen_biru").html("");
+
+        // Reset all history displays
+        for (let i = 1; i <= 3; i++) {
+          $(`.history-teguran1-biru${i}`).html("");
+          $(`.history-teguran2-biru${i}`).html("");
+          $(`.history-peringatan1-biru${i}`).html("");
+          $(`.history-peringatan2-biru${i}`).html("");
+          $(`.history-peringatan3-biru${i}`).html("");
+          $(`.history-binaan-biru${i}`).html("");
+          $(`.history-jatuhan-biru${i}`).html("");
+          $(`.history-jatuhan-merah${i}`).html("");
+          $(`.history-binaan-merah${i}`).html("");
+          $(`.history-peringatan1-merah${i}`).html("");
+          $(`.history-peringatan2-merah${i}`).html("");
+          $(`.history-peringatan3-merah${i}`).html("");
+          $(`.history-teguran1-merah${i}`).html("");
+          $(`.history-teguran2-merah${i}`).html("");
+        }
+
+        $('button[onclick^="button_nilai"]').prop("disabled", true);
+        $(".hapus-skor").prop("disabled", true);
+        $(".verifikasi").prop("disabled", true);
+        $(".pemenang").prop("disabled", true);
+      }
+    }
+
+    const ws = new WebSocket("ws://localhost:3000");
+
+    function set_winner(sudut) {
+      const konfirmasi = confirm(`Apakah kamu yakin sudut ${sudut.toUpperCase()} menang?`);
+      if (!konfirmasi) return;
+
+      const id_jadwal = localStorage.getItem("partai");
+      const currentPartai = localStorage.getItem("currentPartai");
+      const nilaiakhirbiru = $("#nilai_akhir_biru").text();
+      const nilaiakhirmerah = $("#nilai_akhir_merah").text();
+
+      ws.send(JSON.stringify({
+        type: "winner",
+        sudut,
+        nilai: sudut === "biru" ? nilaiakhirbiru : nilaiakhirmerah,
+        nilai_biru: nilaiakhirbiru,
+        nilai_merah: nilaiakhirmerah,
+        currentPartai,
+      }));
+
+      ws.send(JSON.stringify({
+        type: "set_partai_selesai",
+        partai: id_jadwal,
+      }));
+      $("#pemenangModal").modal("hide");
+      $(".button_nilai, .hapus-skor").prop("disabled", true);
+    }
+
+    function putusanDewan(sudut) {
+      console.log("Putusan dewan", sudut);
+      const judul = $("#judul_keputusan").text();
+      ws.send(JSON.stringify({
+        type: "keputusan_dewan",
+        sudut,
+        judul,
+      }));
+    }
+
+    function button_nilai(nilai, sudut) {
+      const id_juri = localStorage.getItem("juri");
+      const id_jadwal = localStorage.getItem("partai");
+      const babak = localStorage.getItem("babak");
+      const bbk = localStorage.getItem("bbk");
+
+      ws.send(JSON.stringify({
+        type: "nilai_dewan",
+        id_juri,
+        id_jadwal,
+        button: nilai,
+        sudut,
+        babak,
+        bbk,
+      }));
+    }
+
+    function button_hapus(sudut) {
+      const data = {
+        type: "hapus_nilai_dewan",
+        sudut: sudut,
+        id_jadwal: localStorage.getItem("partai"),
+        babak: localStorage.getItem("babak"),
+        bbk: localStorage.getItem("bbk"),
+      };
+
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(data));
+        console.log("Perintah hapus dikirim:", data);
+      } else {
+        console.error("WebSocket tidak terhubung!");
+        alert("Koneksi ke server terputus!");
+      }
+    }
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+
+      // Update timer color based on remaining time
+      const timerElement = document.getElementById('timer');
+      timerElement.classList.remove('timer-pulse');
+
+      if (seconds <= 30) {
+        timerElement.classList.add('timer-pulse');
+      }
+
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    function sendBabakToServer(babak) {
+      ws.readyState === WebSocket.OPEN &&
+        ws.send(JSON.stringify({
+          type: "set_round",
+          round: babak,
+          partai: localStorage.getItem("partai"),
+        }));
+    }
+
+    ws.onopen = () => {
+      console.log("Server terhubung.");
+      sendBabakToServer(localStorage.getItem("babak"));
+      console.log("Babak", localStorage.getItem("babak"));
+      $(".button_nilai, .hapus-skor").prop("disabled", true);
+
+      const overlay = document.getElementById("verifOverlay");
+      const statusText = document.getElementById("verifStatus");
+      const cancelBtn = document.getElementById("verifCancel");
+
+      $(".winner-biru").text("🏆 WINNER");
+      $(".winner-merah").text("🏆 WINNER");
+
+      $('.winner-biru').prop('disabled', false);
+      $('.winner-merah').prop('disabled', false);
+
+      let currentTimer = null;
+      let currentJenis = null;
+
+      document.querySelectorAll(".tombol-send").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (currentTimer) return;
+
+          statusText.textContent = "Mengirim…";
+          cancelBtn.style.display = "inline-block";
+          overlay.classList.remove("d-none");
+          overlay.classList.add("d-flex");
+
+          currentTimer = setTimeout(() => {
+            currentJenis = btn.dataset.jenis;
+            console.log(currentJenis);
+            ws.send(JSON.stringify({
+              type: "kirim_verifikasi",
+              jenis: currentJenis,
+            }));
+            $("#judul_keputusan").html('KEPUTUSAN VERIFIKASI <b class="text-uppercase">' + currentJenis + "</b>");
+
+            statusText.textContent = "Menunggu...";
+            cancelBtn.style.display = "none";
+            currentTimer = null;
+
+            if (keputusanJuri.length === 3) {
+              overlay.classList.add("d-none");
+              overlay.classList.remove("d-flex");
+            }
+          }, 1000);
+        });
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        if (!currentTimer) return;
+        clearTimeout(currentTimer);
+        currentTimer = null;
+        overlay.classList.add("d-none");
+        overlay.classList.remove("d-flex");
+      });
+
+      const keputusanJuri = [];
+      document.querySelector(".tutup").addEventListener("click", () => {
+        document.activeElement.blur();
+
+        console.log("TUTUP");
+        ws.send(JSON.stringify({
+          type: "tutup_verifikasi",
+        }));
+
+        keputusanJuri.length = 0;
+
+        const div1 = document.getElementById("verifikasi-biru");
+        const div2 = document.getElementById("verifikasi-merah");
+        const div3 = document.getElementById("verifikasi-netral");
+        div1.innerHTML = `<div></div>`;
+        div2.innerHTML = `<div></div>`;
+        div3.innerHTML = `<div></div>`;
+        overlay.classList.add("d-none");
+        overlay.classList.remove("d-flex");
+        document.getElementById("dewan-actions").style.display = "none";
+      });
+
+      ws.send(JSON.stringify({
+        type: "history_dewan",
+        partai: localStorage.getItem("partai"),
+        babak: localStorage.getItem("babak"),
+        bbk: localStorage.getItem("bbk"),
+      }));
+
+      ws.send(JSON.stringify({
+        type: "history_pemenang",
+        partai: localStorage.getItem("partai"),
+      }));
+
+      function renderPartaiFromStorage() {
+        const raw = localStorage.getItem("currentPartai");
+        if (!raw) return;
+
+        try {
+          const p = JSON.parse(raw);
+
+          $(".nm_biru").text(p.biru.nama);
+          $(".kontingen_biru").text(p.biru.kontingen);
+          $(".nm_merah").text(p.merah.nama);
+          $(".kontingen_merah").text(p.merah.kontingen);
+
+          $("#juri").text(localStorage.getItem("nama_juri"));
+          $("#gelanggang").text(p.gelanggang + " - " + p.partai);
+          $(".gelanggang").text(p.gelanggang);
+
+          if (p.partai === "?" && localStorage.getItem("babak") === 0) {
+            $(".button_nilai, .hapus-skor").prop("disabled", true);
+          }
+        } catch (e) {
+          console.warn("Gagal parse currentPartai di storage", e);
+        }
+      }
+
+      renderPartaiFromStorage();
+
+      const jumlahBabak = parseInt(localStorage.getItem("jumlahBabak")) || 3;
+      generateBabakRows(jumlahBabak);
+
+      ws.onmessage = (event) => {
+        let data = event.data;
+
+        try {
+          const message = JSON.parse(event.data);
+
+          if (message.type === "partai_data") {
+            const p = message.data;
+            console.log("Partai data diterima:", p);
+            localStorage.setItem("partai", p.partai);
+            localStorage.setItem("bbk", p.bbk);
+            localStorage.setItem("currentPartai", JSON.stringify(p));
+
+            const jumlahBabak = parseInt(localStorage.getItem("jumlahBabak")) || 3;
+            generateBabakRows(jumlahBabak);
+
+            $(".nm_biru").text(p.biru.nama);
+            $(".kontingen_biru").text(p.biru.kontingen);
+            $(".nm_merah").text(p.merah.nama);
+            $(".kontingen_merah").text(p.merah.kontingen);
+
+            $("#juri").text(localStorage.getItem("nama_juri"));
+            $("#gelanggang").text(p.gelanggang + " - " + p.partai);
+            $(".gelanggang").text(p.gelanggang);
+
+            if (p.partai === "?") {
+              babakUI();
+            }
+          }
+
+          if (message.type === "status_partai") {
+            console.log(message.status);
+            if (message.status === "selesai") {
+              $("#pemenangModal").modal("show");
+            }
+          }
+
+          if (message.type === "set_jumlah_babak") {
+            console.log(message.jumlah);
+            localStorage.setItem("jumlahBabak", message.jumlah);
+            const jumlahBabak = parseInt(localStorage.getItem("jumlahBabak")) || 3;
+            generateBabakRows(jumlahBabak);
+            babakUI(localStorage.getItem("babak"));
+          }
+
+          if (message.type === "set_diskualifikasi") {
+            const sudut = message.sudut === "BIRU" ? "biru" : "merah";
+            $(".winner-biru").prop("disabled", false);
+            $(".winner-merah").prop("disabled", false);
+            $(".winner-biru").text("🏆 WINNER");
+            $(".winner-merah").text("🏆 WINNER");
+
+            $('.winner-' + sudut).prop('disabled', true);
+            $(".winner-" + sudut).text("DISKUALIFIKASI");
+
+            $("#pemenangModal").modal("show");
+            $(".pemenang").prop("disabled", false);
+          }
+
+          if (message.type === "history_nilai_pemenang") {
+            document.getElementById("pukulan_biru").innerText = message.nilai_tanding.pukulan.BIRU;
+            document.getElementById("tendangan_biru").innerText = message.nilai_tanding.tendangan.BIRU;
+            document.getElementById("jatuhan_biru").innerText = message.nilai_dewan.jatuhan.BIRU;
+            document.getElementById("binaan_biru").innerText = message.nilai_dewan.binaan.BIRU;
+
+            document.getElementById("teguran1_biru").innerText = message.nilai_dewan.teguran1.BIRU;
+            document.getElementById("teguran2_biru").innerText = message.nilai_dewan.teguran2.BIRU;
+            document.getElementById("peringatan1_biru").innerText = message.nilai_dewan.peringatan1.BIRU;
+            document.getElementById("peringatan2_biru").innerText = message.nilai_dewan.peringatan2.BIRU;
+
+            document.getElementById("pukulan_merah").innerText = message.nilai_tanding.pukulan.MERAH;
+            document.getElementById("tendangan_merah").innerText = message.nilai_tanding.tendangan.MERAH;
+            document.getElementById("jatuhan_merah").innerText = message.nilai_dewan.jatuhan.MERAH;
+            document.getElementById("binaan_merah").innerText = message.nilai_dewan.binaan.MERAH;
+
+            document.getElementById("teguran1_merah").innerText = message.nilai_dewan.teguran1.MERAH;
+            document.getElementById("teguran2_merah").innerText = message.nilai_dewan.teguran2.MERAH;
+            document.getElementById("peringatan1_merah").innerText = message.nilai_dewan.peringatan1.MERAH;
+            document.getElementById("peringatan2_merah").innerText = message.nilai_dewan.peringatan2.MERAH;
+          }
+
+          if (message.type === "monitor_data") {
+            console.log(message.nilai_biru);
+            console.log(message.nilai_merah);
+            document.getElementById("nilai_akhir_biru").innerText = message.nilai_biru;
+            document.getElementById("nilai_akhir_merah").innerText = message.nilai_merah;
+          }
+
+          if (message.type === "update_nilai_dewan") {
+            localStorage.setItem("babak", message.data.babak);
+          }
+
+          if (message.type === "update_history_dewan") {
+            const entries = message.data.entries;
+            const sudutList = ["BIRU", "MERAH"];
+            const babakList = [1, 2, 3];
+            const tombolMap = {
+              3: "teguran1",
+              4: "teguran2",
+              5: "peringatan1",
+              6: "peringatan2",
+              7: "peringatan3",
+              2: "binaan",
+              1: "jatuhan",
+            };
+
+            sudutList.forEach((sudut) => {
+              babakList.forEach((babak) => {
+                Object.keys(tombolMap).forEach((tombol) => {
+                  const className = `.history-${tombolMap[tombol]}-${sudut.toLowerCase()}${babak}`;
+                  const matched = entries.filter(
+                    (item) =>
+                      item.sudut === sudut &&
+                      Number(item.babak) === babak &&
+                      String(item.button) === tombol
+                  );
+                  const hasil = matched.map((item) => item.nilai).join("");
+                  $(className).html(hasil);
+                });
+              });
+            });
+          }
+
+          // PERBAIKAN: Babak data dengan memanggil babakUI yang sudah diperbaiki
+          if (message.type === "babak_data") {
+            localStorage.setItem("babak", message.round);
+            babakUI(message.round); // Menggunakan parameter yang benar
+          }
+
+          if (message.type === "tick") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = formatTime(message.remaining);
+            }
+
+            $(".button_nilai, .hapus-skor").prop("disabled", false);
+          }
+
+          if (message.type === "stopped") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = "02:00";
+            }
+
+            $(".pemenang").prop("disabled", false);
+
+            $(".winner-biru").text("🏆 WINNER");
+            $(".winner-merah").text("🏆 WINNER");
+
+            ws.send(JSON.stringify({
+              type: "set_status_stop",
+              partai: localStorage.getItem("partai"),
+            }));
+          }
+
+          if (message.type === "ended") {
+            if (localStorage.getItem("babak") === 3) {
+              $(".pemenang").prop("disabled", true);
+            }
+          }
+
+          if (
+            message.type === "started" ||
+            message.type === "paused" ||
+            message.type === "resumed" ||
+            message.type === "stopped" ||
+            message.type === "ended"
+          ) {
+            console.log("Timer state:", message.type, "remaining:", message.remaining);
+          }
+        } catch (e) {
+          console.warn("Gagal decode non-string payload", data);
+          return;
+        }
+
+        data = data.trim();
+        const firstBrace = data.indexOf("{");
+        if (firstBrace > 0) {
+          data = data.slice(firstBrace);
+        }
+
+        try {
+          const msg = JSON.parse(data);
+
+          if (msg.type === "verifikasi_keputusan") {
+            const { id_juri, sudut } = msg.data;
+            console.log(`Dewan: Juri ${id_juri} memutuskan ${sudut}`);
+            keputusanJuri.push({ id_juri, sudut });
+            console.log(keputusanJuri);
+            console.log(keputusanJuri.length);
+
+            const div = document.getElementById("verifikasi-" + sudut.toLowerCase());
+            div.innerHTML = `<div></div>`;
+
+            const jurus = keputusanJuri
+              .filter((k) => k.sudut === sudut)
+              .map((k) => k.id_juri);
+
+            jurus.forEach((id) => {
+              const p = document.createElement("div");
+              p.innerHTML = `&#10003; Juri ${id}`;
+              p.style.fontWeight = "bold";
+              p.style.margin = "4px 0";
+              p.style.color = sudut === "BIRU" ? "#4dabff" :
+                sudut === "MERAH" ? "#ff6b6b" : "#ffc107";
+              div.appendChild(p);
+            });
+
+            if (keputusanJuri.length === 3) {
+              document.getElementById("dewan-actions").style.display = "block";
+            }
+          }
+        } catch (evrnt) {
+          return;
+        }
+      };
+    };
+
+    ws.onclose = () => {
+      console.log("Server terputus.");
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+  </script>
+</body>
+
+</html>

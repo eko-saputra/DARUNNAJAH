@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="robots" content="noindex" />
+  <link rel="shortcut icon" href="../../../assets/img/LogoIPSI.png" />
+  <link rel="stylesheet prefetch" href="../../../assets/bootstrap/dist/css/bootstrap.min.css" />
+  <style>
+    #openfull,
+    #exitfull {
+      background: 0 0;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      width: 30px;
+      height: 55px;
+      line-height: 55px;
+      float: left;
+    }
+
+    #openfull:active,
+    #exitfull:active,
+    #openfull:focus,
+    #exitfull:focus {
+      outline: 0;
+    }
+
+    #openfull svg,
+    #exitfull svg {
+      vertical-align: middle;
+    }
+
+    #exitfull {
+      display: none;
+    }
+
+    .button-active {
+      background-color: #198754 !important;
+      color: white !important;
+      border-color: #198754 !important;
+    }
+  </style>
+
+  <title>JURI - IPSI Kota Dumai</title>
+</head>
+
+<body class="bg-light bg-gradient">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <table width="100%" class="table mt-1">
+          <tr>
+            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-4 text-white" colspan="3">
+              <b id="juri"></b> ( Kategori : <b class="kategori"></b>/<b class="kelas"></b>) <b id="timer"
+                style="font-size: 17px; font-weight: bold; background-color: black;color: white;padding:2px;border:2px solid white">⏱️
+                00:00</b>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-uppercase text-primary fw-bold" width="40%">
+              <b class="nm"></b>
+            </td>
+            <td class="text-uppercase text-center" width="20%">
+              <!-- Wrapper untuk center -->
+              <div class="d-flex justify-content-center align-items-center">
+                <!-- Konten yang sebelumnya -->
+                <div class="d-flex flex-column align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#2d2d2d"
+                          d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                      </svg>
+                    </button>
+                    <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#2d2d2d"
+                          d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="d-flex gap-2 mt-2">
+                    <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="konfirmasiKeluar()">
+                      KELUAR
+                    </button>
+                    <a href="#" class="btn btn-light border border-1 btn-sm reload-btn small"
+                      onclick="konfirmasiRefresh(event)">
+                      Refresh
+                    </a>
+                  </div>
+                  <script>
+                    function konfirmasiKeluar() {
+                      const yakin = confirm("Apakah Anda yakin ingin keluar?");
+                      if (yakin) {
+                        // Pindah halaman logout
+                        window.location.href = 'index.html'; // ganti sesuai kebutuhan
+                      }
+                    }
+                    function konfirmasiRefresh(event) {
+                      event.preventDefault();
+                      const yakin = confirm("Apakah Anda yakin ingin me-refresh halaman ini ?");
+                      if (yakin) {
+                        window.location.href = 'penilaian.html';
+                      }
+                    }
+                  </script>
+                </div>
+              </div>
+            </td>
+            <td class="text-uppercase text-danger fw-bold text-end" width="40%">
+              Kontingen<br><small class="kontingen"></small>
+            </td>
+          </tr>
+        </table>
+        <table class="table table-bordered align-middle bg-white">
+          <thead class="table-light">
+            <tr>
+              <th style="font-size: 12px;" class="text-center">PENALTY</th>
+              <th style="font-size: 12px;" class="text-center">STATUS</th>
+              <th style="font-size: 12px;" class="text-center">SCORE</th>
+              <th style="font-size: 12px;" class="text-center">TOTAL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="width:70 px;">Performanya Melampaui Arena 10m x 10m</td>
+              <td class="text-center"><button class="btn btn-primary bg-gradient btn-clear"
+                  data-target="1">Clear</button></td>
+              <td class="text-center"><button class="btn btn-danger bg-gradient btn-minus" data-target="1">-
+                  0.50</button></td>
+              <td class="text-center target1" style="width:20px;">0.00</td>
+            </tr>
+            <tr>
+              <td>Menjatuh Kan Senjata Dan Memegang Matras</td>
+              <td class="text-center"><button class="btn btn-primary bg-gradient btn-clear"
+                  data-target="2">Clear</button></td>
+              <td class="text-center"><button class="btn btn-danger bg-gradient btn-minus" data-target="2">-
+                  0.50</button></td>
+              <td class="text-center target2">0.00</td>
+            </tr>
+            <tr>
+              <td>Pakaian Tidak Sesuai Dengan Aturan (Tanjak atau Samping lepas)</td>
+              <td class="text-center"><button class="btn btn-primary bg-gradient btn-clear"
+                  data-target="3">Clear</button></td>
+              <td class="text-center"><button class="btn btn-danger bg-gradient btn-minus" data-target="3">-
+                  0.50</button></td>
+              <td class="text-center target3">0.00</td>
+            </tr>
+            <tr>
+              <td>Atlet Bertahan Pada Satu Gerakan Selama Lebih Dari 5 Detik</td>
+              <td class="text-center"><button class="btn btn-primary bg-gradient btn-clear"
+                  data-target="4">Clear</button></td>
+              <td class="text-center"><button class="btn btn-danger bg-gradient btn-minus" data-target="4">-
+                  0.50</button></td>
+              <td class="text-center target4">0.00</td>
+            </tr>
+            <tr>
+              <td>Waktu Penampilan +/-</td>
+              <td class="text-center"><button class="btn btn-primary bg-gradient btn-clear"
+                  data-target="5">Clear</button></td>
+              <td class="text-center"><button class="btn btn-danger bg-gradient btn-minus" data-target="5">-
+                  0.50</button></td>
+              <td class="text-center target5">0.00</td>
+            </tr>
+          </tbody>
+          <tfoot class="table-light">
+            <tr>
+              <td colspan="3" class="text-center fw-bold text-uppercase">
+                <h6>Total</h6>
+              </td>
+              <td class="score-negative text-center fw-bold" width="15%">
+                <h6>0</h6>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+        <table width="100%">
+          <tr>
+            <td align="center" width="50%">
+              <button class="btn btn-success text-light text-uppercase selesai_seni">Selesai</button>
+            </td>
+            <td align="center" width="50%">
+              <button class="btn btn-success text-light text-uppercase" onclick="partai_finish()">Partai Finish</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="../../../assets/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ======== KONSTANTA & VAR GLOBAL ========
+    const baseUrl = "http://192.168.100.133/skordigital";
+    const url_api = `${baseUrl}/backend/api/api_juri.php`;
+    const url_juri = `${baseUrl}/juri`;
+
+    $('#juri').text(localStorage.getItem('nama_juri'));
+
+    function partai_finish() {
+      const partai = localStorage.getItem('partai');
+      console.log("📦 Mengirim partai_finish:", partai);
+
+      const payload = {
+        type: 'partai_finish_regu',
+        partai_regu: partai
+      };
+
+      ws.send(JSON.stringify(payload));
+    }
+
+    if (localStorage.getItem('is_login') < 1) {
+      localStorage.clear();
+      document.location.href = "http://192.168.100.133/skordigital/TGR/tunggal/dewan";
+    }
+
+    const ws = new WebSocket('ws://192.168.100.133:3000');
+    const elem = document.documentElement;
+
+    document.querySelector('.selesai_seni').addEventListener('click', function () {
+      const partai = localStorage.getItem('partai'); // pastikan ini sudah diset sebelumnya
+      const currentPartai = JSON.parse(localStorage.getItem('currentPartai') || '{}');
+      // console.log(partai);
+      // console.log(currentPartai.peserta.sudut);
+      const sudut = currentPartai.peserta.sudut || 'TIDAK DIKETAHUI';
+      const payload = {
+        type: 'selesai_seni_regu',
+        partai_regu: partai,
+        sudut_regu: sudut,
+      };
+
+      ws.send(JSON.stringify(payload));
+      console.log("✅ Dikirim ke server:", payload);
+    });
+
+    $(document).on('click', '.btn-clear', function () {
+      const target = $(this).data('target');
+      const row = $(this).closest('tr');
+      const dataString = localStorage.getItem('currentPartai');
+      const data = JSON.parse(dataString || '{}');
+
+      let penaltyData = JSON.parse(localStorage.getItem('penaltyScores') || '{}');
+      let currentScore = parseFloat(penaltyData[target] || 0);
+
+      if (target == 5) {
+        // ✅ Kurangi penalti sebesar +0.50 (ingat: dari -)
+        if (currentScore < 0) {
+          let newScore = parseFloat((currentScore + 0.50).toFixed(2));
+
+          if (newScore < 0) {
+            // Masih ada penalti, simpan nilai baru
+            penaltyData[target] = newScore;
+          } else {
+            // Sudah tidak negatif, hapus data
+            delete penaltyData[target];
+            newScore = 0;
+          }
+
+          // Simpan ke localStorage
+          localStorage.setItem('penaltyScores', JSON.stringify(penaltyData));
+
+          // Update tampilan kolom
+          row.find('td').last().text(newScore.toFixed(2));
+        } else {
+          // Sudah 0, pastikan juga hapus data
+          delete penaltyData[target];
+          localStorage.setItem('penaltyScores', JSON.stringify(penaltyData));
+          row.find('td').last().text('0.00');
+        }
+      } else {
+        // Untuk target lain → langsung clear
+        delete penaltyData[target];
+        localStorage.setItem('penaltyScores', JSON.stringify(penaltyData));
+        row.find('td').last().text('0.00');
+      }
+
+      // Kirim ke server
+      console.log("🔄 Mengirim penalty_remove_tunggal:");
+
+      ws.send(JSON.stringify({
+        type: 'penalty_remove_regu',
+        partai: localStorage.getItem('partai'),
+        id_juri: localStorage.getItem('juri'),
+        sudut: data.peserta.sudut,
+        target: target
+      }));
+
+
+    });
+
+
+
+    // ======= WebSocket (bisa kamu sesuaikan sendiri) =======
+    $(document).ready(function () {
+      // Ambil data penalty dari localStorage
+      let penaltyData = JSON.parse(localStorage.getItem('penaltyScores') || '{}');
+
+      // Loop semua baris yang punya tombol .btn-minus
+      $('.btn-minus').each(function () {
+        const target = $(this).data('target'); // Ambil target dari tombol
+        const row = $(this).closest('tr');     // Ambil baris tempat tombol berada
+
+        // Jika ada skor tersimpan untuk target ini
+        if (penaltyData[target] !== undefined) {
+          row.find('td').last().text(parseFloat(penaltyData[target]).toFixed(2));
+        }
+      });
+      $('.btn-minus').on('click', function () {
+        const target = $(this).data('target'); // Ambil data-target dari tombol
+        const row = $(this).closest('tr');
+        const index = row.index();
+        const score = -0.50;
+
+        const dataString = localStorage.getItem('currentPartai');
+        const data = JSON.parse(dataString);
+
+        if (target == 5) {
+          // Ambil objek penalty dari localStorage
+          let penaltyData = JSON.parse(localStorage.getItem('penaltyScores') || '{}');
+
+          // Ambil nilai sebelumnya untuk target 5 (default 0 jika belum ada)
+          let existingScore = parseFloat(penaltyData[5] || 0);
+
+          // Tambah -0.50 ke nilai sebelumnya
+          let newScore = parseFloat((existingScore + score).toFixed(2));
+
+          // Simpan kembali ke localStorage
+          penaltyData[5] = newScore;
+          localStorage.setItem('penaltyScores', JSON.stringify(penaltyData));
+
+          // Tampilkan skor ke kolom terakhir
+          row.find('td').last().text(newScore.toFixed(2));
+        } else {
+          // Untuk target lain, hanya simpan -0.50 langsung
+          let penaltyData = JSON.parse(localStorage.getItem('penaltyScores') || '{}');
+          penaltyData[target] = score;
+          localStorage.setItem('penaltyScores', JSON.stringify(penaltyData));
+
+          // Tampilkan langsung
+          row.find('td').last().text(score.toFixed(2));
+        }
+
+        // Kirim ke WebSocket
+        ws.send(JSON.stringify({
+          type: 'penalty_add_regu',
+          partai: localStorage.getItem('partai'),
+          id_juri: localStorage.getItem('juri'),
+          sudut: data.peserta.sudut,
+          score: score,
+          target: target // Kirim data target ke server jika dibutuhkan
+        }));
+      });
+
+
+      ws.onopen = function () {
+        console.log('Server connected');
+        const dataString = localStorage.getItem('currentPartai');
+        if (dataString) {
+          try {
+            const data = JSON.parse(dataString);
+            $('.nm').text(data.peserta.nama);
+            $('.kontingen').text(data.peserta.kontingen);
+            $('.kategori').text(data.kategori);
+            $('.kelas').text(data.kelas);
+
+            if (data.partai === '?') {
+              $('.wrong').prop('disabled', true);
+              $('.move').prop('disabled', true);
+            } else {
+              $('.wrong').prop('disabled', false);
+              $('.move').prop('disabled', false);
+            }
+          } catch (e) {
+            console.error("Gagal parsing data dari localStorage:", e);
+          }
+        }
+      };
+
+      function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      ws.onmessage = function (event) {
+        try {
+          const message = JSON.parse(event.data);
+
+          if (message.type === 'partai_data_tunggal') {
+            const p = message.data;
+            localStorage.setItem('partai', p.partai);
+            localStorage.setItem('currentPartai', JSON.stringify(p));
+            localStorage.removeItem('penaltyScores');
+            $('.nm').text(p.peserta.nama);
+            $('.kontingen').text(p.peserta.kontingen);
+            $('.kategori').text(p.kategori);
+            $('.kelas').text(p.kelas);
+
+            $('.target1').text('0.00');
+            $('.target2').text('0.00');
+            $('.target3').text('0.00');
+            $('.target4').text('0.00');
+            $('.target5').text('0.00');
+
+            if (p.partai === '?') {
+              $('.wrong').prop('disabled', true);
+              $('.move').prop('disabled', true);
+            } else {
+              $('.wrong').prop('disabled', false);
+              $('.move').prop('disabled', false);
+            }
+          }
+
+          if (message.type === "tick") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = '⏱️ ' + formatTime(message.remaining);
+            }
+            ws.send(JSON.stringify({
+              type: 'set_status',
+              partai: localStorage.getItem('partai')
+            }));
+          }
+
+          if (message.type === "stopped") {
+            const timerElement = document.getElementById("timer");
+            if (timerElement) {
+              timerElement.textContent = '02:00';
+            }
+            ws.send(JSON.stringify({
+              type: 'set_status_stop',
+              partai: localStorage.getItem('partai')
+            }));
+          }
+
+        } catch (e) {
+          console.error('Error parsing message:', event.data);
+        }
+      };
+
+      ws.onclose = function () {
+        console.log('WebSocket disconnected');
+      };
+    });
+
+    // Fungsi fullscreen
+    window.openFullscreen = () => {
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      $("#openfull").hide();
+      $("#exitfull").show();
+    };
+
+    window.closeFullscreen = () => {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      $("#openfull").show();
+      $("#exitfull").hide();
+    };
+  </script>
+</body>
+
+</html>

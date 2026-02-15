@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="robots" content="noindex" />
+    <title>JURI SENI GANDA - IPSI Kota Dumai</title>
+    <link rel="shortcut icon" href="img/LogoIPSI.png" />
+    <link
+      rel="stylesheet prefetch"
+      href="../../../assets/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <style>
+      .btn-fixed {
+        width: 34px;
+        text-align: center;
+        padding: 0.4rem 0;
+        margin-bottom: 2px;
+        margin-right: 2px;
+      }
+
+      .active-score-button {
+        background-color: #ffc107 !important; /* Bootstrap primary blue */
+        border-color: #ffc107 !important;
+        color: #2d2d2d !important;
+        font-weight: bold;
+      }
+
+      #timer {
+        font-size: 17px;
+        font-weight: bold;
+        background-color: black;
+        color: white;
+        padding: 5px;
+        border: 3px solid grey;
+      }
+      .team-player {
+        display: inline-block;
+        margin: 0 5px;
+      }
+      .fullscreen-btn {
+        padding: 0;
+      }
+      .action-buttons {
+        gap: 0.5rem;
+      }
+      .category-col {
+        width: 150px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-light bg-gradient">
+    <div class="container-fluid">
+      <!-- HEADER -->
+      <div class="row">
+        <div class="col">
+          <table width="100%" class="table mt-1">
+            <tr>
+              <td
+                class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-4 text-white"
+                colspan="3"
+              >
+                <b id="juri-name"></b> (Gelanggang: <b id="arena"></b>)
+              </td>
+            </tr>
+            <tr>
+              <td class="text-uppercase text-dark fw-bold" width="40%">
+                <b class="team-player-1"></b> & <b class="team-player-2"></b
+                ><br />
+                <small class="team-name"></small>
+              </td>
+              <td class="text-uppercase text-center" width="20%">
+                <div class="d-flex flex-column align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                      aria-label="Open Fullscreen"
+                      id="open-fullscreen"
+                      class="btn fullscreen-btn"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path
+                          fill="#2d2d2d"
+                          d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      aria-label="Exit Fullscreen"
+                      id="exit-fullscreen"
+                      class="btn fullscreen-btn d-none"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path
+                          fill="#2d2d2d"
+                          d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="d-flex gap-2 mt-2 action-buttons">
+                    <button
+                      class="btn btn-danger bg-gradient btn-sm small"
+                      id="logout-btn"
+                    >
+                      KELUAR
+                    </button>
+                    <button
+                      class="btn btn-light border border-1 btn-sm small"
+                      id="refresh-btn"
+                    >
+                      REFRESH
+                    </button>
+                  </div>
+                </div>
+              </td>
+              <td class="text-uppercase fw-bold text-end pt-3" width="40%">
+                <b class="border border-4 border-secondary p-1 text-dark"
+                  >SENI GANDA</b
+                >
+                <b id="timer">⏱️ 00:00</b>
+              </td>
+            </tr>
+          </table>
+
+          <!-- SCORING -->
+          <table class="table text-uppercase fw-bold border">
+            <tr>
+              <td class="bg-dark bg-gradient text-light small">Kategori</td>
+              <td
+                colspan="3"
+                align="center"
+                class="bg-secondary bg-gradient text-light small"
+                valign="middle"
+              >
+                Nilai
+              </td>
+            </tr>
+
+            <!-- Teknik Serangan & Bertahan -->
+            <tr>
+              <td class="text-muted small category-col small">
+                Teknik Serangan & Bertahan<br />(0.01 - 0.30)
+              </td>
+              <td>
+                <div id="attack-defense-buttons" class="score-buttons"></div>
+              </td>
+              <td
+                valign="middle"
+                width="7%"
+                class="text-center border current-score"
+                data-category="attack-defense"
+              >
+                0
+              </td>
+              <td
+                rowspan="3"
+                valign="middle"
+                width="7%"
+                class="text-center border total-score"
+                id="sub-total"
+              >
+                0
+              </td>
+            </tr>
+
+            <!-- Kekompakan & Harmoni -->
+            <tr>
+              <td class="text-muted small category-col small">
+                Kekompakan & Harmoni<br />(0.01 - 0.30)
+              </td>
+              <td><div id="harmony-buttons" class="score-buttons"></div></td>
+              <td
+                valign="middle"
+                width="7%"
+                class="text-center border current-score"
+                data-category="harmony"
+              >
+                0
+              </td>
+            </tr>
+
+            <!-- Penjiwaan -->
+            <tr>
+              <td class="text-muted small category-col small">
+                Penjiwaan<br />(0.01 - 0.30)
+              </td>
+              <td>
+                <div id="soulfulness-buttons" class="score-buttons"></div>
+              </td>
+              <td
+                valign="middle"
+                width="7%"
+                class="text-center border current-score"
+                data-category="soulfulness"
+              >
+                0
+              </td>
+            </tr>
+
+            <!-- Total -->
+            <tr class="">
+              <td
+                colspan="3"
+                align="right"
+                class="text-uppercase bg-secondary bg-gradient text-light small"
+              >
+                Total Nilai
+              </td>
+              <td
+                align="center"
+                id="grand-total"
+                class="bg-warning text-dark fw-bold text-center border"
+              >
+                0
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL READY -->
+    <div
+      class="modal fade"
+      id="readyModal"
+      tabindex="-1"
+      aria-labelledby="readyModalLabel"
+      aria-hidden="true"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+          <div class="modal-body">
+            <h1>Halo, <span id="modal-juri-name">Juri</span></h1>
+            <button id="readyBtn" class="btn btn-success btn-lg w-100">
+              READY
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../../assets/jquery/jquery.min.js"></script>
+    <script src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      const BASE_URL = "http://192.168.100.133/skordigital";
+      const JURI_URL = `${BASE_URL}/juri`;
+
+      const elements = {
+        juriName: document.getElementById("juri-name"),
+        arena: document.getElementById("arena"),
+        teamPlayer1: document.querySelector(".team-player-1"),
+        teamPlayer2: document.querySelector(".team-player-2"),
+        teamName: document.querySelector(".team-name"),
+        timer: document.getElementById("timer"),
+        logoutBtn: document.getElementById("logout-btn"),
+        refreshBtn: document.getElementById("refresh-btn"),
+        openFullscreenBtn: document.getElementById("open-fullscreen"),
+        exitFullscreenBtn: document.getElementById("exit-fullscreen"),
+        scoreButtons: {
+          attackDefense: document.getElementById("attack-defense-buttons"),
+          harmony: document.getElementById("harmony-buttons"),
+          soulfulness: document.getElementById("soulfulness-buttons"),
+        },
+        currentScores: document.querySelectorAll(".current-score"),
+        subtotal: document.getElementById("sub-total"),
+        grandTotal: document.getElementById("grand-total"),
+        readyBtn: document.getElementById("readyBtn"),
+        modalJuriName: document.getElementById("modal-juri-name"),
+      };
+
+      const state = {
+        scores: { "attack-defense": 0, harmony: 0, soulfulness: 0 },
+        currentPasangan: null,
+        ws: null,
+        isReady: false,
+      };
+
+      function init() {
+        checkLoginStatus();
+        setupEventListeners();
+        generateScoreButtons();
+        connectWebSocket();
+        loadInitialData();
+        showReadyModalIfNeeded();
+      }
+
+      function checkLoginStatus() {
+        if (localStorage.getItem("is_login") !== "1") {
+          localStorage.clear();
+          window.location.href = JURI_URL;
+        }
+      }
+
+      function setupEventListeners() {
+        elements.logoutBtn.addEventListener("click", confirmLogout);
+        elements.refreshBtn.addEventListener("click", confirmRefresh);
+        elements.openFullscreenBtn.addEventListener("click", openFullscreen);
+        elements.exitFullscreenBtn.addEventListener("click", closeFullscreen);
+        elements.readyBtn.addEventListener("click", () => {
+          state.isReady = true;
+          localStorage.setItem("is_ready_done", "1");
+          setScoreButtonsEnabled(true);
+          bootstrap.Modal.getInstance(
+            document.getElementById("readyModal")
+          ).hide();
+        });
+      }
+
+      function generateScoreButtons() {
+        Object.keys(elements.scoreButtons).forEach((category) => {
+          const container = elements.scoreButtons[category];
+          for (let i = 1; i <= 30; i++) {
+            const value = (i / 100).toFixed(2);
+            const button = document.createElement("button");
+            button.className =
+              "btn btn-secondary btn-sm text-white btn-fixed score-button";
+            button.textContent = value;
+            button.dataset.value = value;
+            button.dataset.category = category
+              .replace(/([a-z])([A-Z])/g, "$1-$2")
+              .toLowerCase();
+            button.disabled = true;
+            button.addEventListener("click", handleScoreClick);
+            container.appendChild(button);
+          }
+        });
+      }
+
+      function setScoreButtonsEnabled(enabled) {
+        document.querySelectorAll(".score-button").forEach((btn) => {
+          btn.disabled = !enabled;
+        });
+      }
+
+      function handleScoreClick(event) {
+        if (!state.isReady) return;
+        const button = event.target;
+        const value = parseFloat(button.dataset.value);
+        const category = button.dataset.category;
+        state.scores[category] = value;
+
+        document
+          .querySelectorAll(`.score-button[data-category="${category}"]`)
+          .forEach((btn) => btn.classList.remove("active-score-button"));
+
+        button.classList.add("active-score-button");
+
+        updateScoreDisplay(category, value);
+        calculateTotals();
+        sendScoreToServer(category, value);
+      }
+
+      function sendScoreToServer(category, value) {
+        if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+          state.ws.send(
+            JSON.stringify({
+              type: "nilai",
+              kategori: category,
+              nilai: value,
+              id_juri: localStorage.getItem("juri"),
+              id_pasangan: state.currentPasangan?.id || null,
+              babak: localStorage.getItem("babak") || 1,
+            })
+          );
+        }
+      }
+
+      function updateScoreDisplay(category, value) {
+        const scoreElement = document.querySelector(
+          `.current-score[data-category="${category}"]`
+        );
+        if (scoreElement) scoreElement.textContent = value.toFixed(2);
+      }
+
+      function calculateTotals() {
+        const scores = Object.values(state.scores);
+        const subtotal = scores.reduce((sum, score) => sum + score, 0);
+        const grandTotal = scores.reduce((sum, score) => sum + score, 0);
+        elements.subtotal.textContent = subtotal.toFixed(2);
+        elements.grandTotal.textContent = grandTotal.toFixed(2);
+      }
+
+      function connectWebSocket() {
+        state.ws = new WebSocket("ws://192.168.23.5:3000");
+        state.ws.onopen = () => console.log("Terhubung ke server WebSocket");
+        state.ws.onmessage = (event) => {
+          try {
+            const message = JSON.parse(event.data);
+            handleWebSocketMessage(message);
+          } catch (e) {
+            console.error("Gagal parsing pesan:", e);
+          }
+        };
+        state.ws.onclose = () => {
+          console.log("Koneksi WebSocket terputus");
+          setTimeout(connectWebSocket, 3000); // Auto reconnect
+        };
+      }
+
+      function handleWebSocketMessage(message) {
+        switch (message.type) {
+          case "data_pasangan":
+            updatePasanganData(message.data);
+            break;
+          case "tick":
+            updateTimer(message.remaining);
+            break;
+          default:
+            console.log("Pesan tidak dikenali:", message.type);
+        }
+      }
+
+      function updatePasanganData(data) {
+        state.currentPasangan = data;
+        elements.teamPlayer1.textContent = data.pemain1;
+        elements.teamPlayer2.textContent = data.pemain2;
+        elements.teamName.textContent = data.tim;
+        elements.arena.textContent = `Gelanggang ${data.gelanggang} - Partai ${data.partai}`;
+      }
+
+      function updateTimer(seconds) {
+        const minutes = Math.floor(seconds / 60)
+          .toString()
+          .padStart(2, "0");
+        const secs = (seconds % 60).toString().padStart(2, "0");
+        elements.timer.textContent = `⏱️ ${minutes}:${secs}`;
+      }
+
+      function loadInitialData() {
+        const namaJuri = localStorage.getItem("nama_juri") || "JURI";
+        elements.juriName.textContent = namaJuri;
+        elements.modalJuriName.textContent = namaJuri;
+
+        if (!state.currentPasangan) {
+          updatePasanganData({
+            id: 1,
+            pemain1: "AHMAD FUADI",
+            pemain2: "SITI RAHAYU",
+            tim: "KOTA DUMAI",
+            gelanggang: "A",
+            partai: "1",
+          });
+        }
+      }
+
+      function openFullscreen() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) elem.requestFullscreen();
+        elements.openFullscreenBtn.classList.add("d-none");
+        elements.exitFullscreenBtn.classList.remove("d-none");
+      }
+
+      function closeFullscreen() {
+        if (document.exitFullscreen) document.exitFullscreen();
+        elements.openFullscreenBtn.classList.remove("d-none");
+        elements.exitFullscreenBtn.classList.add("d-none");
+      }
+
+      function confirmLogout() {
+        if (confirm("Apakah Anda yakin ingin keluar?")) {
+          localStorage.clear();
+          window.location.href = "index.html";
+        }
+      }
+
+      function confirmRefresh() {
+        if (confirm("Refresh halaman ini?")) {
+          window.location.reload();
+        }
+      }
+
+      function showReadyModalIfNeeded() {
+        if (localStorage.getItem("is_ready_done") === "1") {
+          state.isReady = true;
+          setScoreButtonsEnabled(true);
+        } else {
+          state.isReady = false;
+          setScoreButtonsEnabled(false);
+          new bootstrap.Modal(document.getElementById("readyModal")).show();
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

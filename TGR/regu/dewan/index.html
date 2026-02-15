@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content="30" />
+    <title>DEWAN - IPSI Kota Dumai</title>
+
+    <link rel="shortcut icon" href="../../../assets/img/LogoIPSI.png">
+    <link rel="stylesheet" href="../../../assets/login/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="decorative-line"></div>
+            <div class="login-header">
+                <img src="../../../assets/img/LogoIPSI.png" alt="Pencak Silat Logo" class="login-logo" />
+                <h1 class="login-title">DEWAN</h1>
+                <p class="login-subtitle">Aplikasi Skor Digital Pencak Silat</p>
+            </div>
+            <div class="login-body">
+                <form onsubmit="return false;">
+                    <a href="index.html" class="reload-btn">
+                        <i class="fas fa-sync-alt mr-2"></i> RELOAD DATA PARTAI
+                    </a>
+
+                    <div class="form-group">
+                        <select class="form-control" id="juri" name="juri">
+                            <option value="">-- Pilih Dewan --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                            value="DEWAN" required />
+                    </div>
+
+                    <a class="btn btn-primary" id="btn-login">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    </a>
+                </form>
+            </div>
+            <div class="login-footer">
+                &copy;
+                <?php echo date('Y'); ?>
+                IPSI Kota Dumai
+            </div>
+            <div class="silat-decoration"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../../assets/jquery/index.js"></script>
+    <script type="text/javascript" src="../../../assets/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        var url_api = "http://192.168.100.133/skordigital/api/api.php";
+
+        $(function () {
+            // Simple animation for login form
+            const formElements = document.querySelectorAll(
+                ".form-control, .btn, .reload-btn"
+            );
+
+            formElements.forEach((element, index) => {
+                element.style.opacity = "0";
+                element.style.transform = "translateY(20px)";
+                element.style.transition = "all 0.4s ease";
+
+                setTimeout(() => {
+                    element.style.opacity = "1";
+                    element.style.transform = "translateY(0)";
+                }, 300 + index * 100);
+            });
+
+            setTimeout(function () {
+                // get juri
+                $.ajax({
+                    url: url_api,
+                    data: { a: 'juri' },
+                    type: "GET",
+                    dataType: "json",
+                    crossDomain: true,
+                    success: function (obj) {
+                        var html = "<option value=\"\"> -- Pilih Dewan -- </option>";
+
+                        $.each(obj, function (key, value) {
+                            if (value.name == 'DEWAN') {
+                                html += "<option value=\"" + value.id + "\">" + value.name + "</option>";
+                            }
+                        })
+
+                        $("#juri").html(html);
+                    }
+                });
+
+                console.log(url_api);
+            }, 1000);
+
+            $("#btn-login").on("click", function () {
+
+                var id_wasit = $("#juri").val();
+                var nama_wasit = $("select#juri :selected").text();
+
+                var pass = $("#password").val();
+
+                if (id_wasit == "") {
+                    alert("Dewan Harus dipilih");
+                    return false;
+                }
+
+                if (pass == "") {
+                    alert("Password Harus dipilih");
+                    return false;
+                }
+
+                // get juri
+                $.ajax({
+                    url: url_api,
+                    data: { a: "login", id: id_wasit, password: pass },
+                    type: "GET",
+                    dataType: "json",
+                    crossDomain: true,
+                    success: function (obj) {
+                        if (obj.status == "error") {
+                            alert("Password anda salah");
+                        } else {
+                            window.localStorage.setItem("is_login", 1);
+                            window.localStorage.setItem("juri", id_wasit);
+                            window.localStorage.setItem("nama_juri", nama_wasit);
+                            // window.localStorage.setItem("partai", id_partai);
+
+                            window.location.replace("penilaian.html");
+                        }
+                    },
+                });
+            });
+        });
+
+        // Tambahkan efek animasi untuk tombol
+        document.addEventListener("DOMContentLoaded", function () {
+            const btnLogin = document.getElementById("btn-login");
+            const reloadBtn = document.querySelector(".reload-btn");
+
+            if (btnLogin) {
+                btnLogin.addEventListener("mouseover", function () {
+                    this.style.transform = "translateY(-2px)";
+                });
+
+                btnLogin.addEventListener("mouseout", function () {
+                    this.style.transform = "translateY(0)";
+                });
+            }
+
+            if (reloadBtn) {
+                reloadBtn.addEventListener("mouseover", function () {
+                    this.style.transform = "translateY(-2px)";
+                });
+
+                reloadBtn.addEventListener("mouseout", function () {
+                    this.style.transform = "translateY(0)";
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
