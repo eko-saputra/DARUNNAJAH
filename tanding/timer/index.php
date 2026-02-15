@@ -100,7 +100,7 @@
     const aktifkanSemua = $('#aktifkan-semua');
     const babakContainer = $('#babak-container');
 
-    const ws = new WebSocket('ws://192.168.100.254:3000');
+    const ws = new WebSocket('ws://192.168.30.2:3000');
 
     let remaining = (parseInt(localStorage.getItem('timer')) || 120); // Default 2 minutes
     let currentRound = null;

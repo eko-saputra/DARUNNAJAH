@@ -611,7 +611,7 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 				/* Vertikal stack elemen */
 				justify-content: center;
 				align-items: center;
-				padding: 20px;
+				/* padding: 20px; */
 			}
 
 			/* Menambahkan jarak antar elemen */
@@ -620,19 +620,21 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 				/* Menambahkan jarak antara judul dan spinner */
 			}
 
-			.verifikasi,
-			.diskualifikasi h1 {
-				font-weight: normal;
-				font-size: 10rem;
-				/* ukuran default */
-			}
+			/* .verifikasi, */
+			/* .diskualifikasi h1 { */
+			/* font-weight: normal; */
+			/* font-size: 10rem; */
+			/* ukuran default */
+			/* } */
 		</style>
 		<div class="modal fade" id="verifikasiModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog modal-fullscreen">
 				<div class="modal-content verifikasi-bg">
 					<div class="modal-body verifikasi text-center text-dark text-uppercase">
 						<!-- Judul -->
-						<h1>VERIFIKASI <b class="jenis text-uppercase"></b></h1>
+						<span style="font-size: 400px !important;">
+							VERIFIKASI <b class="jenis text-uppercase"></b>
+						</span>
 
 						<!-- Spinner loading di bawah judul -->
 						<div class="spinner-container">

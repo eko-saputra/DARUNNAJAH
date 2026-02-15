@@ -140,7 +140,7 @@
       margin-bottom: 12px !important;
     }
 
-    /* FULLSCREEN BUTTONS IMPROVEMENT */
+    /* FULLSCREEN BUTTONS IMPROVEMENT - FIXED */
     #openfull,
     #exitfull {
       background: rgba(255, 255, 255, 0.1) !important;
@@ -169,6 +169,23 @@
     }
 
     #exitfull {
+      display: none !important;
+    }
+
+    /* Fix untuk fullscreen */
+    :fullscreen #exitfull {
+      display: flex !important;
+    }
+
+    :fullscreen #openfull {
+      display: none !important;
+    }
+
+    :-webkit-full-screen #exitfull {
+      display: flex !important;
+    }
+
+    :-webkit-full-screen #openfull {
       display: none !important;
     }
 
@@ -219,7 +236,7 @@
     }
 
     .bg-danger {
-      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+      background: linear-gradient(135deg, #ff1900 0%, #a41000 100%) !important;
       color: white !important;
     }
 
@@ -423,8 +440,8 @@
 
     .table-primary thead th {
       background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
-      font-size: 1.3rem !important;
-      padding: 20px 15px !important;
+      font-size: 1rem !important;
+      padding: 10px 15px !important;
     }
 
     .table-danger thead th {
@@ -449,10 +466,10 @@
     /* SKOR AKHIR DIPERBESAR LAGI */
     #nilai_akhir_biru,
     #nilai_akhir_merah {
-      font-size: 5rem !important;
+      font-size: 4rem !important;
       font-weight: 900 !important;
       text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7) !important;
-      padding: 30px 15px !important;
+      padding: 10px 10px !important;
     }
 
     #nilai_akhir_biru {
@@ -642,8 +659,7 @@
                         d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
                     </svg>
                   </button>
-                  <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();"
-                    class="btn p-0 d-none">
+                  <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
                     <svg width="24" height="24" viewBox="0 0 24 24">
                       <path d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
                     </svg>
@@ -760,8 +776,7 @@
 
             <div class="col-2">
               <div class="">
-                <button
-                  class="btn btn-primary bg-gradient p-2 rounded-5 fw-bold hapus-skor button_nilai border border-5 border-dark"
+                <button class="btn btn-primary bg-gradient p-2 rounded-5 fw-bold hapus-skor border border-5 border-dark"
                   onclick="button_hapus('BIRU')" data-sudut="BIRU">
                   <i class="fas fa-trash-alt me-1"></i>Hapus
                 </button>
@@ -884,12 +899,12 @@
           <div class="verif-container position-relative">
             <div class="my-4 text-center">
               <button class="btn btn-primary bg-gradient p-3 tombol-send w-100" data-jenis="jatuhan">
-                <i class="fas fa-user-fall me-2"></i>Kirim Verifikasi Jatuhan
+                Kirim Verifikasi Jatuhan
               </button>
             </div>
             <div class="my-4 text-center">
               <button class="btn btn-danger bg-gradient p-3 tombol-send w-100" data-jenis="pelanggaran">
-                <i class="fas fa-exclamation-triangle me-2"></i>Kirim Verifikasi Pelanggaran
+                Kirim Verifikasi Pelanggaran
               </button>
             </div>
 
@@ -925,12 +940,10 @@
           <h3 class="modal-title fw-bold text-center text-light w-100" id="exampleModalLabel">
             <i class="fas fa-trophy me-2"></i>PENENTUAN PEMENANG
           </h3>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close btn-close-white btn-danger" data-bs-dismiss="modal"
+            aria-label="Close"></button>
         </div>
         <div class="modal-body bg-dark">
-          <h5 class="text-center text-uppercase fw-bold mb-4">
-            PENENTUAN PEMENANG
-          </h5>
           <div class="container-fluid">
             <div class="row">
               <!-- SUDUT BIRU -->
@@ -948,61 +961,66 @@
                       <td class="text-start fw-bold text-uppercase">
                         Pukulan
                       </td>
-                      <td id="pukulan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                      <td id="pukulan_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
                     </tr>
                     <tr>
                       <td class="text-start fw-bold text-uppercase">
                         Tendangan
                       </td>
-                      <td id="tendangan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                      <td id="tendangan_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;">
+                      </td>
                     </tr>
                     <tr>
                       <td class="text-start fw-bold text-uppercase">
                         Jatuhan
                       </td>
-                      <td id="jatuhan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                      <td id="jatuhan_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
                     </tr>
                     <tr>
                       <td class="text-start fw-bold text-uppercase">
                         Binaan
                       </td>
-                      <td id="binaan_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                      <td id="binaan_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
                     </tr>
                     <tr>
                       <td class="text-start fw-bold text-uppercase">
                         Teguran 1
                       </td>
-                      <td id="teguran1_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                      <td id="teguran1_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;">
+                      </td>
                     </tr>
                     <tr>
                       <td class="text-start fw-bold text-uppercase">
                         Teguran 2
                       </td>
-                      <td id="teguran2_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;"></td>
+                      <td id="teguran2_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;">
+                      </td>
                     </tr>
                     <tr>
                       <td class="text-start fw-bold text-uppercase">
                         Peringatan 1
                       </td>
-                      <td id="peringatan1_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;">
+                      <td id="peringatan1_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;">
                       </td>
                     </tr>
                     <tr>
                       <td class="text-start fw-bold text-uppercase">
                         Peringatan 2
                       </td>
-                      <td id="peringatan2_biru" class="text-end fw-bold" style="font-size: 1.4rem; color: #4dabff;">
+                      <td id="peringatan2_biru" class="text-center fw-bold" style="font-size: 1.4rem; color: #4dabff;">
                       </td>
                     </tr>
                     <tr class="table-primary">
-                      <td id="nilai_akhir_biru" colspan="2" class="fw-bold text-primary py-4"></td>
+                      <td id="nilai_akhir_biru" colspan="2" class="fw-bold text-primary"></td>
                     </tr>
                   </tbody>
                 </table>
-                <button class="btn winner-biru" onclick="set_winner('biru')">
-                  🏆
-                  <h1>WINNER</h1>
-                </button>
+                <center>
+                  <button class="btn winner-biru" onclick="set_winner('biru')">
+                    🏆
+                    <h1>WINNER</h1>
+                  </button>
+                </center>
               </div>
 
               <!-- SUDUT MERAH -->
@@ -1017,61 +1035,65 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td id="pukulan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;"></td>
+                      <td id="pukulan_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      </td>
                       <td class="text-end fw-bold text-uppercase">Pukulan</td>
                     </tr>
                     <tr>
-                      <td id="tendangan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      <td id="tendangan_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
                       </td>
                       <td class="text-end fw-bold text-uppercase">
                         Tendangan
                       </td>
                     </tr>
                     <tr>
-                      <td id="jatuhan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;"></td>
+                      <td id="jatuhan_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      </td>
                       <td class="text-end fw-bold text-uppercase">Jatuhan</td>
                     </tr>
                     <tr>
-                      <td id="binaan_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;"></td>
+                      <td id="binaan_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;"></td>
                       <td class="text-end fw-bold text-uppercase">Binaan</td>
                     </tr>
                     <tr>
-                      <td id="teguran1_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      <td id="teguran1_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
                       </td>
                       <td class="text-end fw-bold text-uppercase">
                         Teguran 1
                       </td>
                     </tr>
                     <tr>
-                      <td id="teguran2_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      <td id="teguran2_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
                       </td>
                       <td class="text-end fw-bold text-uppercase">
                         Teguran 2
                       </td>
                     </tr>
                     <tr>
-                      <td id="peringatan1_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      <td id="peringatan1_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
                       </td>
                       <td class="text-end fw-bold text-uppercase">
                         Peringatan 1
                       </td>
                     </tr>
                     <tr>
-                      <td id="peringatan2_merah" class="text-start fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
+                      <td id="peringatan2_merah" class="text-center fw-bold" style="font-size: 1.4rem; color: #ff6b6b;">
                       </td>
                       <td class="text-end fw-bold text-uppercase">
                         Peringatan 2
                       </td>
                     </tr>
                     <tr class="table-danger">
-                      <td id="nilai_akhir_merah" class="fw-bold text-danger py-4" colspan="2"></td>
+                      <td id="nilai_akhir_merah" class="fw-bold text-danger" colspan="2"></td>
                     </tr>
                   </tbody>
                 </table>
-                <button class="btn winner-merah" onclick="set_winner('merah')">
-                  🏆
-                  <h1>WINNER</h1>
-                </button>
+                <center>
+                  <button class="btn winner-merah" onclick="set_winner('merah')">
+                    🏆
+                    <h1>WINNER</h1>
+                  </button>
+                </center>
               </div>
             </div>
           </div>
@@ -1098,7 +1120,7 @@
       }
     }
 
-    // FUNGSI FULLSCREEN DIPERBAIKI UNTUK MENCEGAH ZOOM
+    // FUNGSI FULLSCREEN YANG DIPERBAIKI
     window.openFullscreen = function () {
       const elem = document.documentElement;
 
@@ -1115,8 +1137,9 @@
         elem.msRequestFullscreen();
       }
 
-      $("#openfull").hide();
-      $("#exitfull").show().removeClass('d-none');
+      // Toggle buttons secara manual
+      document.getElementById('openfull').style.display = 'none';
+      document.getElementById('exitfull').style.display = 'flex';
     };
 
     window.closeFullscreen = function () {
@@ -1128,39 +1151,37 @@
         document.msExitFullscreen();
       }
 
-      $("#openfull").show();
-      $("#exitfull").hide().addClass('d-none');
+      // Toggle buttons secara manual
+      document.getElementById('openfull').style.display = 'flex';
+      document.getElementById('exitfull').style.display = 'none';
     };
 
     // EVENT LISTENER UNTUK FULLSCREEN CHANGE
-    document.addEventListener('fullscreenchange', function () {
-      if (document.fullscreenElement) {
+    function handleFullscreenChange() {
+      const isFullscreen = document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement;
+
+      if (isFullscreen) {
         // Saat masuk fullscreen, fix scaling
         document.body.style.transform = "scale(1)";
         document.body.style.zoom = "1";
-        $("#openfull").hide();
-        $("#exitfull").show().removeClass('d-none');
+        document.getElementById('openfull').style.display = 'none';
+        document.getElementById('exitfull').style.display = 'flex';
       } else {
         document.body.style.transform = "";
         document.body.style.zoom = "";
-        $("#openfull").show();
-        $("#exitfull").hide().addClass('d-none');
+        document.getElementById('openfull').style.display = 'flex';
+        document.getElementById('exitfull').style.display = 'none';
       }
-    });
+    }
 
-    document.addEventListener('webkitfullscreenchange', function () {
-      if (document.webkitFullscreenElement) {
-        document.body.style.transform = "scale(1)";
-        document.body.style.zoom = "1";
-        $("#openfull").hide();
-        $("#exitfull").show().removeClass('d-none');
-      } else {
-        document.body.style.transform = "";
-        document.body.style.zoom = "";
-        $("#openfull").show();
-        $("#exitfull").hide().addClass('d-none');
-      }
-    });
+    // Daftarkan semua event fullscreen change
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
     // FUNGSI generateBabakRows DIPERBAIKI
     function generateBabakRows(jumlahBabak) {
@@ -1290,8 +1311,8 @@
     const ws = new WebSocket("ws://localhost:3000");
 
     function set_winner(sudut) {
-      const konfirmasi = confirm(`Apakah kamu yakin sudut ${sudut.toUpperCase()} menang?`);
-      if (!konfirmasi) return;
+      // const konfirmasi = confirm(`Apakah kamu yakin sudut ${sudut.toUpperCase()} menang?`);
+      // if (!konfirmasi) return;
 
       const id_jadwal = localStorage.getItem("partai");
       const currentPartai = localStorage.getItem("currentPartai");
