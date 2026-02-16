@@ -1268,7 +1268,7 @@
 
     function updatePartaiUI(data) {
       if (data.status != "kosong") {
-        $("#gelanggang").html("| Gelanggang : " + data.gelanggang + " - " + data.partai);
+        $("#gelanggang").html("| Gelanggang : " + data.gelanggang + " / Partai : " + data.partai);
         window.localStorage.setItem("partai", data.partai);
         window.localStorage.setItem("bbk", data.bbk);
         $(".nm_merah").html(data.nm_merah);
