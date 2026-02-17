@@ -22,18 +22,18 @@ function getDashboardStats($koneksi)
 
   // 2. Total Partai dari kedua tabel
   $query2 = "SELECT (
-              SELECT COUNT(*) FROM jadwal_tanding
+              SELECT COUNT(*) FROM jadwal_tanding WHERE babak='SEMIFINAL'
             ) + (
-              SELECT COUNT(*) FROM jadwal_tanding_final
+              SELECT COUNT(*) FROM jadwal_tanding WHERE babak='FINAL'
             ) as total_partai";
   $result2 = $koneksi->query($query2);
   $stats['total_partai'] = $result2->fetch_assoc()['total_partai'] ?? 0;
 
   // 3. Partai Selesai (status bukan '-') dari kedua tabel
   $query3 = "SELECT (
-              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai'
+              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai' and  babak='SEMIFINAL'
             ) + (
-              SELECT COUNT(*) FROM jadwal_tanding_final WHERE status = 'selesai'
+              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai' and babak='FINAL'
             ) as partai_selesai";
   $result3 = $koneksi->query($query3);
   $stats['partai_selesai'] = $result3->fetch_assoc()['partai_selesai'] ?? 0;
@@ -61,11 +61,7 @@ function getDashboardStats($koneksi)
                  SELECT kontingen_biru as kontingen FROM jadwal_tanding
                  UNION ALL
                  SELECT kontingen_merah as kontingen FROM jadwal_tanding
-                 UNION ALL
-                 SELECT kontingen_biru as kontingen FROM jadwal_tanding_final
-                 UNION ALL
-                 SELECT kontingen_merah as kontingen FROM jadwal_tanding_final
-               ) as all_kontingen
+                ) as all_kontingen
                WHERE kontingen != ''
                GROUP BY kontingen
                ORDER BY jumlah_peserta DESC
@@ -78,18 +74,18 @@ function getDashboardStats($koneksi)
 
   // 7. Partai Hari Ini dari kedua tabel
   $query7 = "SELECT (
-              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai'
+              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai' and babak='SEMIFINAL'
             ) + (
-              SELECT COUNT(*) FROM jadwal_tanding_final WHERE status = 'selesai'
+              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai' and babak='FINAL'
             ) as partai_hari_ini";
   $result7 = $koneksi->query($query7);
   $stats['partai_hari_ini'] = $result7->fetch_assoc()['partai_hari_ini'] ?? 0;
 
   // 8. Partai Mendatang dari kedua tabel
   $query8 = "SELECT (
-              SELECT COUNT(*) FROM jadwal_tanding WHERE tgl > CURDATE()
+              SELECT COUNT(*) FROM jadwal_tanding WHERE tgl > CURDATE() and babak='SEMIFINAL'
             ) + (
-              SELECT COUNT(*) FROM jadwal_tanding_final WHERE tgl > CURDATE()
+              SELECT COUNT(*) FROM jadwal_tanding WHERE tgl > CURDATE() and babak='FINAL'
             ) as partai_mendatang";
   $result8 = $koneksi->query($query8);
   $stats['partai_mendatang'] = $result8->fetch_assoc()['partai_mendatang'] ?? 0;
@@ -115,7 +111,7 @@ function getSemifinalMatches($koneksi)
                 status,
                 tgl,
                 DATE_FORMAT(tgl, '%d %b %Y') as tanggal
-              FROM jadwal_tanding WHERE status != 'selesai'
+              FROM jadwal_tanding WHERE status != 'selesai' and babak='SEMIFINAL'
               ORDER BY tgl DESC, partai ASC
               LIMIT 5";
 
@@ -139,7 +135,7 @@ function getFinalMatches($koneksi)
                 status,
                 tgl,
                 DATE_FORMAT(tgl, '%d %b %Y') as tanggal
-              FROM jadwal_tanding_final WHERE status != 'selesai'
+              FROM jadwal_tanding WHERE status != 'selesai' and babak='FINAL'
               ORDER BY tgl DESC, partai ASC
               LIMIT 5";
 
