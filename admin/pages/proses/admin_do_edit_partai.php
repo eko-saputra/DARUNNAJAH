@@ -3,13 +3,13 @@
 session_start();
 
 // Include koneksi database
-include('includes/connection.php');
+include('../../includes/connection.php');
 
 // Cek apakah request POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-	die("<script type='text/javascript'>
+  die("<script type='text/javascript'>
             alert('Akses tidak valid!');
-            document.location = './?page=tambah_jadwal';
+            document.location = '../../?page=tambah_jadwal_tanding';
           </script>");
 }
 
@@ -20,10 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // AMBIL VARIABEL dengan validasi
 $id_partai = isset($_POST["id_partai"]) ? mysqli_real_escape_string($koneksi, $_POST["id_partai"]) : '';
-$tgl = isset($_POST["tgl"]) ? mysqli_real_escape_string($koneksi, $_POST["tgl"]) : '';
 $kelas = isset($_POST["kelas"]) ? mysqli_real_escape_string($koneksi, $_POST["kelas"]) : '';
 $gelanggang = isset($_POST["gelanggang"]) ? mysqli_real_escape_string($koneksi, $_POST["gelanggang"]) : '';
-$partai = isset($_POST["partai"]) ? mysqli_real_escape_string($koneksi, $_POST["partai"]) : '';
 $nm_merah = isset($_POST["nm_merah"]) ? mysqli_real_escape_string($koneksi, $_POST["nm_merah"]) : '';
 $kontingen_merah = isset($_POST["kontingen_merah"]) ? mysqli_real_escape_string($koneksi, $_POST["kontingen_merah"]) : '';
 $nm_biru = isset($_POST["nm_biru"]) ? mysqli_real_escape_string($koneksi, $_POST["nm_biru"]) : '';
@@ -35,19 +33,17 @@ $aktif = isset($_POST["aktif"]) ? mysqli_real_escape_string($koneksi, $_POST["ak
 
 // Validasi data wajib
 if (empty($id_partai)) {
-	echo "<script type='text/javascript'>
+  echo "<script type='text/javascript'>
             alert('ID Partai tidak boleh kosong!');
             window.history.back();
           </script>";
-	exit();
+  exit();
 }
 
 // UPDATE DATA PESERTA
-$sql = "UPDATE jadwal_tanding SET 
-        tgl = '$tgl', 
+$sql = "UPDATE jadwal_tanding SET
         kelas = '$kelas', 
         gelanggang = '$gelanggang',
-        partai = '$partai', 
         nm_merah = '$nm_merah', 
         kontingen_merah = '$kontingen_merah',
         nm_biru = '$nm_biru', 
@@ -60,23 +56,23 @@ $sql = "UPDATE jadwal_tanding SET
 
 // Eksekusi query
 if (mysqli_query($koneksi, $sql)) {
-	// Cek apakah ada data yang terupdate
-	if (mysqli_affected_rows($koneksi) > 0) {
-		echo "<script type='text/javascript'>
+  // Cek apakah ada data yang terupdate
+  if (mysqli_affected_rows($koneksi) > 0) {
+    echo "<script type='text/javascript'>
                 alert('Data partai berhasil diperbarui.');
-                document.location = './?page=tambah_jadwal';
+                document.location = '../../?page=tambah_jadwal_tanding';
               </script>";
-	} else {
-		echo "<script type='text/javascript'>
+  } else {
+    echo "<script type='text/javascript'>
                 alert('Tidak ada perubahan data atau ID partai tidak ditemukan.');
-                document.location = './?page=tambah_jadwal';
+                document.location = '../../?page=tambah_jadwal_tanding';
               </script>";
-	}
+  }
 } else {
-	// Log error untuk debugging (hapus di production)
-	error_log("MySQL Error: " . mysqli_error($koneksi));
+  // Log error untuk debugging (hapus di production)
+  error_log("MySQL Error: " . mysqli_error($koneksi));
 
-	echo "<script type='text/javascript'>
+  echo "<script type='text/javascript'>
             alert('Data gagal diupdate. Error: " . addslashes(mysqli_error($koneksi)) . "');
             window.history.back();
           </script>";

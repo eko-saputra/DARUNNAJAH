@@ -271,7 +271,6 @@
                                             <th>KELOMPOK</th>
                                             <th class="bg-primary text-light">SUDUT BIRU</th>
                                             <th class="bg-danger text-light">SUDUT MERAH</th>
-                                            <th>AKTIF</th>
                                             <th>ACTIONS</th>
                                         </tr>
                                     </thead>
@@ -288,13 +287,6 @@
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['kelas']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['nm_biru']) . " - " . htmlspecialchars($jadwal['kontingen_biru']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['nm_merah']) . " - " . htmlspecialchars($jadwal['kontingen_merah']); ?></td>
-                                                    <td class="text-light text-uppercase">
-                                                        <?php if ($jadwal['aktif'] == '0'): ?>
-                                                            <span class="badge bg-danger">NO</span>
-                                                        <?php else: ?>
-                                                            <span class="badge bg-success">YES</span>
-                                                        <?php endif; ?>
-                                                    </td>
                                                     <td>
                                                         <a class="btn btn-warning btn-sm" href="?page=edit_partai&id_partai=<?php echo $jadwal['id_partai']; ?>">
                                                             <i class="halflings-icon white pencil"></i> Edit

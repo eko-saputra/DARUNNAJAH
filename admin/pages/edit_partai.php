@@ -15,7 +15,7 @@
                 $partai = mysqli_fetch_array($datapartai);
                 ?>
 
-                <form class="row g-3" method="post" action="proses/admin_do_edit_partai.php">
+                <form class="row g-3" method="post" action="pages/proses/admin_do_edit_partai.php">
                     <!-- ID Partai (Readonly) -->
                     <div class="col-md-6">
                         <label for="id_partai" class="form-label fw-bold">ID Partai</label>
@@ -23,25 +23,11 @@
                             value="<?php echo htmlspecialchars($id_partai); ?>" readonly>
                     </div>
 
-                    <!-- Tanggal -->
-                    <div class="col-md-6">
-                        <label for="tgl" class="form-label fw-bold">Tanggal</label>
-                        <input type="date" class="form-control text-muted" name="tgl" id="tgl"
-                            value="<?php echo htmlspecialchars($partai["tgl"] ?? ''); ?>">
-                    </div>
-
                     <!-- Gelanggang -->
                     <div class="col-md-6">
                         <label for="gelanggang" class="form-label fw-bold">Gelanggang</label>
-                        <input type="text" class="form-control text-muted" name="gelanggang" id="gelanggang"
+                        <input type="text" class="form-control bg-light text-muted" name="gelanggang" id="gelanggang"
                             value="<?php echo htmlspecialchars($partai["gelanggang"] ?? ''); ?>">
-                    </div>
-
-                    <!-- No Partai -->
-                    <div class="col-md-6">
-                        <label for="partai" class="form-label fw-bold">No Partai</label>
-                        <input type="text" class="form-control text-muted" name="partai" id="partai"
-                            value="<?php echo htmlspecialchars($partai["partai"] ?? ''); ?>">
                     </div>
 
                     <!-- Babak -->
@@ -61,45 +47,45 @@
                     <!-- Kelompok -->
                     <div class="col-md-6">
                         <label for="kelas" class="form-label fw-bold">Kelompok</label>
-                        <input type="text" class="form-control text-muted" name="kelas" id="kelas"
+                        <input type="text" class="form-control bg-light text-muted" name="kelas" id="kelas"
                             value="<?php echo htmlspecialchars($partai["kelas"] ?? ''); ?>">
                     </div>
 
                     <!-- Pesilat Sudut Merah -->
                     <div class="col-12">
-                        <h6 class="border-bottom pb-2 mb-3 text-danger">
+                        <h6 class="text-danger text-uppercase">
                             <i class="fas fa-user me-2"></i>Sudut Merah
                         </h6>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 bg-danger rounded p-2">
                         <label for="nm_merah" class="form-label">Nama Pesilat</label>
-                        <input type="text" class="form-control text-muted" name="nm_merah" id="nm_merah"
+                        <input type="text" class="form-control bg-light text-muted" name="nm_merah" id="nm_merah"
                             value="<?php echo htmlspecialchars($partai["nm_merah"] ?? ''); ?>">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 bg-danger rounded p-2">
                         <label for="kontingen_merah" class="form-label">Kontingen</label>
-                        <input type="text" class="form-control text-muted" name="kontingen_merah" id="kontingen_merah"
+                        <input type="text" class="form-control bg-light text-muted" name="kontingen_merah" id="kontingen_merah"
                             value="<?php echo htmlspecialchars($partai["kontingen_merah"] ?? ''); ?>">
                     </div>
 
                     <!-- Pesilat Sudut Biru -->
                     <div class="col-12 mt-4">
-                        <h6 class="border-bottom pb-2 mb-3 text-primary">
+                        <h6 class="text-primary text-uppercase">
                             <i class="fas fa-user me-2"></i>Sudut Biru
                         </h6>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 bg-primary rounded p-2">
                         <label for="nm_biru" class="form-label">Nama Pesilat</label>
-                        <input type="text" class="form-control text-muted" name="nm_biru" id="nm_biru"
+                        <input type="text" class="form-control bg-light text-muted" name="nm_biru" id="nm_biru"
                             value="<?php echo htmlspecialchars($partai["nm_biru"] ?? ''); ?>">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 bg-primary rounded p-2">
                         <label for="kontingen_biru" class="form-label">Kontingen</label>
-                        <input type="text" class="form-control text-muted" name="kontingen_biru" id="kontingen_biru"
+                        <input type="text" class="form-control bg-light text-muted" name="kontingen_biru" id="kontingen_biru"
                             value="<?php echo htmlspecialchars($partai["kontingen_biru"] ?? ''); ?>">
                     </div>
 
