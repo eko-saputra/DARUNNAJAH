@@ -647,6 +647,7 @@ ORDER BY peserta.nm_lengkap ASC;
                   // BAGIAN INSERT MEDALI
                   const babak = currentPartai.bbk.toUpperCase();
                   const idPartai = currentPartai.partai;
+                  console.log(`Partai selesai: ID ${idPartai}, Babak ${babak}, Pemenang: ${pemenang}`);
 
                   // Ambil data kontingen dan kelas dari jadwal_tanding
                   // PERBAIKAN: tambahkan kolom nm_biru dan nm_merah jika ada
@@ -663,6 +664,7 @@ ORDER BY peserta.nm_lengkap ASC;
 
                       if (results.length > 0) {
                         const data = results[0];
+                        const idPartai = currentPartai.partai;
                         const kontingenBiru = data.kontingen_biru;
                         const kontingenMerah = data.kontingen_merah;
                         const nama_biru = data.nm_biru || ""; // default kosong jika null
@@ -687,6 +689,8 @@ ORDER BY peserta.nm_lengkap ASC;
                         }
 
                         // Handle medali berdasarkan babak
+                        console.log('Id Partai yang selesai (semifinal):', idPartai);
+                        console.log(`Pemenang semifinal: ${namaPemenang} (${kontingenPemenang})`);
                         if (babak === "SEMIFINAL") {
                           // Kalah di semifinal = Perunggu
                           db.query(
@@ -698,6 +702,66 @@ ORDER BY peserta.nm_lengkap ASC;
                                 console.error("Error insert medali Perunggu:", err);
                               } else {
                                 console.log(`Medali Perunggu diberikan ke: ${namaKalah} (${kontingenKalah})`);
+                              }
+                            }
+                          );
+
+                          // Cek di tabel jadwal_tanding apakah ada nama yang menunggu pemenang di partai lain dengan babak SEMIFINAL yang sama (untuk menentukan lawan selanjutnya di partai semifinal yang lain)
+                          // Setelah idPartai 1 menjadi pemenang semifinal
+                          // const namaPemenang = namaPemenang; // Nama atlet pemenang
+                          // const kontingenPemenang = kontingenPemenang; // Kontingen pemenang
+
+                          // Cari partai FINAL yang menunggu pemenang dari partai 1
+                          db.query(
+                            `SELECT id_partai, 
+            CASE 
+                WHEN nm_biru LIKE ? THEN 'biru'
+                WHEN nm_merah LIKE ? THEN 'merah'
+                ELSE NULL
+            END as posisi
+     FROM jadwal_tanding 
+     WHERE babak = 'FINAL' 
+       AND (nm_biru LIKE ? OR nm_merah LIKE ?)`,
+                            [
+                              `%Pemenang Partai ${idPartai}%`,
+                              `%Pemenang Partai ${idPartai}%`,
+                              `%Pemenang Partai ${idPartai}%`,
+                              `%Pemenang Partai ${idPartai}%`
+                            ],
+                            (err, results) => {
+                              if (err) {
+                                console.error("Error cek partai FINAL:", err);
+                                return;
+                              }
+
+                              if (results.length > 0) {
+                                const partaiFinal = results[0];
+                                const posisi = partaiFinal.posisi; // 'biru' atau 'merah'
+
+                                console.log(`Pemenang dari partai ${idPartai} akan masuk ke posisi ${posisi} di partai FINAL ${partaiFinal.id_partai}`);
+
+                                // Update nama atlet di partai FINAL
+                                let updateQuery = '';
+                                if (posisi === 'biru') {
+                                  updateQuery = `UPDATE jadwal_tanding SET nm_biru = ?, kontingen_biru = ? WHERE id_partai = ?`;
+                                } else {
+                                  updateQuery = `UPDATE jadwal_tanding SET nm_merah = ?, kontingen_merah = ? WHERE id_partai = ?`;
+                                }
+
+                                db.query(
+                                  updateQuery,
+                                  [namaPemenang, kontingenPemenang, partaiFinal.id_partai],
+                                  (updateErr, updateResult) => {
+                                    if (updateErr) {
+                                      console.error("Error update partai FINAL:", updateErr);
+                                    } else {
+                                      console.log(`Berhasil mengupdate pemenang partai ${idPartai} ke partai FINAL ${partaiFinal.id_partai} sebagai ${posisi}`);
+                                    }
+                                  }
+                                );
+
+                              } else {
+                                console.log(`Tidak ditemukan partai FINAL yang menunggu pemenang dari partai ${idPartai}`);
                               }
                             }
                           );
