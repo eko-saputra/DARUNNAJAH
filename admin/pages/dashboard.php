@@ -32,14 +32,32 @@ function getDashboardStats($koneksi)
   $result2 = $koneksi->query($query2);
   $stats['total_partai'] = $result2->fetch_assoc()['total_partai'] ?? 0;
 
+  // Total partai TGR
+  $querytgr = "SELECT (
+              SELECT COUNT(*) FROM jadwal_tgr WHERE babak='SEMIFINAL'
+            ) + (
+              SELECT COUNT(*) FROM jadwal_tgr WHERE babak='FINAL'
+            ) as total_partaitgr";
+  $resulttgr = $koneksi->query($querytgr);
+  $stats['total_partaitgr'] = $resulttgr->fetch_assoc()['total_partaitgr'] ?? 0;
+
   // 3. Partai Selesai (status bukan '-') dari kedua tabel
   $query3 = "SELECT (
-              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai' and  babak='SEMIFINAL'
+              SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai' and babak='SEMIFINAL'
             ) + (
               SELECT COUNT(*) FROM jadwal_tanding WHERE status = 'selesai' and babak='FINAL'
             ) as partai_selesai";
   $result3 = $koneksi->query($query3);
   $stats['partai_selesai'] = $result3->fetch_assoc()['partai_selesai'] ?? 0;
+
+  // Partai selesai TGR
+  $querytgr1 = "SELECT (
+              SELECT COUNT(*) FROM jadwal_tgr WHERE status = 'selesai' and babak='SEMIFINAL'
+            ) + (
+              SELECT COUNT(*) FROM jadwal_tgr WHERE status = 'selesai' and babak='FINAL'
+            ) as partai_selesaitgr1";
+  $resulttgr1 = $koneksi->query($querytgr1);
+  $stats['partai_selesaitgr1'] = $resulttgr1->fetch_assoc()['partai_selesaitgr1'] ?? 0;
 
   // 4. Total Medali
   $query4 = "SELECT COUNT(*) as total_medali FROM medali WHERE medali IS NOT NULL";
@@ -100,6 +118,12 @@ function getDashboardStats($koneksi)
     $stats['progress'] = 0;
   }
 
+  if ($stats['total_partaitgr'] > 0) {
+    $stats['progresstgr'] = round(($stats['partai_selesaitgr1'] / $stats['total_partaitgr']) * 100, 2);
+  } else {
+    $stats['progresstgr'] = 0;
+  }
+
   return $stats;
 }
 
@@ -127,6 +151,30 @@ function getSemifinalMatches($koneksi)
   return $matches;
 }
 
+function getSemifinalMatchestgr($koneksi)
+{
+  $query = "SELECT 
+                partai,
+                kategori,
+                golongan,
+                nm_biru,
+                nm_merah,
+                status,
+                tgl,
+                DATE_FORMAT(tgl, '%d %b %Y') as tanggal
+              FROM jadwal_tgr WHERE status != 'selesai' and babak='SEMIFINAL'
+              ORDER BY tgl DESC, partai ASC
+              LIMIT 5";
+
+  $result = $koneksi->query($query);
+
+  $matches = [];
+  while ($row = $result->fetch_assoc()) {
+    $matches[] = $row;
+  }
+  return $matches;
+}
+
 // Fungsi untuk mendapatkan jadwal FINAL terbaru
 function getFinalMatches($koneksi)
 {
@@ -139,6 +187,30 @@ function getFinalMatches($koneksi)
                 tgl,
                 DATE_FORMAT(tgl, '%d %b %Y') as tanggal
               FROM jadwal_tanding WHERE status != 'selesai' and babak='FINAL'
+              ORDER BY tgl DESC, partai ASC
+              LIMIT 5";
+
+  $result = $koneksi->query($query);
+
+  $matches = [];
+  while ($row = $result->fetch_assoc()) {
+    $matches[] = $row;
+  }
+  return $matches;
+}
+
+function getFinalMatchestgr($koneksi)
+{
+  $query = "SELECT 
+                partai,
+                kategori,
+                golongan,
+                nm_biru,
+                nm_merah,
+                status,
+                tgl,
+                DATE_FORMAT(tgl, '%d %b %Y') as tanggal
+              FROM jadwal_tgr WHERE status != 'selesai' and babak='FINAL'
               ORDER BY tgl DESC, partai ASC
               LIMIT 5";
 
@@ -216,6 +288,8 @@ function getKontingenRanking($koneksi)
 $stats = getDashboardStats($koneksi);
 $semifinalMatches = getSemifinalMatches($koneksi);
 $finalMatches = getFinalMatches($koneksi);
+$semifinalMatchestgr = getSemifinalMatchestgr($koneksi);
+$finalMatchestgr = getFinalMatchestgr($koneksi);
 $kontingenRanking = getKontingenRanking($koneksi);
 
 // Data untuk grafik medali
@@ -255,7 +329,9 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
           <div class="col-9">
             <div class="d-flex align-items-center align-self-start">
               <h3 class="mb-0"><?php echo $stats['total_partai']; ?></h3>
-              <p class="text-info ms-2 mb-0 font-weight-medium">Partai</p>
+              <p class="text-info ms-2 mb-0 font-weight-medium">Tanding</p>/
+              <h3 class="mb-0"><?php echo $stats['total_partaitgr']; ?></h3>
+              <p class="text-info ms-2 mb-0 font-weight-medium">TGR</p>
             </div>
           </div>
           <div class="col-3">
@@ -264,7 +340,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
             </div>
           </div>
         </div>
-        <h6 class="text-muted font-weight-normal">Total Partai</h6>
+        <h6 class="text-muted font-weight-normal">Total Partai Tanding/TGR</h6>
       </div>
     </div>
   </div>
@@ -278,6 +354,10 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
               <h3 class="mb-0"><?php echo $stats['partai_selesai']; ?></h3>
               <p class="<?php echo ($stats['progress'] > 0) ? 'text-success' : 'text-warning'; ?> ms-2 mb-0 font-weight-medium">
                 <?php echo $stats['progress']; ?>%
+              </p>/
+              <h3 class="mb-0"><?php echo $stats['partai_selesaitgr1']; ?></h3>
+              <p class="<?php echo ($stats['progresstgr'] > 0) ? 'text-success' : 'text-warning'; ?> ms-2 mb-0 font-weight-medium">
+                <?php echo $stats['progresstgr']; ?>%
               </p>
             </div>
           </div>
@@ -287,7 +367,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
             </div>
           </div>
         </div>
-        <h6 class="text-muted font-weight-normal">Partai Selesai</h6>
+        <h6 class="text-muted font-weight-normal">Partai Selesai Tanding/TGR</h6>
       </div>
     </div>
   </div>
@@ -377,11 +457,11 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
   </div>
 
   <!-- Jadwal Partai Terbaru dengan Tab -->
-  <div class="col-md-8 grid-margin stretch-card">
+  <div class="col-md-4 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
         <div class="d-flex flex-row justify-content-between">
-          <h4 class="card-title mb-1">Jadwal 5 Partai Terbaru</h4>
+          <h4 class="card-title mb-1">Jadwal Tanding 5 Partai Terbaru</h4>
         </div>
 
         <!-- Tab Navigation -->
@@ -419,17 +499,16 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
                     </div>
                     <div class="preview-item-content d-sm-flex flex-grow">
                       <div class="flex-grow">
-                        <h6 class="preview-subject">Partai <?php echo htmlspecialchars($match['partai']); ?> - <?php echo htmlspecialchars($match['kelas']); ?></h6>
-                        <p class="text-muted mb-0">
+                        <h6 class="preview-subject">Partai <?php echo htmlspecialchars($match['partai']); ?> <br> <?php echo htmlspecialchars($match['kelas']); ?></h6>
+                        <!-- <p class="text-muted mb-0">
                           <span class="fw-bold text-primary"><?php echo htmlspecialchars($match['nm_biru']); ?></span>
                           vs
                           <span class="fw-bold text-danger"><?php echo htmlspecialchars($match['nm_merah']); ?></span>
-                        </p>
+                        </p> -->
                       </div>
                       <div class="me-auto text-sm-right pt-2 pt-sm-0">
-                        <p class="text-muted mb-1"><?php echo $match['tanggal']; ?></p>
                         <p class="text-muted mb-0">
-                          <span class="badge badge-<?php echo ($match['status'] != '-') ? 'success' : 'warning'; ?>">
+                          <span class="badge text-dark badge-<?php echo ($match['status'] != '-') ? 'success' : 'warning'; ?>">
                             <?php echo ($match['status'] != '-') ? 'Selesai' : 'Menunggu'; ?>
                           </span>
                         </p>
@@ -439,7 +518,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
                 <?php endforeach; ?>
                 <?php if (count($semifinalMatches) > 0): ?>
                   <div class="text-center mt-3">
-                    <!-- <a href="jadwal_semifinal.php" class="btn btn-outline-primary btn-sm">Lihat Semua Jadwal Semifinal</a> -->
+                    <a href="?page=tambah_jadwal_tanding" class="btn btn-outline-primary btn-sm">Lihat Semua Jadwal Tanding</a>
                   </div>
                 <?php endif; ?>
               <?php endif; ?>
@@ -464,19 +543,12 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
                     <div class="preview-item-content d-sm-flex flex-grow">
                       <div class="flex-grow">
                         <h6 class="preview-subject">
-                          <span class="badge badge-warning me-2">FINAL</span>
-                          Partai <?php echo htmlspecialchars($match['partai']); ?> - <?php echo htmlspecialchars($match['kelas']); ?>
+                          Partai <?php echo htmlspecialchars($match['partai']); ?> <br> <?php echo htmlspecialchars($match['kelas']); ?>
                         </h6>
-                        <p class="text-muted mb-0">
-                          <span class="fw-bold text-primary"><?php echo htmlspecialchars($match['nm_biru']); ?></span>
-                          vs
-                          <span class="fw-bold text-danger"><?php echo htmlspecialchars($match['nm_merah']); ?></span>
-                        </p>
                       </div>
                       <div class="me-auto text-sm-right pt-2 pt-sm-0">
-                        <p class="text-muted mb-1"><?php echo $match['tanggal']; ?></p>
                         <p class="text-muted mb-0">
-                          <span class="badge badge-<?php echo ($match['status'] != '-') ? 'success' : 'warning'; ?>">
+                          <span class="badge text-dark badge-<?php echo ($match['status'] != '-') ? 'success' : 'warning'; ?>">
                             <?php echo ($match['status'] != '-') ? 'Selesai' : 'Menunggu'; ?>
                           </span>
                         </p>
@@ -486,7 +558,113 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
                 <?php endforeach; ?>
                 <?php if (count($finalMatches) > 0): ?>
                   <div class="text-center mt-3">
-                    <!-- <a href="jadwal_final.php" class="btn btn-outline-warning btn-sm">Lihat Semua Jadwal Final</a> -->
+                    <a href="?page=tambah_jadwal_tanding" class="btn btn-outline-warning btn-sm">Lihat Semua Jadwal Tanding</a>
+                  </div>
+                <?php endif; ?>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex flex-row justify-content-between">
+          <h4 class="card-title mb-1">Jadwal Tanding 5 Partai Terbaru</h4>
+        </div>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs" id="jadwalTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="semifinal-tab1" data-bs-toggle="tab" href="#semifinal1" role="tab" aria-controls="semifinal1" aria-selected="true">
+              <i class="mdi mdi-sword-cross me-1"></i> SEMIFINAL
+              <span class="badge bg-primary ms-2"><?php echo count($semifinalMatchestgr); ?></span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="final-tab1" data-bs-toggle="tab" href="#final1" role="tab" aria-controls="final1" aria-selected="false">
+              <i class="mdi mdi-trophy me-1"></i> FINAL
+              <span class="badge bg-warning ms-2"><?php echo count($finalMatchestgr); ?></span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content pt-3" id="jadwalTabContent">
+          <!-- Tab SEMIFINAL -->
+          <div class="tab-pane fade show active" id="semifinal1" role="tabpanel" aria-labelledby="semifinal-tab1">
+            <div class="preview-list">
+              <?php if (empty($semifinalMatchestgr)): ?>
+                <div class="text-center py-4">
+                  <p class="text-muted">Tidak ada jadwal semifinal</p>
+                </div>
+              <?php else: ?>
+                <?php foreach ($semifinalMatchestgr as $match): ?>
+                  <div class="preview-item border-bottom">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon <?php echo ($match['status'] != '-') ? 'bg-success' : 'bg-info'; ?>">
+                        <i class="mdi mdi-sword-cross"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content d-sm-flex flex-grow">
+                      <div class="flex-grow">
+                        <h6 class="preview-subject">Partai <?php echo htmlspecialchars($match['partai']); ?> <br> <?php echo htmlspecialchars($match['kategori'] . " - " . $match['golongan']); ?></h6>
+                      </div>
+                      <div class="me-auto text-sm-right pt-2 pt-sm-0">
+                        <p class="text-muted mb-0">
+                          <span class="badge text-dark badge-<?php echo ($match['status'] != '-') ? 'success' : 'warning'; ?>">
+                            <?php echo ($match['status'] != '-') ? 'Selesai' : 'Menunggu'; ?>
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+                <?php if (count($semifinalMatchestgr) > 0): ?>
+                  <div class="text-center mt-3">
+                    <a href="?page=tambah_jadwal_tgr" class="btn btn-outline-primary btn-sm">Lihat Semua Jadwal TGR</a>
+                  </div>
+                <?php endif; ?>
+              <?php endif; ?>
+            </div>
+          </div>
+
+          <!-- Tab FINAL -->
+          <div class="tab-pane fade" id="final1" role="tabpanel" aria-labelledby="final-tab1">
+            <div class="preview-list">
+              <?php if (empty($finalMatchestgr)): ?>
+                <div class="text-center py-4">
+                  <p class="text-muted">Tidak ada jadwal final</p>
+                </div>
+              <?php else: ?>
+                <?php foreach ($finalMatchestgr as $match): ?>
+                  <div class="preview-item border-bottom">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning">
+                        <i class="mdi mdi-trophy"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content d-sm-flex flex-grow">
+                      <div class="flex-grow">
+                        <h6 class="preview-subject">
+                          Partai <?php echo htmlspecialchars($match['partai']); ?> <br> <?php echo htmlspecialchars($match['kategori'] . " - " . $match['golongan']); ?>
+                        </h6>
+                      </div>
+                      <div class="me-auto text-sm-right pt-2 pt-sm-0">
+                        <p class="text-muted mb-0">
+                          <span class="badge text-dark badge-<?php echo ($match['status'] != '-') ? 'success' : 'warning'; ?>">
+                            <?php echo ($match['status'] != '-') ? 'Selesai' : 'Menunggu'; ?>
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+                <?php if (count($finalMatchestgr) > 0): ?>
+                  <div class="text-center mt-3">
+                    <a href="?page=tambah_jadwal_tgr" class="btn btn-outline-warning btn-sm">Lihat Semua Jadwal TGR</a>
                   </div>
                 <?php endif; ?>
               <?php endif; ?>
