@@ -1,8 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['pwd'])) {
-    header('location:login.php');
-}
+
 include('../../includes/connection.php');
 
 $id_medali = mysqli_real_escape_string($koneksi, $_GET["id_medali"]);
