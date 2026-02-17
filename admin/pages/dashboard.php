@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Include connection file
 require 'includes/connection.php';
 
@@ -11,11 +14,11 @@ function getDashboardStats($koneksi)
   $query1 = "SELECT (
               SELECT COUNT(DISTINCT nm_biru) + COUNT(DISTINCT nm_merah) 
               FROM jadwal_tanding 
-              WHERE nm_biru NOT LIKE 'Pemenang%' AND nm_merah NOT LIKE 'Pemenang%'
+              WHERE nm_biru NOT LIKE 'Pemenang%' AND nm_merah NOT LIKE 'Pemenang%' AND babak='SEMIFINAL'
             ) + (
               SELECT COUNT(DISTINCT nm_biru) + COUNT(DISTINCT nm_merah) 
-              FROM jadwal_tanding_final 
-              WHERE nm_biru NOT LIKE 'Pemenang%' AND nm_merah NOT LIKE 'Pemenang%'
+              FROM jadwal_tanding
+              WHERE nm_biru NOT LIKE 'Pemenang%' AND nm_merah NOT LIKE 'Pemenang%' AND babak='FINAL'
             ) as total_peserta";
   $result1 = $koneksi->query($query1);
   $stats['total_peserta'] = $result1->fetch_assoc()['total_peserta'] ?? 0;
@@ -168,10 +171,6 @@ function getKontingenRanking($koneksi)
                   SELECT kontingen_biru as kontingen FROM jadwal_tanding WHERE kontingen_biru != '' AND kontingen_biru != '-'
                   UNION ALL
                   SELECT kontingen_merah as kontingen FROM jadwal_tanding WHERE kontingen_merah != '' AND kontingen_merah != '-'
-                  UNION ALL
-                  SELECT kontingen_biru as kontingen FROM jadwal_tanding_final WHERE kontingen_biru != '' AND kontingen_biru != '-'
-                  UNION ALL
-                  SELECT kontingen_merah as kontingen FROM jadwal_tanding_final WHERE kontingen_merah != '' AND kontingen_merah != '-'
                 ) as all_kontingen
                 WHERE kontingen IS NOT NULL AND kontingen != ''
                 GROUP BY kontingen
