@@ -7,8 +7,8 @@
                 include("includes/connection.php");
 
                 // Mencari data jadwal pertandingan
-                $sqljadwal = "SELECT * FROM jadwal_tanding ORDER BY id_partai ASC";
-                $jadwal_tanding = mysqli_query($koneksi, $sqljadwal);
+                $sqljadwal = "SELECT * FROM jadwal_tgr ORDER BY id_partai ASC";
+                $jadwal_tgr = mysqli_query($koneksi, $sqljadwal);
                 ?>
 
                 <!-- SweetAlert2 CSS & JS -->
@@ -99,12 +99,13 @@
                                                 $mysqlDate = date('Y-m-d');
                                                 $errors[] = "Tanggal tidak valid: '$originalDate', diubah ke " . date('Y-m-d');
                                             }
-
+                                            // echo $mysqlDate . "<br>"; // Debug: tampilkan tanggal yang akan disimpan
+                                            // print($escapedData[0] . " | " . $escapedData[1] . " | " . $escapedData[2] . " | " . $escapedData[3] . " | " . $escapedData[4] . " | " . $escapedData[5] . " | " . $escapedData[6] . " | " . $escapedData[7] . " | " . $escapedData[8] . "<br>"); // Debug: tampilkan data yang akan disimpan
                                             // Query insert dengan tanggal yang sudah dikonversi
-                                            $import = "INSERT INTO jadwal_tanding (id_partai, tgl, kelas, gelanggang, partai, nm_merah, kontingen_merah,
+                                            $import = "INSERT INTO jadwal_tgr (id_partai, tgl, kategori, golongan, partai, nm_merah, kontingen_merah,
                             nm_biru, kontingen_biru, babak) 
-                          VALUES ('$escapedData[3]', '$mysqlDate', '$escapedData[1]', '$escapedData[2]', '$escapedData[3]', 
-                                  '$escapedData[4]', '$escapedData[5]', '$escapedData[6]', '$escapedData[7]', '$escapedData[8]')";
+                          VALUES ('$escapedData[2]', '$mysqlDate', '$escapedData[0]', '$escapedData[1]', '$escapedData[2]', 
+                                  '$escapedData[3]', '$escapedData[4]', '$escapedData[5]', '$escapedData[6]', '$escapedData[7]')";
 
                                             if (mysqli_query($koneksi, $import)) {
                                                 $importCount++;
@@ -140,7 +141,7 @@
         confirmButtonColor: '#3085d6'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '?page=tambah_jadwal';
+            window.location.href = '?page=tambah_jadwal_tgr';
         }
     });
 </script>";
@@ -153,7 +154,7 @@
                                 <div class="mb-3">
                                     <p>
                                         Format kolom data pada csv harus sesuai dengan contoh.
-                                        Download sample csv <a href="sample_jadwal.csv" class="text-info">di sini</a>.
+                                        Download sample csv <a href="sample_jadwal_tgr.csv" class="text-info">di sini</a>.
                                         <br><strong class="text-warning">Format tanggal wajib (YYYY-MM-DD)</strong>.
                                     </p>
                                 </div>
@@ -179,17 +180,17 @@
                             </div>
                         </div>
                         <div class="box-content">
-                            <form class="form-horizontal" method="post" action="pages/proses/post_jadwal_tanding.php" id="manualForm">
+                            <form class="form-horizontal" method="post" action="pages/proses/post_jadwal_tgr.php" id="manualForm">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Tanggal<span class="text-danger">*</span></label>
-                                        <input type="date" name="tgl" id="tgl" class="form-control text-muted" value="<?php echo date('Y-m-d'); ?>" required>
-                                        <div class="invalid-feedback" id="tglError">Tanggal harus diisi dan tidak boleh lebih dari hari ini</div>
+                                        <label class="form-label">Kategori<span class="text-danger">*</span></label>
+                                        <input type="text" name="kategori" id="kategori" class="form-control text-muted" maxlength="35" placeholder="TUNGGAL/REGU/GANDA" required>
+                                        <div class="invalid-feedback" id="kategoriError">kategori harus diisi (maksimal 35 karakter)</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Kelas/Kelompok<span class="text-danger">*</span></label>
-                                        <input type="text" name="kelas" id="kelas" class="form-control text-muted" maxlength="35" placeholder="Contoh: Remaja Putra Kelas A" required>
-                                        <div class="invalid-feedback" id="kelasError">Kelas harus diisi (maksimal 35 karakter)</div>
+                                        <label class="form-label">Golongan<span class="text-danger">*</span></label>
+                                        <input type="text" name="golongan" id="golongan" class="form-control text-muted" maxlength="35" placeholder="DEWASA PUTRA" required>
+                                        <div class="invalid-feedback" id="golonganError">golongan harus diisi (maksimal 35 karakter)</div>
                                     </div>
                                 </div>
 
@@ -265,41 +266,27 @@
                                 <table class="table table-striped table-bordered bootstrap-datatable datatable">
                                     <thead>
                                         <tr>
-                                            <th>NO</th>
-                                            <th>TANGGAL</th>
-                                            <th>GEL.</th>
                                             <th>PARTAI</th>
                                             <th>BABAK</th>
-                                            <th>KELOMPOK</th>
+                                            <th>KELAS</th>
                                             <th class="bg-primary text-light">SUDUT BIRU</th>
                                             <th class="bg-danger text-light">SUDUT MERAH</th>
-                                            <th>AKTIF</th>
                                             <th>ACTIONS</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
                                         $no = 0;
-                                        if (mysqli_num_rows($jadwal_tanding) > 0) {
-                                            while ($jadwal = mysqli_fetch_array($jadwal_tanding)) {
+                                        if (mysqli_num_rows($jadwal_tgr) > 0) {
+                                            while ($jadwal = mysqli_fetch_array($jadwal_tgr)) {
                                                 $no++;
                                         ?>
                                                 <tr>
-                                                    <td class="text-light"><?php echo $no; ?></td>
-                                                    <td class="text-light text-uppercase"><?php echo date('d/m/Y', strtotime($jadwal['tgl'])); ?></td>
-                                                    <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['gelanggang']); ?></td>
-                                                    <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['partai']); ?></td>
+                                                    <td class="text-light text-uppercase text-center"><?php echo htmlspecialchars($jadwal['partai']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['babak']); ?></td>
-                                                    <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['kelas']); ?></td>
+                                                    <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['kategori'] . " - " . $jadwal['golongan']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['nm_biru']) . " - " . htmlspecialchars($jadwal['kontingen_biru']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['nm_merah']) . " - " . htmlspecialchars($jadwal['kontingen_merah']); ?></td>
-                                                    <td class="text-light text-uppercase">
-                                                        <?php if ($jadwal['aktif'] == '0'): ?>
-                                                            <span class="badge bg-danger">NO</span>
-                                                        <?php else: ?>
-                                                            <span class="badge bg-success">YES</span>
-                                                        <?php endif; ?>
-                                                    </td>
                                                     <td>
                                                         <a class="btn btn-warning btn-sm" href="?page=edit_partai&id_partai=<?php echo $jadwal['id_partai']; ?>">
                                                             <i class="halflings-icon white pencil"></i> Edit
@@ -336,10 +323,10 @@
                             </div>
                         </div>
                         <div class="box-content">
-                            <form class="form-horizontal" method="post" action="pages/proses/clear_jadwal_tanding.php" id="deleteAllForm">
+                            <form class="form-horizontal" method="post" action="pages/proses/clear_jadwal_tgr.php" id="deleteAllForm">
                                 <div class="alert alert-danger">
                                     <h4><i class="icon-warning-sign"></i> PERINGATAN!</h4>
-                                    <p>Dengan menekan tombol "HAPUS SEMUA" di bawah ini, maka seluruh data <b>Jadwal Partai beserta Nilai Penjuriannya</b> pada <b>Kelas Tanding</b> akan hilang dari database.</p>
+                                    <p>Dengan menekan tombol "HAPUS SEMUA" di bawah ini, maka seluruh data <b>Jadwal Partai beserta Nilai Penjuriannya</b> pada <b>Kelas TGR</b> akan hilang dari database.</p>
                                     <p><strong>Tindakan ini tidak dapat dibatalkan!</strong></p>
                                 </div>
                                 <div class="text-center">
@@ -517,7 +504,7 @@
                             // confirmButtonColor: '#3085d6'
                         }).then((result) => {
                             // if (result.isConfirmed) {
-                            window.location.href = `pages/proses/del_partai.php?id_partai=${id}`;
+                            window.location.href = `pages/proses/del_partai_tgr.php?id_partai=${id}`;
                             // }
                         });
                     }

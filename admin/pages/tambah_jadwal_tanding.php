@@ -241,7 +241,8 @@
                                             <option value="SEMIFINAL">SEMIFINAL</option>
                                             <option value="FINAL">FINAL</option>
                                         </select>
-                                        <div class="invalid-feedback" id="babakError">Pilih babak pertandingan</div>
+                                        <div class="invalid-feedback" id="b
+                                            <th>KATEGORI</th>abakError">Pilih babak pertandingan</div>
                                     </div>
                                     <div class="col-md-6 mb-3 d-flex align-items-end">
                                         <button type="submit" class="btn btn-info w-100">SUBMIT</button>
@@ -265,9 +266,6 @@
                                 <table class="table table-striped table-bordered bootstrap-datatable datatable">
                                     <thead>
                                         <tr>
-                                            <th>NO</th>
-                                            <th>TANGGAL</th>
-                                            <th>GEL.</th>
                                             <th>PARTAI</th>
                                             <th>BABAK</th>
                                             <th>KELOMPOK</th>
@@ -285,10 +283,7 @@
                                                 $no++;
                                         ?>
                                                 <tr>
-                                                    <td class="text-light"><?php echo $no; ?></td>
-                                                    <td class="text-light text-uppercase"><?php echo date('d/m/Y', strtotime($jadwal['tgl'])); ?></td>
-                                                    <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['gelanggang']); ?></td>
-                                                    <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['partai']); ?></td>
+                                                    <td class="text-light text-uppercase text-center"><?php echo htmlspecialchars($jadwal['partai']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['babak']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['kelas']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['nm_biru']) . " - " . htmlspecialchars($jadwal['kontingen_biru']); ?></td>
