@@ -288,7 +288,7 @@
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['nm_biru']) . " - " . htmlspecialchars($jadwal['kontingen_biru']); ?></td>
                                                     <td class="text-light text-uppercase"><?php echo htmlspecialchars($jadwal['nm_merah']) . " - " . htmlspecialchars($jadwal['kontingen_merah']); ?></td>
                                                     <td>
-                                                        <a class="btn btn-warning btn-sm" href="?page=edit_partai&id_partai=<?php echo $jadwal['id_partai']; ?>">
+                                                        <a class="btn btn-warning btn-sm" href="?page=edit_partai_tgr&id_partai=<?php echo $jadwal['id_partai']; ?>">
                                                             <i class="halflings-icon white pencil"></i> Edit
                                                         </a>
                                                         <a class="btn btn-danger btn-sm btn-delete"

@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Nebula Admin - Login</title>
+  <title>Admin - Login</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -234,11 +234,11 @@
         <div class="logo">
           <div class="logo-text">SKORDIGITAL</div>
         </div>
-        <div class="tagline">PENCAKSILAT KOTA DUMAI</div>
+        <div class="tagline">PENCAKSILAT</div>
       </div>
 
       <div class="card-body">
-        <h3 class="text-center mb-4" style="color: var(--text-light);">Login to Your Account</h3>
+        <!-- <h3 class="text-center mb-4" style="color: var(--text-light);">Login to Your Account</h3> -->
 
         <form id="loginForm">
           <div class="mb-4">
@@ -279,7 +279,7 @@
           </button>
 
           <div class="divider">
-            <span>SKORDIGITAL</span>
+            <span>@<?= date('Y') ?></span>
           </div>
         </form>
       </div>
