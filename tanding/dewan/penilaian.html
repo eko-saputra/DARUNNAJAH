@@ -9,7 +9,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png" />
   <link rel="stylesheet prefetch" href="../../assets/bootstrap/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     /* Mencegah zoom otomatis di fullscreen */
@@ -1105,7 +1104,7 @@
   <!-- SEMUA SCRIPT FUNGSIONAL -->
   <script type="text/javascript" src="../../assets/jquery/jquery.min.js"></script>
   <script type="text/javascript" src="../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
+  <script src="../../assets/sweatalert/sweatlalert.js"></script>
   <script>
     // PERBAIKAN FUNGSI BABAK UI
     function babakUI(babak) {
@@ -1319,6 +1318,21 @@
       const nilaiakhirbiru = $("#nilai_akhir_biru").text();
       const nilaiakhirmerah = $("#nilai_akhir_merah").text();
 
+      // Dapatkan nama pemenang
+      let namaPemenang = "";
+      let warnaPemenang = "";
+      let skorPemenang = "";
+
+      if (sudut === "biru") {
+        namaPemenang = $(".nm_biru").text();
+        warnaPemenang = "#4dabff";
+        skorPemenang = nilaiakhirbiru;
+      } else {
+        namaPemenang = $(".nm_merah").text();
+        warnaPemenang = "#ff6b6b";
+        skorPemenang = nilaiakhirmerah;
+      }
+
       ws.send(JSON.stringify({
         type: "winner",
         sudut,
@@ -1334,6 +1348,20 @@
       }));
       $("#pemenangModal").modal("hide");
       $(".button_nilai, .hapus-skor").prop("disabled", true);
+
+      // Tampilkan SweetAlert
+      Swal.fire({
+        title: `${sudut.toUpperCase()} MENANG!`,
+        text: `${namaPemenang} - ${skorPemenang} poin`,
+        icon: 'success',
+        background: '#1a1a2e',
+        color: '#fff',
+        showConfirmButton: false,
+        confirmButtonColor: sudut === "biru" ? "#4dabff" : "#ff6b6b",
+        // confirmButtonText: 'OK',
+        timer: 2000,
+        timerProgressBar: true
+      });
     }
 
     function putusanDewan(sudut) {
