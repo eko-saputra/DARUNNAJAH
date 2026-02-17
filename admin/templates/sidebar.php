@@ -41,13 +41,26 @@
         <span class="menu-icon">
           <i class="mdi mdi-laptop"></i>
         </span>
-        <span class="menu-title">Jadwal Partai</span>
+        <span class="menu-title">Partai Tanding</span>
         <i class="menu-arrow"></i>
       </a>
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="?page=tambah_jadwal">Tambah Jadwal</a></li>
-          <!-- <li class="nav-item"> <a class="nav-link" href="?page=cetak_jadwal">Cetak Jadwal</a></li> -->
+          <li class="nav-item"> <a class="nav-link" href="?page=tambah_jadwal_tanding">Tambah Jadwal Tanding</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item menu-items">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic1" aria-expanded="false" aria-controls="ui-basic1">
+        <span class="menu-icon">
+          <i class="mdi mdi-laptop"></i>
+        </span>
+        <span class="menu-title">Partai TGR</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-basic1">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="?page=tambah_jadwal_tgr">Tambah Jadwal TGR</a></li>
         </ul>
       </div>
     </li>
