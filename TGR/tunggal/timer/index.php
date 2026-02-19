@@ -483,7 +483,6 @@
                             <i class="fas fa-keyboard me-2"></i>
                             Shortcut: <kbd>Space</kbd> (Start/Pause/Resume) |
                             <kbd>S</kbd> (Stop) |
-                            <kbd>R</kbd> (Reset) |
                             <kbd>F</kbd> (Fullscreen)
                         </small>
                     </div>

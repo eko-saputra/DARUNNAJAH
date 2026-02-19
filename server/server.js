@@ -639,6 +639,7 @@ ORDER BY peserta.nm_lengkap ASC;
                   broadcast({
                     type: "response",
                     message: 'selesai',
+                    pemenang: payload.sudut,
                   });
 
                   console.log(currentPartai.bbk);

@@ -10,7 +10,7 @@ $jadwal = mysqli_fetch_array($jadwal_tanding);
 
 // Cek status pertandingan dan pemenang
 $status_pertandingan = $jadwal['status'] ?? 'belum';
-$pemenang = $jadwal['pemenang'] ?? ''; // 'biru', 'merah', atau ''
+$pemenang = $jadwal['pemenang'] ?? ''; // TIDAK DIGUNAKAN LAGI - Pemenang dari server WebSocket
 
 // Ambil partai sebelumnya
 $sql_prev = "SELECT id_partai FROM jadwal_tanding WHERE id_partai < '$id_partai' ORDER BY id_partai DESC LIMIT 1";
@@ -969,8 +969,10 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
     let serverSelesai = false;
     let currentPartai = <?= $id_partai ?>;
     let totalPartai = <?= $total_partai ?>;
-    let pemenang = '<?= $pemenang ?>'; // 'biru', 'merah', atau ''
-    console.log('Initial pemenang from server:', pemenang);
+
+    // Pemenang dari server WebSocket (TIDAK dari database)
+    let pemenang = '<?= $pemenang ?>'; // 'biru', 'merah', atau '' (dari server WebSocket)
+    console.log('Initial pemenang (from WebSocket only):', pemenang);
 
     // Data partai
     let partaiData = {
@@ -1017,17 +1019,19 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
           updateConnectionStatus(true);
           reconnectAttempts = 0;
 
+          $('#tukarPartaiBtn').prop('disabled', false);
+
           // Kirim data awal
           sendInitialData();
 
-          // Tampilkan pemenang dari database
+          // Pemenang awal kosong (dari server WebSocket)
           updatePemenangDisplay();
         };
 
         ws.onmessage = (e) => {
           try {
             const msg = JSON.parse(e.data);
-            console.log('Received:', msg.type);
+            console.log('Received:', msg.type, msg);
 
             if (typeof msg.remaining === 'number') {
               remaining = msg.remaining;
@@ -1084,8 +1088,17 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
                 break;
               case 'response':
                 if (msg.message === 'selesai') {
-                  console.log('Server mengirim: partai selesai');
+                  console.log('Server mengirim: partai selesai dengan pemenang:', msg.pemenang);
                   serverSelesai = true;
+
+                  // Set pemenang dari server WebSocket
+                  if (msg.pemenang) {
+                    pemenang = msg.pemenang; // 'biru' atau 'merah'
+                    updatePemenangDisplay();
+                  }
+
+                  $('#tukarPartaiBtn').prop('disabled', false);
+
                   showServerNotification('Partai Selesai', 'Pertandingan telah dinyatakan selesai oleh server');
                   showServerStatus('Partai Selesai (Server)');
                   $('#timerCard').addClass('server-selesai');
@@ -1098,10 +1111,19 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
                   updateDBStatusDisplay();
                   console.log('DB Status updated:', msg.status);
                 }
+                // KOMENTAR: Jangan update pemenang dari database
+                // if (msg.pemenang) {
+                //   pemenang = msg.pemenang;
+                //   updatePemenangDisplay();
+                //   console.log('Pemenang updated from DB:', msg.pemenang);
+                // }
+                break;
+              case 'winner_update':
+                // Tambahan: menerima update pemenang langsung dari server
                 if (msg.pemenang) {
+                  console.log('Winner update from server:', msg.pemenang);
                   pemenang = msg.pemenang;
                   updatePemenangDisplay();
-                  console.log('Pemenang updated:', msg.pemenang);
                 }
                 break;
             }
@@ -1160,7 +1182,7 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
       }
     }
 
-    // Fungsi untuk update tampilan pemenang
+    // Fungsi untuk update tampilan pemenang (HANYA dari server WebSocket)
     function updatePemenangDisplay() {
       // Hapus semua class winner terlebih dahulu
       $('#playerBlueCard, #playerRedCard').removeClass('winner');
@@ -1169,11 +1191,11 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
       if (pemenang === 'biru') {
         $('#playerBlueCard').addClass('winner');
         $('#blueWinnerIcon').show();
-        console.log('Menampilkan pemenang: BIRU');
+        console.log('Menampilkan pemenang dari server: BIRU');
       } else if (pemenang === 'merah') {
         $('#playerRedCard').addClass('winner');
         $('#redWinnerIcon').show();
-        console.log('Menampilkan pemenang: MERAH');
+        console.log('Menampilkan pemenang dari server: MERAH');
       }
     }
 
@@ -1195,7 +1217,7 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
       const jumlahBabak = parseInt(localStorage.getItem('jumlahBabak')) || 3;
       renderBabakButtons(jumlahBabak);
       updateDBStatusDisplay();
-      updatePemenangDisplay(); // Tampilkan pemenang dari database
+      updatePemenangDisplay(); // Tampilkan pemenang (awalnya kosong)
       updateTukarPartaiButton(isTimerRunning); // Set initial state tukar partai
     });
 
@@ -1232,7 +1254,6 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
                         </div>
                     </div>
                 `;
-        $('#tukarPartaiBtn').prop('disabled', true);
       } else if (statusDB === 'proses') {
         bannerHtml = `
                     <div class="status-banner" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
@@ -1248,7 +1269,6 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
                         </div>
                     </div>
                 `;
-        $('#tukarPartaiBtn').prop('disabled', isTimerRunning);
       } else {
         bannerHtml = '';
         $('#tukarPartaiBtn').prop('disabled', isTimerRunning);

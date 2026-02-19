@@ -461,7 +461,6 @@
             <div class="mt-4 text-secondary small">
               <kbd>Space</kbd> Start/Pause/Resume ·
               <kbd>S</kbd> Stop ·
-              <kbd>R</kbd> Reset Waktu ·
               <kbd>F</kbd> Fullscreen
             </div>
           </div>
@@ -498,6 +497,10 @@
     let lastValidTime = '2:00';
     let initialTime = 120; // Menyimpan waktu awal dari input
 
+    // Flag untuk mencegah multiple update babak
+    let isUpdatingBabak = false;
+    let lastBabakUpdate = 0;
+
     // WebSocket
     ws.onopen = () => {
       console.log("Timer Connected");
@@ -513,36 +516,63 @@
         updateDisplay();
       }
 
-      if (data.type === 'tick') {
-        timerState = 'active';
-        updateButtons('active');
-        updateStatus('active');
-      } else if (data.type === 'stopped') {
-        timerState = 'stopped';
-        updateButtons('stopped');
-        updateStatus('stopped');
+      switch (data.type) {
+        case 'tick':
+          timerState = 'active';
+          updateButtons('active');
+          updateStatus('active');
+          break;
+        case 'stopped':
+          timerState = 'stopped';
+          updateButtons('stopped');
+          updateStatus('stopped');
+          resetToInitialTime();
+          break;
+        case 'paused':
+          timerState = 'paused';
+          updateButtons('paused');
+          updateStatus('paused');
+          break;
+        case 'resumed':
+          timerState = 'active';
+          updateButtons('active');
+          updateStatus('active');
+          break;
+        case 'ended':
+          timerState = 'stopped';
+          updateButtons('stopped');
+          updateStatus('stopped');
+          playNotification();
+          resetToInitialTime();
+          handleRoundEnd();
+          break;
+        case 'set_round':
+          // Update babak hanya jika berbeda dan tidak dalam proses update
+          const newBabak = parseInt(data.round);
+          const now = Date.now();
 
-        // KEMBALIKAN KE WAKTU AWAL DARI INPUT
-        resetToInitialTime();
+          // Cegah update terlalu sering (debounce)
+          if (newBabak && newBabak !== currentRound && !isUpdatingBabak && (now - lastBabakUpdate > 500)) {
+            isUpdatingBabak = true;
+            lastBabakUpdate = now;
 
-      } else if (data.type === 'paused') {
-        timerState = 'paused';
-        updateButtons('paused');
-        updateStatus('paused');
-      } else if (data.type === 'resumed') {
-        timerState = 'active';
-        updateButtons('active');
-        updateStatus('active');
-      } else if (data.type === 'ended') {
-        timerState = 'stopped';
-        updateButtons('stopped');
-        updateStatus('stopped');
-        playNotification();
+            console.log('Setting babak from server:', newBabak);
+            setRound(newBabak, false); // false = jangan kirim ke server lagi
 
-        // KEMBALIKAN KE WAKTU AWAL DARI INPUT
-        resetToInitialTime();
-
-        handleRoundEnd();
+            setTimeout(() => {
+              isUpdatingBabak = false;
+            }, 500);
+          }
+          break;
+        case 'set_jumlah_babak':
+          maxBabak = parseInt(data.jumlah);
+          localStorage.setItem('jumlahBabak', maxBabak);
+          renderBabakButtons(maxBabak);
+          $('#total-babak').text(maxBabak);
+          break;
+        case 'reset_complete':
+          console.log('Reset completed');
+          break;
       }
     };
 
@@ -836,7 +866,7 @@
       babakContainer.empty();
       for (let i = 1; i <= total; i++) {
         const btn = $(`<button class="babak-btn" id="babak${i}" disabled>Babak ${i}</button>`);
-        btn.on('click', () => setRound(i));
+        btn.on('click', () => setRound(i, true));
         babakContainer.append(btn);
       }
 
@@ -846,7 +876,7 @@
         currentRound = savedRound;
         btnStart.prop('disabled', false);
       } else {
-        setRound(1);
+        setRound(1, true);
       }
 
       toggleBabakMode();
@@ -871,14 +901,17 @@
       $(`#babak${round}`).addClass('active');
     }
 
-    function setRound(round) {
+    function setRound(round, sendToServer = true) {
+      // Cegah set round jika round sama dengan currentRound
+      if (currentRound === round) return;
+
       currentRound = round;
       highlightActiveRound(round);
       btnStart.prop('disabled', false);
       localStorage.setItem('babak', round);
       toggleBabakMode();
 
-      if (ws.readyState === WebSocket.OPEN) {
+      if (sendToServer && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
           type: 'set_round',
           round
@@ -905,33 +938,61 @@
         }
         btnStart.prop('disabled', false);
       } else {
+        // Babak terakhir selesai
         $(`#babak${maxBabak}`).removeClass('active').addClass('completed');
-        btnStart.hide().off('click');
-        btnStart
-          .removeClass('btn-start btn-success')
-          .addClass('btn-secondary')
-          .html('<i class="fas fa-redo me-2"></i>Reset')
-          .show()
-          .prop('disabled', false)
-          .on('click', resetBabak);
+
+        // Hapus interval jika ada (untuk berjaga-jaga)
+        if (window.roundEndInterval) {
+          clearInterval(window.roundEndInterval);
+        }
+
+        // Ubah tombol Start menjadi Reset
+        setRound(1, true); // Reset ke babak 1 tanpa kirim ke server
         btnStop.hide();
+
+        // Nonaktifkan pemilihan babak
+        $('.babak-btn').prop('disabled', true);
       }
     }
 
     function resetBabak() {
       localStorage.removeItem('babak');
+      localStorage.removeItem('finishedRounds');
+
+      // Hapus interval jika ada
+      if (window.roundEndInterval) {
+        clearInterval(window.roundEndInterval);
+      }
+
+      // Reset currentRound
       currentRound = null;
+
+      // Render ulang tombol babak
       renderBabakButtons(maxBabak);
+
+      // Kembalikan tombol Start ke fungsi semula
       btnStart
+        .off('click') // Hapus event listener Reset
         .removeClass('btn-secondary')
         .addClass('btn-start btn-success')
         .html('<i class="fas fa-play me-2"></i>Start')
         .prop('disabled', true)
-        .on('click', startTimer);
-      setRound(1);
+        .show();
+
+      btnStop.show();
+
+      // Set babak 1 sebagai aktif
+      setRound(1, true);
 
       // Reset waktu ke input
       resetToInitialTime();
+
+      // Kirim reset ke WebSocket
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'reset_all'
+        }));
+      }
     }
 
     function startTimer() {
