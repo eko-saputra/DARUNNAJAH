@@ -280,8 +280,9 @@ $partaiselesai = mysqli_fetch_array($sqlpartaiselesai);
     </div>
 
     <script>
+        const hostname = window.location.hostname;
         function keluar() {
-            window.location.href = "http://localhost/DARUNNAJAH/TGR/tunggal/operator";
+            window.location.href = "http://" + hostname + "/DARUNNAJAH/TGR/tunggal/operator";
         }
 
         $(document).ready(function() {
@@ -309,11 +310,11 @@ $partaiselesai = mysqli_fetch_array($sqlpartaiselesai);
             $('.nama').text(localStorage.getItem('nama_operator'));
             if (localStorage.getItem('is_login') < 1) {
                 localStorage.clear();
-                window.location.href = "http://localhost/DARUNNAJAH/TGR/tunggal/operator";
+                window.location.href = "http://" + hostname + "/DARUNNAJAH/TGR/tunggal/operator";
             }
         });
 
-        const ws = new WebSocket('ws://localhost:3000');
+        const ws = new WebSocket('ws://' + hostname + ':3000');
 
         ws.onopen = () => {
             console.log("Server terhubung.");

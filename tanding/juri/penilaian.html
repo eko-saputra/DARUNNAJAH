@@ -236,13 +236,14 @@
 
   <script>
     // =====================[ KONSTANTA & VARIABEL GLOBAL ]=====================
-    const baseUrl = "http://localhost/skordigital";
+    const hostname = window.location.hostname;
+    const baseUrl = "http://" + hostname + "/skordigital";
     const url_api = `${baseUrl}/backend/api/api_juri.php`;
     const url_juri = `${baseUrl}/juri`;
 
     if (localStorage.getItem("is_login") < 1) {
       localStorage.clear();
-      document.location.href = "http://localhost/skordigital/juri";
+      document.location.href = "http://" + hostname + "/skordigital/juri";
     }
 
     const id_juri = localStorage.getItem("juri");
@@ -253,7 +254,7 @@
 
     let autoCloseTimeout = null;
 
-    const ws = new WebSocket("ws://localhost:3000");
+    const ws = new WebSocket("ws://" + hostname + ":3000");
 
     function updateVerification(pilihan, warnaClass) {
       const statusEl = document.getElementById("verifikasi-status");

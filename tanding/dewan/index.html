@@ -57,7 +57,10 @@
   <script type="text/javascript" src="../../assets/jquery/index.js"></script>
   <script type="text/javascript" src="../../assets/jquery/jquery.min.js"></script>
   <script type="text/javascript">
-    var url_api = "http://localhost/DARUNNAJAH/api/api.php";
+    const currentURL = window.location.href;
+    const hostname = window.location.hostname;
+
+    var url_api = "http://" + hostname + "/DARUNNAJAH/api/api.php";
 
     $(function () {
       // Simple animation for login form

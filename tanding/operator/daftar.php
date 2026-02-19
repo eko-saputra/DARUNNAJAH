@@ -236,8 +236,9 @@ $jadwal_tanding = mysqli_query($koneksi, $sqljadwal);
             loadJadwal();
             loadJadwalFinal();
 
+            const hostname = window.location.hostname;
             // Koneksi WebSocket
-            const ws = new WebSocket('ws://localhost:3000');
+            const ws = new WebSocket('ws://' + hostname + ':3000');
             ws.onopen = () => console.log("Server WebSocket terhubung.");
             ws.onerror = err => console.error("WebSocket error:", err);
             ws.onclose = () => alert("Koneksi WebSocket terputus.");

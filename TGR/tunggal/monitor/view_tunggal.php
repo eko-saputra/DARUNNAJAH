@@ -929,7 +929,8 @@
         }
 
         // WebSocket
-        const ws = new WebSocket('ws://localhost:3000');
+        const hostname = window.location.hostname;
+        const ws = new WebSocket('ws://' + hostname + ':3000');
 
         $(document).ready(function() {
             // Load semua data yang tersimpan

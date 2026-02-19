@@ -869,7 +869,8 @@
 
   <script>
     // ======== KONSTANTA & VAR GLOBAL ========
-    const baseUrl = "http://192.168.30.2/DARUNNAJAH";
+    const hostname = window.location.hostname;
+    const baseUrl = "http://" + hostname + "/DARUNNAJAH";
     let ws;
     let currentPartaiData = null;
     let lastResultData = null;
@@ -884,7 +885,7 @@
 
       if (localStorage.getItem('is_login') < 1) {
         localStorage.clear();
-        document.location.href = "http://192.168.30.2/DARUNNAJAH/TGR/tunggal/dewan";
+        document.location.href = "http://" + hostname + "/DARUNNAJAH/TGR/tunggal/dewan";
         return;
       }
 
@@ -894,7 +895,7 @@
     }
 
     function initWebSocket() {
-      ws = new WebSocket('ws://192.168.30.2:3000');
+      ws = new WebSocket('ws://' + hostname + ':3000');
 
       ws.onopen = function () {
         console.log('✅ WebSocket connected to server');

@@ -1106,6 +1106,7 @@
   <script type="text/javascript" src="../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../assets/sweatalert/sweatlalert.js"></script>
   <script>
+    const hostname = window.location.hostname;
     // PERBAIKAN FUNGSI BABAK UI
     function babakUI(babak) {
       // Hapus class active dari semua tombol babak
@@ -1255,12 +1256,12 @@
 
     $(".keluar").on("click", function () {
       localStorage.clear();
-      document.location.href = "http://localhost/DARUNNAJAH/tanding/dewan";
+      document.location.href = "http://" + hostname + "/DARUNNAJAH/tanding/dewan";
     });
 
     if (localStorage.getItem("is_login") < 1) {
       localStorage.clear();
-      document.location.href = "http://localhost/DARUNNAJAH/tanding/dewan";
+      document.location.href = "http://" + hostname + "/DARUNNAJAH/tanding/dewan";
     }
 
     const elem = document.documentElement;
@@ -1307,7 +1308,7 @@
       }
     }
 
-    const ws = new WebSocket("ws://localhost:3000");
+    const ws = new WebSocket("ws://" + hostname + ":3000");
 
     function set_winner(sudut) {
       // const konfirmasi = confirm(`Apakah kamu yakin sudut ${sudut.toUpperCase()} menang?`);

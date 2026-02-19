@@ -699,7 +699,9 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 					verifikasi.hide();
 					diskualifikasi.hide();
 					winner.hide();
-					const socket = new WebSocket("ws://localhost:3000");
+
+					const hostname = window.location.hostname;
+					const socket = new WebSocket("ws://" + hostname + ":3000");
 
 					let LastcombinedData = null;
 

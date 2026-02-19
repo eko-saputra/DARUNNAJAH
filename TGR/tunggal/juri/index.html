@@ -63,8 +63,8 @@
     var user_db = window.localStorage.getItem("user_db");
     var password_db = window.localStorage.getItem("password_db");
     var db = window.localStorage.getItem("db");
-
-    var url_api = "http://localhost/DARUNNAJAH/api/api.php";
+    const hostname = window.location.hostname;
+    var url_api = "http://" + hostname + "/DARUNNAJAH/api/api.php";
 
     $(function () {
       // Simple animation for login form

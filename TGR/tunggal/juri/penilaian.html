@@ -305,8 +305,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
+    const hostname = window.location.hostname;
     // ======== KONSTANTA & VAR GLOBAL ========
-    const baseUrl = "http://localhost/DARUNNAJAH";
+    const baseUrl = "http://" + hostname + "/DARUNNAJAH";
 
     // ======= STATE =======
     let wrongCount = 0;
@@ -329,7 +330,7 @@
       if (localStorage.getItem('is_login') < 1) {
         console.log('❌ Tidak login, redirect ke halaman login');
         localStorage.clear();
-        document.location.href = "http://localhost/DARUNNAJAH/TGR/tunggal/juri";
+        document.location.href = "http://" + hostname + "/DARUNNAJAH/TGR/tunggal/juri";
         return false;
       }
 
@@ -635,7 +636,7 @@
     let ws;
 
     function initWebSocket() {
-      ws = new WebSocket('ws://localhost:3000');
+      ws = new WebSocket('ws://' + hostname + ':3000');
 
       ws.onopen = function () {
         console.log('✅ WebSocket connected to server');

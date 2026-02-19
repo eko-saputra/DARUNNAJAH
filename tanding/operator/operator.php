@@ -2,18 +2,35 @@
 include "../../backend/includes/connection.php";
 
 $id_partai = isset($_GET["id_partai"]) ? mysqli_real_escape_string($koneksi, $_GET["id_partai"]) : '';
-$babak = isset($_GET['babak']) ? $_GET['babak'] : '';
 
-// if ($babak == 'SEMIFINAL') {
+// Ambil partai saat ini
 $sqljadwal = "SELECT * FROM jadwal_tanding WHERE id_partai='$id_partai'";
-// } else if ($babak == 'FINAL') {
-// $sqljadwal = "SELECT * FROM jadwal_tanding WHERE id_partai='$id_partai' AND babak='FINAL'";
-// } else {
-//   die("Ada kesalahan: babak tidak valid");
-// }
-
 $jadwal_tanding = mysqli_query($koneksi, $sqljadwal);
 $jadwal = mysqli_fetch_array($jadwal_tanding);
+
+// Cek status pertandingan dan pemenang
+$status_pertandingan = $jadwal['status'] ?? 'belum';
+$pemenang = $jadwal['pemenang'] ?? ''; // 'biru', 'merah', atau ''
+
+// Ambil partai sebelumnya
+$sql_prev = "SELECT id_partai FROM jadwal_tanding WHERE id_partai < '$id_partai' ORDER BY id_partai DESC LIMIT 1";
+$result_prev = mysqli_query($koneksi, $sql_prev);
+$prev_partai = mysqli_fetch_assoc($result_prev);
+
+// Ambil partai berikutnya
+$sql_next = "SELECT id_partai FROM jadwal_tanding WHERE id_partai > '$id_partai' ORDER BY id_partai ASC LIMIT 1";
+$result_next = mysqli_query($koneksi, $sql_next);
+$next_partai = mysqli_fetch_assoc($result_next);
+
+// Hitung total partai
+$sql_total = "SELECT COUNT(*) as total FROM jadwal_tanding";
+$result_total = mysqli_query($koneksi, $sql_total);
+$total_partai = mysqli_fetch_assoc($result_total)['total'];
+
+// Hitung partai selesai
+$sql_selesai = "SELECT COUNT(*) as selesai FROM jadwal_tanding WHERE status = 'selesai'";
+$result_selesai = mysqli_query($koneksi, $sql_selesai);
+$selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -21,382 +38,1495 @@ $jadwal = mysqli_fetch_array($jadwal_tanding);
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Operator Pertandingan - Partai</title>
+  <title>Operator Pertandingan - TANDING</title>
   <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png" />
   <link href="../../assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    #babak-bar button[aria-selected="true"] {
-      font-weight: bold;
+    body {
+      background: #0a0e17;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .main-card {
+      background: linear-gradient(145deg, #1e2532 0%, #141b26 100%);
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.05);
+      padding: 2.5rem;
+      max-width: 1200px;
+      width: 100%;
+      border: 1px solid rgba(0, 180, 255, 0.15);
+    }
+
+    /* Status Selesai Banner */
+    .status-banner {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 60px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+      animation: slideDown 0.5s ease;
+    }
+
+    .status-banner.selesai {
+      background: linear-gradient(135deg, #b91c1c, #dc2626);
+      box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .banner-icon {
+      font-size: 2rem;
+      margin-right: 15px;
+    }
+
+    .banner-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .banner-subtext {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    /* Notifikasi Partai Selesai dari Server */
+    .server-notification {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: slideInRight 0.5s ease, pulse-notif 2s infinite;
+      border-left: 5px solid #fbbf24;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(50px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse-notif {
+      0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .notif-icon {
+      font-size: 2.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notif-content {
+      flex: 1;
+    }
+
+    .notif-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .notif-message {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .notif-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .notif-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    /* Header Styles */
+    .header-title {
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin: 0;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.8rem;
+    }
+
+    .fullscreen-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: scale(1.05);
+    }
+
+    /* Connection Status */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 20px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .connection-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .connection-indicator.connected {
+      background-color: #10b981;
+      box-shadow: 0 0 20px #10b981;
+      animation: pulse-green 2s infinite;
+    }
+
+    .connection-indicator.disconnected {
+      background-color: #ef4444;
+      box-shadow: 0 0 20px #ef4444;
+    }
+
+    @keyframes pulse-green {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.6;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .connection-text {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .connection-text.connected {
+      color: #10b981;
+    }
+
+    .connection-text.disconnected {
+      color: #ef4444;
+    }
+
+    /* Info Cards */
+    .info-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      border-radius: 24px;
+      padding: 1.2rem;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card.selesai {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .info-card:hover {
+      border-color: #38bdf8;
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+    }
+
+    .info-label {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      color: #e2e8f0;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .status-badge-db {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-badge-db.belum {
+      background: rgba(148, 163, 184, 0.2);
+      color: #94a3b8;
+      border: 1px solid #94a3b8;
+    }
+
+    .status-badge-db.proses {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid #f59e0b;
+      animation: blink 1.5s infinite;
+    }
+
+    .status-badge-db.selesai {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid #10b981;
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* Player Cards dengan Pemenang */
+    .player-card {
+      border-radius: 30px;
+      padding: 2rem 1.5rem;
+      transition: all 0.3s ease;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .player-card.blue {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(59, 130, 246, 0.2));
+      border: 2px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .player-card.red {
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(239, 68, 68, 0.2));
+      border: 2px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .player-card.winner {
+      position: relative;
+      border-width: 4px;
+      animation: winner-pulse 2s infinite;
+    }
+
+    .player-card.blue.winner {
+      border-color: #10b981;
+      box-shadow: 0 0 50px rgba(16, 185, 129, 0.5);
+    }
+
+    .player-card.red.winner {
+      border-color: #10b981;
+      box-shadow: 0 0 50px rgba(16, 185, 129, 0.5);
+    }
+
+    .player-card.winner::before {
+      content: "👑 PEMENANG";
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #000;
+      padding: 5px 25px;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      box-shadow: 0 5px 20px rgba(251, 191, 36, 0.5);
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    @keyframes winner-pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .player-name {
+      font-size: 2.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .player-card.blue .player-name {
+      color: #60a5fa;
+      text-shadow: 0 2px 20px rgba(96, 165, 250, 0.5);
+    }
+
+    .player-card.red .player-name {
+      color: #f87171;
+      text-shadow: 0 2px 20px rgba(248, 113, 113, 0.5);
+    }
+
+    .player-kontingen {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 0;
+    }
+
+    .winner-icon {
+      font-size: 3rem;
+      margin-top: 10px;
+      animation: winner-icon-spin 2s infinite;
+    }
+
+    @keyframes winner-icon-spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      25% {
+        transform: rotate(10deg);
+      }
+
+      75% {
+        transform: rotate(-10deg);
+      }
+
+      100% {
+        transform: rotate(0deg);
+      }
+    }
+
+    /* Babak Bar */
+    .babak-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .babak-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 3px solid rgba(56, 189, 248, 0.3);
+      background: rgba(0, 0, 0, 0.3);
+      color: #94a3b8;
+      font-size: 1.8rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .babak-btn:hover:not(:disabled) {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+    }
+
+    .babak-btn.active {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      border-color: #fbbf24;
+      color: #000;
+      box-shadow: 0 0 40px rgba(251, 191, 36, 0.4);
+    }
+
+    .babak-btn.completed {
+      border-color: #10b981;
+      color: #10b981;
+      position: relative;
+    }
+
+    .babak-btn.completed::after {
+      content: "✓";
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #10b981;
+      color: white;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Timer Display */
+    .timer-card {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 30px;
+      padding: 1.5rem;
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      margin-top: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .timer-card.selesai {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      animation: glow-green 2s infinite;
+    }
+
+    .timer-card.server-selesai {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      animation: glow-yellow 2s infinite;
+    }
+
+    @keyframes glow-green {
+      0% {
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
+      }
+
+      100% {
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+      }
+    }
+
+    @keyframes glow-yellow {
+      0% {
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(251, 191, 36, 0.6);
+      }
+
+      100% {
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+      }
+    }
+
+    #waktu {
+      font-family: 'Courier New', monospace;
+      font-size: 5rem;
+      font-weight: 800;
+      color: #38bdf8;
+      text-shadow: 0 0 40px rgba(56, 189, 248, 0.5);
+      letter-spacing: 8px;
+    }
+
+    #waktu.warning {
+      color: #fbbf24;
+      text-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
+    }
+
+    #waktu.danger {
+      color: #f87171;
+      text-shadow: 0 0 40px rgba(248, 113, 113, 0.5);
+      animation: pulse 1s infinite;
+    }
+
+    #status {
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 8px 25px;
+      border-radius: 40px;
+      display: inline-block;
+    }
+
+    .status-berjalan {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid #10b981;
+    }
+
+    .status-jeda {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid #f59e0b;
+    }
+
+    .status-selesai {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid #ef4444;
+    }
+
+    .status-menunggu {
+      background: rgba(148, 163, 184, 0.2);
+      color: #94a3b8;
+      border: 1px solid #94a3b8;
+    }
+
+    /* Server Status Display */
+    .server-status {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 5px solid #38bdf8;
+    }
+
+    .server-status.selesai {
+      border-left-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .server-message {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .server-message i {
+      margin-right: 10px;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      color: #e2e8f0;
+      border-radius: 50px;
+      padding: 12px 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover:not(:disabled):not(.disabled) {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .action-btn:disabled,
+    .action-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Navigation Buttons */
+    .nav-btn {
+      background: rgba(56, 189, 248, 0.1);
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      color: #e2e8f0;
+      border-radius: 50px;
+      padding: 12px 30px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover:not(.disabled):not(.nav-disabled) {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: translateY(-2px);
+    }
+
+    .nav-btn.disabled,
+    .nav-btn.nav-disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+      background: rgba(100, 100, 100, 0.1);
+      border-color: rgba(150, 150, 150, 0.2);
+    }
+
+    /* Progress Bar */
+    .progress {
+      background: rgba(0, 0, 0, 0.3);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #38bdf8, #8b5cf6);
+      transition: width 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .main-card {
+        padding: 1.5rem;
+      }
+
+      .player-name {
+        font-size: 1.5rem;
+      }
+
+      #waktu {
+        font-size: 3rem;
+      }
+
+      .babak-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+
+      .status-banner {
+        flex-direction: column;
+        text-align: center;
+      }
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-dark d-flex align-items-center justify-content-center">
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <div class="main-card">
 
-  <div class="container-fluid bg-dark bg-gradient border-secondary rounded-5 p-5 m-5">
+          <!-- Notifikasi dari Server -->
+          <div id="serverNotification" class="server-notification" style="display: none;">
+            <div class="notif-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="notif-content">
+              <div class="notif-title">Pesan dari Server</div>
+              <div class="notif-message" id="serverMessage"></div>
+            </div>
+            <button class="notif-close" onclick="closeNotification()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="text-light text-uppercase">Operator PARTAI</h3>
-      <div>
-        <button id="openfull" onclick="openFullscreen();" class="btn btn-outline-secondary me-2" title="Fullscreen">
-          <svg width="24" height="24" viewBox="0 0 24 24">
-            <path fill="#ffffff"
-              d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
-          </svg>
-        </button>
-        <button id="exitfull" onclick="closeFullscreen();" class="btn btn-outline-secondary d-none" title="Exit Fullscreen">
-          <svg width="24" height="24" viewBox="0 0 24 24">
-            <path fill="#ffffff"
-              d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
-          </svg>
-        </button>
-      </div>
-    </div>
+          <!-- Status Banner Container (akan diupdate realtime) -->
+          <div id="statusBannerContainer"></div>
 
-    <!-- Kategori, Gelanggang, Partai -->
-    <div class="mb-4 shadow-sm border-0 rounded">
-      <div class="card-body text-light d-flex flex-wrap justify-content-between text-center gap-3">
-        <div class="border border-2 border-light rounded p-3 flex-fill" style="min-width:150px;">
-          <small class="text-light text-uppercase">Kategori Pertandingan</small>
-          <div class="fs-5 fw-bold text-uppercase"><?= htmlspecialchars($jadwal['kelas'] ?? '-') ?> / <?= htmlspecialchars($jadwal['babak'] ?? '-') ?></div>
-        </div>
-        <div class="border border-2 border-light rounded p-3 flex-fill" style="min-width:150px;">
-          <small class="text-light text-uppercase">Gelanggang</small>
-          <div class="fs-5 fw-bold text-uppercase"><?= htmlspecialchars($jadwal['gelanggang'] ?? '') ?></div>
-        </div>
-        <div class="border border-2 border-light rounded p-3 flex-fill" style="min-width:150px;">
-          <small class="text-light text-uppercase">Partai</small>
-          <div class="fs-5 fw-bold text-uppercase"><?= htmlspecialchars($jadwal['partai'] ?? '') ?></div>
-        </div>
-      </div>
-    </div>
+          <!-- Header with Connection Status -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center gap-3">
+              <h1 class="header-title">
+                <i class="fas fa-ring me-3 text-primary"></i>
+                Operator TANDING
+              </h1>
+              <div class="connection-status" id="connectionStatus">
+                <span id="connectionIndicator" class="connection-indicator disconnected"></span>
+                <span id="connectionText" class="connection-text disconnected">Server: Disconnected</span>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button id="openfull" onclick="openFullscreen();" class="fullscreen-btn" title="Fullscreen">
+                <i class="fas fa-expand fa-lg"></i>
+              </button>
+              <button id="exitfull" onclick="closeFullscreen();" class="fullscreen-btn" style="display: none;" title="Exit Fullscreen">
+                <i class="fas fa-compress fa-lg"></i>
+              </button>
+            </div>
+          </div>
 
-    <!-- Buttons -->
-    <div class="mb-4 d-flex flex-wrap gap-2">
-      <button class="btn btn-light flex-grow-1 flex-md-grow-0 tukarpartai">Tukar Partai</button>
-      <button class="btn btn-light flex-grow-1 flex-md-grow-0" id="refreshBtn">Refresh Partai Juri</button>
-      <a href="../monitor/view_tanding.php" target="_blank" class="btn btn-light flex-grow-1 flex-md-grow-0">Layar Monitor</a>
-    </div>
+          <!-- Info Cards Container (akan diupdate realtime) -->
+          <div class="row g-3 mb-4" id="infoCardsContainer"></div>
 
-    <!-- Peserta dan Babak -->
-    <div class="row">
-      <div class="col-4 bg-primary bg-gradient text-white rounded p-3 flex-fill text-center" id="player-blue">
-        <h1 class="text-uppercase"><?= htmlspecialchars($jadwal['nm_biru'] ?? '-') ?></h1>
-        <h6 class="text-uppercase"><?= htmlspecialchars($jadwal['kontingen_biru'] ?? '-') ?></h6>
-      </div>
+          <!-- Action Buttons -->
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <button class="action-btn tukarpartai" id="tukarPartaiBtn">
+              <i class="fas fa-exchange-alt me-2"></i>Tukar Partai
+            </button>
+            <button class="action-btn" id="refreshBtn">
+              <i class="fas fa-sync-alt me-2"></i>Refresh Juri
+            </button>
+            <a href="../monitor/view_tanding.php" target="_blank" class="action-btn">
+              <i class="fas fa-tv me-2"></i>Layar Monitor
+            </a>
+          </div>
 
-      <!-- Babak vertical bar -->
-      <div class="col-2">
-        <div id="babak-bar" class="d-flex flex-column gap-3 align-items-center" style="min-width: 60px;"></div>
-      </div>
+          <!-- Players and Babak -->
+          <div class="row g-4">
+            <!-- Blue Player -->
+            <div class="col-md-5">
+              <div class="player-card blue text-center" id="playerBlueCard">
+                <div class="mb-3">
+                  <span class="badge bg-primary bg-gradient px-4 py-2 fs-6">BIRU</span>
+                </div>
+                <h2 class="player-name">
+                  <?= htmlspecialchars($jadwal['nm_biru'] ?? '-') ?>
+                </h2>
+                <p class="player-kontingen">
+                  <i class="fas fa-flag me-2"></i>
+                  <?= htmlspecialchars($jadwal['kontingen_biru'] ?? '-') ?>
+                </p>
+                <div id="blueWinnerIcon" class="winner-icon" style="display: none;">
+                  <i class="fas fa-crown text-warning"></i>
+                </div>
+              </div>
+            </div>
 
-      <div class="col-4 bg-danger bg-gradient text-white rounded p-3 flex-fill text-center" id="player-red">
-        <h1 class="text-uppercase"><?= htmlspecialchars($jadwal['nm_merah'] ?? '-') ?></h1>
-        <h6 class="text-uppercase"><?= htmlspecialchars($jadwal['kontingen_merah'] ?? '-') ?></h6>
-      </div>
-    </div>
+            <!-- Babak Bar -->
+            <div class="col-md-2 d-flex align-items-center justify-content-center">
+              <div id="babak-bar" class="babak-bar"></div>
+            </div>
 
-    <!-- Timer & Status -->
-    <div class="card shadow-sm mt-4 p-4 text-center bg-dark text-success">
-      <div id="waktu" class="display-1 fw-bold">00:00</div>
-      <div id="status" class="fs-5 mt-2 text-muted">Menunggu...</div>
-    </div>
-    <div class="container my-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <?php
-        // Asumsikan Anda punya fungsi untuk mendapatkan jumlah partai terakhir
-        // $totalPartai = getTotalPartai(); // Fungsi ini harus Anda buat
+            <!-- Red Player -->
+            <div class="col-md-5">
+              <div class="player-card red text-center" id="playerRedCard">
+                <div class="mb-3">
+                  <span class="badge bg-danger bg-gradient px-4 py-2 fs-6">MERAH</span>
+                </div>
+                <h2 class="player-name">
+                  <?= htmlspecialchars($jadwal['nm_merah'] ?? '-') ?>
+                </h2>
+                <p class="player-kontingen">
+                  <i class="fas fa-flag me-2"></i>
+                  <?= htmlspecialchars($jadwal['kontingen_merah'] ?? '-') ?>
+                </p>
+                <div id="redWinnerIcon" class="winner-icon" style="display: none;">
+                  <i class="fas fa-crown text-warning"></i>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        // Jika tidak ada data, kita bisa cek dari database
-        // Contoh dengan query langsung:
-        include '../../backend/includes/connection.php';
-        $query = "SELECT MAX(id_partai) as max_id FROM jadwal_tanding WHERE babak = 'SEMIFINAL'";
-        $result = mysqli_query($koneksi, $query);
-        $row = mysqli_fetch_assoc($result);
-        $maxId = $row['max_id'] ?? 0;
+          <!-- Timer & Status -->
+          <div class="timer-card" id="timerCard">
+            <div class="row align-items-center">
+              <div class="col-md-6 text-center">
+                <div id="waktu" class="display-1 fw-bold">00:00</div>
+                <div id="dbStatusMessage" class="mt-2"></div>
+              </div>
+              <div class="col-md-6 text-center">
+                <div id="status" class="status-menunggu">
+                  <i class="fas fa-hourglass-half me-2"></i>Menunggu...
+                </div>
+                <div class="mt-2 text-secondary">
+                  Babak <span id="current-babak">1</span>/<span id="total-babak">3</span>
+                </div>
 
-        $query_proses = "SELECT COUNT(id_partai) as jum_proses FROM jadwal_tanding WHERE status = 'proses'";
-        $result_proses = mysqli_query($koneksi, $query_proses);
-        $row_proses = mysqli_fetch_assoc($result_proses);
+                <!-- Server Status Message -->
+                <div id="serverStatusMessage" class="server-status" style="display: none;">
+                  <div class="server-message">
+                    <i class="fas fa-check-circle text-success"></i>
+                    <span id="serverStatusText"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        $query_selesai = "SELECT COUNT(id_partai) as jum_selesai FROM jadwal_tanding WHERE status = 'selesai'";
-        $result_selesai = mysqli_query($koneksi, $query_selesai);
-        $row_selesai = mysqli_fetch_assoc($result_selesai);
+          <!-- Navigation & Progress -->
+          <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <!-- Tombol Previous -->
+              <?php if ($prev_partai): ?>
+                <a href="?id_partai=<?= $prev_partai['id_partai'] ?>" class="nav-btn" id="tombol_previous">
+                  <i class="fas fa-chevron-left"></i> Previous
+                </a>
+              <?php else: ?>
+                <span class="nav-btn disabled" id="tombol_previous_disabled">
+                  <i class="fas fa-chevron-left"></i> Previous
+                </span>
+              <?php endif; ?>
 
-        $cek = "SELECT babak FROM jadwal_tanding WHERE id_partai = '$_GET[id_partai] + 1'";
-        $result_cek = mysqli_query($koneksi, $cek);
-        $row_cek = mysqli_fetch_assoc($result_cek);
+              <div class="text-center">
+                <span class="badge bg-secondary p-3" id="partaiInfo">
+                  Partai <?= $id_partai ?> dari <?= $total_partai ?>
+                  <span class="text-light mx-2">|</span>
+                  Selesai: <span id="selesaiCount"><?= $selesai ?></span>
+                </span>
+              </div>
 
-        $currentId = $_GET['id_partai'] ?? 0;
-        // $babak = $_GET['babak'] ?? 'SEMIFINAL';
-        // $babak = $row_cek['babak'];
-        ?>
+              <!-- Tombol Next -->
+              <?php if ($next_partai): ?>
+                <a href="?id_partai=<?= $next_partai['id_partai'] ?>" class="nav-btn" id="tombol_next">
+                  Next <i class="fas fa-chevron-right"></i>
+                </a>
+              <?php else: ?>
+                <span class="nav-btn disabled" id="tombol_next_disabled">
+                  Next <i class="fas fa-chevron-right"></i>
+                </span>
+              <?php endif; ?>
+            </div>
 
-        <!-- Tombol Previous -->
-        <a href="?id_partai=<?= max(0, $currentId - 1); ?>"
-          class="btn btn-outline-primary <?= ($currentId <= 1) ? 'disabled' : ''; ?>"
-          id="tombol_previous">
-          <i class="fas fa-chevron-left me-2"></i> Previous
-        </a>
-        <!-- Indicator -->
-        <div class="text-center">
-          <span class="badge bg-secondary p-2">
-            <b id="stat"></b>
-            <span class="text-light mx-2">|</span>
-            Partai Selesai <?= ($row_selesai['jum_selesai'] ? $row_selesai['jum_selesai'] : 0); ?>
-          </span>
-        </div>
+            <!-- Progress Bar -->
+            <div class="progress">
+              <div class="progress-bar"
+                id="progressBar"
+                role="progressbar"
+                style="width: <?= ($total_partai > 0) ? ($id_partai / $total_partai * 100) : 0; ?>%;">
+              </div>
+            </div>
+          </div>
 
-        <!-- Tombol Next -->
-        <a href="?id_partai=<?= $_GET['id_partai'] + 1; ?>"
-          class="btn btn-outline-primary" id="tombol_next">
-          Next <i class="fas fa-chevron-right ms-2"></i>
-        </a>
-      </div>
-
-      <!-- Progress Bar -->
-      <div class="progress mt-3" style="height: 8px;">
-        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
-          role="progressbar"
-          style="width: <?=
-                        // Jika hanya ada 1 partai, progress 100%
-                        (($maxId + 1) <= 1) ? 100 :
-                          // Rumus yang benar: (posisi saat ini) / (total partai) * 100
-                          (($currentId) / ($maxId)) * 100;
-                        ?>%;"
-          aria-valuenow="<?= $currentId + 1; ?>"
-          aria-valuemin="1"
-          aria-valuemax="<?= $maxId + 1; ?>">
         </div>
       </div>
     </div>
   </div>
 
-
   <script src="../../assets/jquery/jquery.min.js"></script>
   <script src="../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const ws = new WebSocket('ws://localhost:3000');
+    const hostname = window.location.hostname;
+    let ws;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 10;
+    let reconnectTimeout;
+
     let currentBabak = parseInt(localStorage.getItem('babak')) || 1;
     let remaining = 0;
-    let status = '';
-    let isTimerRunning = false; // Status timer berjalan
+    let status = 'Menunggu...';
+    let isTimerRunning = false;
+    let statusDB = '<?= $status_pertandingan ?>';
+    let serverSelesai = false;
+    let currentPartai = <?= $id_partai ?>;
+    let totalPartai = <?= $total_partai ?>;
+    let pemenang = '<?= $pemenang ?>'; // 'biru', 'merah', atau ''
+    console.log('Initial pemenang from server:', pemenang);
 
-    function updateStatus() {
-      $('#status').text(status).removeClass('text-success text-warning text-danger text-muted').addClass(
-        status === 'Berjalan' ? 'text-success' :
-        status === 'Jeda' ? 'text-warning' :
-        status === 'Selesai' ? 'text-danger' : 'text-muted'
-      );
+    // Data partai
+    let partaiData = {
+      id: <?= $id_partai ?>,
+      kelas: '<?= htmlspecialchars($jadwal['kelas'] ?? '-') ?>',
+      gelanggang: '<?= htmlspecialchars($jadwal['gelanggang'] ?? '-') ?>',
+      partai: '<?= htmlspecialchars($jadwal['partai'] ?? '-') ?>',
+      babak: '<?= htmlspecialchars($jadwal['babak'] ?? '-') ?>',
+      nm_biru: '<?= htmlspecialchars($jadwal['nm_biru'] ?? '-') ?>',
+      kontingen_biru: '<?= htmlspecialchars($jadwal['kontingen_biru'] ?? '-') ?>',
+      nm_merah: '<?= htmlspecialchars($jadwal['nm_merah'] ?? '-') ?>',
+      kontingen_merah: '<?= htmlspecialchars($jadwal['kontingen_merah'] ?? '-') ?>'
+    };
 
-      // Kontrol tombol berdasarkan status
-      if (status === 'Berjalan') {
-        disableNavigationButtons(true);
-        isTimerRunning = true;
-      } else if (status === 'Selesai') {
-        disableNavigationButtons(false);
-        isTimerRunning = false;
-      } else if (status === 'Jeda') {
-        disableNavigationButtons(false);
-        isTimerRunning = false;
+    function connectWebSocket() {
+      // Clear existing timeout
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+
+      // Determine WebSocket URL
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      let wsUrl;
+
+      // Try multiple possible URLs
+      const possibleUrls = [
+        `${protocol}//${hostname}:3000`,
+        `${protocol}//localhost:3000`,
+        `${protocol}//127.0.0.1:3000`,
+        `ws://${hostname}:3000`,
+        `ws://localhost:3000`,
+        `ws://127.0.0.1:3000`
+      ];
+
+      // Use the first one that works (we'll try in order)
+      wsUrl = possibleUrls[0];
+      console.log('Attempting to connect to WebSocket at:', wsUrl);
+
+      try {
+        ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+          console.log('✅ Connected to server at', wsUrl);
+          updateConnectionStatus(true);
+          reconnectAttempts = 0;
+
+          // Kirim data awal
+          sendInitialData();
+
+          // Tampilkan pemenang dari database
+          updatePemenangDisplay();
+        };
+
+        ws.onmessage = (e) => {
+          try {
+            const msg = JSON.parse(e.data);
+            console.log('Received:', msg.type);
+
+            if (typeof msg.remaining === 'number') {
+              remaining = msg.remaining;
+              updateTimerDisplay();
+            }
+
+            switch (msg.type) {
+              case 'tick':
+              case 'started':
+                status = 'Berjalan';
+                isTimerRunning = true;
+                updateNavigationButtons(true);
+                updateTukarPartaiButton(true); // Disable tukar partai
+                break;
+              case 'resumed':
+                status = 'Berjalan';
+                isTimerRunning = true;
+                updateNavigationButtons(true);
+                updateTukarPartaiButton(true); // Disable tukar partai
+                break;
+              case 'paused':
+                status = 'Jeda';
+                isTimerRunning = false;
+                updateNavigationButtons(false);
+                updateTukarPartaiButton(false); // Enable tukar partai
+                break;
+              case 'stopped':
+                status = 'Selesai';
+                isTimerRunning = false;
+                remaining = 0;
+                updateNavigationButtons(false);
+                updateTukarPartaiButton(false); // Enable tukar partai
+                break;
+              case 'ended':
+                status = 'Selesai';
+                isTimerRunning = false;
+                updateNavigationButtons(false);
+                updateTukarPartaiButton(false); // Enable tukar partai
+                break;
+              case 'set_round':
+                currentBabak = parseInt(msg.round);
+                localStorage.setItem('babak', currentBabak);
+                setBabakUI(currentBabak);
+                $('#current-babak').text(currentBabak);
+                break;
+              case 'set_jumlah_babak':
+                localStorage.setItem('jumlahBabak', msg.jumlah);
+                renderBabakButtons(msg.jumlah);
+                $('#total-babak').text(msg.jumlah);
+                break;
+              case 'babak_data':
+                setBabakUI(msg.round);
+                $('#current-babak').text(msg.round);
+                break;
+              case 'response':
+                if (msg.message === 'selesai') {
+                  console.log('Server mengirim: partai selesai');
+                  serverSelesai = true;
+                  showServerNotification('Partai Selesai', 'Pertandingan telah dinyatakan selesai oleh server');
+                  showServerStatus('Partai Selesai (Server)');
+                  $('#timerCard').addClass('server-selesai');
+                  updateStatus();
+                }
+                break;
+              case 'db_status_update':
+                if (msg.status) {
+                  statusDB = msg.status;
+                  updateDBStatusDisplay();
+                  console.log('DB Status updated:', msg.status);
+                }
+                if (msg.pemenang) {
+                  pemenang = msg.pemenang;
+                  updatePemenangDisplay();
+                  console.log('Pemenang updated:', msg.pemenang);
+                }
+                break;
+            }
+
+            updateStatus();
+            updateTimerDisplay();
+          } catch (error) {
+            console.log('Error parsing message:', error);
+          }
+        };
+
+        ws.onclose = (event) => {
+          console.log('❌ WebSocket disconnected. Code:', event.code, 'Reason:', event.reason);
+          updateConnectionStatus(false);
+
+          // Exponential backoff for reconnection
+          const timeout = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+          reconnectAttempts++;
+
+          if (reconnectAttempts <= maxReconnectAttempts) {
+            console.log(`Attempting to reconnect in ${timeout / 1000}s... (attempt ${reconnectAttempts}/${maxReconnectAttempts})`);
+            reconnectTimeout = setTimeout(connectWebSocket, timeout);
+          } else {
+            console.log('Max reconnection attempts reached. Please refresh the page.');
+            showServerNotification('Koneksi Gagal', 'Tidak dapat terhubung ke server. Silakan refresh halaman.');
+          }
+        };
+
+        ws.onerror = (error) => {
+          console.log('❌ WebSocket error:', error);
+          updateConnectionStatus(false);
+
+          // Try next URL if this one failed
+          if (reconnectAttempts === 0) {
+            // Try next URL in the list
+            const nextUrl = possibleUrls[1];
+            if (nextUrl) {
+              console.log('Trying next URL:', nextUrl);
+              wsUrl = nextUrl;
+            }
+          }
+        };
+      } catch (e) {
+        console.log('❌ WebSocket connection error:', e);
+        updateConnectionStatus(false);
       }
     }
 
-    function disableNavigationButtons(disable) {
-      if (disable) {
-        $('#tombol_previous').addClass('disabled btn-disabled');
-        $('#tombol_next').addClass('disabled btn-disabled');
+    function sendInitialData() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'request_status',
+          id_partai: currentPartai
+        }));
+        refreshpartai();
+      }
+    }
 
-        // Juga nonaktifkan secara HTML
-        $('#tombol_previous').attr('aria-disabled', 'true');
-        $('#tombol_next').attr('aria-disabled', 'true');
+    // Fungsi untuk update tampilan pemenang
+    function updatePemenangDisplay() {
+      // Hapus semua class winner terlebih dahulu
+      $('#playerBlueCard, #playerRedCard').removeClass('winner');
+      $('#blueWinnerIcon, #redWinnerIcon').hide();
+
+      if (pemenang === 'biru') {
+        $('#playerBlueCard').addClass('winner');
+        $('#blueWinnerIcon').show();
+        console.log('Menampilkan pemenang: BIRU');
+      } else if (pemenang === 'merah') {
+        $('#playerRedCard').addClass('winner');
+        $('#redWinnerIcon').show();
+        console.log('Menampilkan pemenang: MERAH');
+      }
+    }
+
+    // Fungsi untuk mengupdate status tombol tukar partai
+    function updateTukarPartaiButton(disable) {
+      const tukarBtn = $('#tukarPartaiBtn');
+      if (disable || statusDB === 'selesai' || serverSelesai) {
+        tukarBtn.prop('disabled', true).addClass('disabled');
       } else {
-        // Hapus disabled hanya jika bukan karena partai pertama/terakhir
-        const currentId = <?= $currentId ?>;
-        const maxId = <?= $maxId ?>;
+        tukarBtn.prop('disabled', false).removeClass('disabled');
+      }
+    }
 
-        // Previous button
-        if (currentId > 1) {
-          $('#tombol_previous').removeClass('disabled btn-disabled');
-          $('#tombol_previous').attr('aria-disabled', 'false');
+    // Initialize WebSocket
+    $(document).ready(function() {
+      connectWebSocket();
+
+      // Initial render
+      const jumlahBabak = parseInt(localStorage.getItem('jumlahBabak')) || 3;
+      renderBabakButtons(jumlahBabak);
+      updateDBStatusDisplay();
+      updatePemenangDisplay(); // Tampilkan pemenang dari database
+      updateTukarPartaiButton(isTimerRunning); // Set initial state tukar partai
+    });
+
+    function updateConnectionStatus(connected) {
+      const indicator = document.getElementById('connectionIndicator');
+      const text = document.getElementById('connectionText');
+
+      if (connected) {
+        indicator.className = 'connection-indicator connected';
+        text.className = 'connection-text connected';
+        text.innerHTML = 'Server: Connected';
+      } else {
+        indicator.className = 'connection-indicator disconnected';
+        text.className = 'connection-text disconnected';
+        text.innerHTML = 'Server: Disconnected';
+      }
+    }
+
+    function updateDBStatusDisplay() {
+      // Update banner
+      let bannerHtml = '';
+      if (statusDB === 'selesai') {
+        bannerHtml = `
+                    <div class="status-banner selesai">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle banner-icon"></i>
+                            <div>
+                                <div class="banner-text">Pertandingan Selesai</div>
+                                <div class="banner-subtext">Partai ini telah dinyatakan selesai di database</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <i class="fas fa-flag-checkered fa-2x"></i>
+                        </div>
+                    </div>
+                `;
+        $('#tukarPartaiBtn').prop('disabled', true);
+      } else if (statusDB === 'proses') {
+        bannerHtml = `
+                    <div class="status-banner" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-play-circle banner-icon"></i>
+                            <div>
+                                <div class="banner-text">Pertandingan Sedang Berlangsung</div>
+                                <div class="banner-subtext">Partai sedang dalam proses</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                        </div>
+                    </div>
+                `;
+        $('#tukarPartaiBtn').prop('disabled', isTimerRunning);
+      } else {
+        bannerHtml = '';
+        $('#tukarPartaiBtn').prop('disabled', isTimerRunning);
+      }
+      $('#statusBannerContainer').html(bannerHtml);
+
+      // Update info cards
+      let infoCardsHtml = `
+                <div class="col-md-3">
+                    <div class="info-card ${statusDB === 'selesai' ? 'selesai' : ''}">
+                        <div class="info-label">
+                            <i class="fas fa-tag me-2"></i>Kelas
+                        </div>
+                        <div class="info-value">
+                            ${partaiData.kelas}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card ${statusDB === 'selesai' ? 'selesai' : ''}">
+                        <div class="info-label">
+                            <i class="fas fa-ring me-2"></i>Gelanggang
+                        </div>
+                        <div class="info-value">
+                            ${partaiData.gelanggang}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card ${statusDB === 'selesai' ? 'selesai' : ''}">
+                        <div class="info-label">
+                            <i class="fas fa-flag-checkered me-2"></i>Partai
+                        </div>
+                        <div class="info-value">
+                            ${partaiData.partai}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-card ${statusDB === 'selesai' ? 'selesai' : ''}">
+                        <div class="info-label">
+                            <i class="fas fa-clock me-2"></i>Status Partai
+                        </div>
+                        <div class="info-value status-partai">
+                        </div>
+                    </div>
+                </div>
+            `;
+      $('#infoCardsContainer').html(infoCardsHtml);
+
+      // Update player cards
+      if (statusDB === 'selesai') {
+        $('#timerCard').addClass('selesai');
+        $('#dbStatusMessage').html('<div class="text-success"><i class="fas fa-check-circle me-1"></i> Database: Pertandingan selesai</div>');
+      } else {
+        $('#timerCard').removeClass('selesai');
+        $('#dbStatusMessage').html('');
+      }
+    }
+
+    function updateNavigationButtons(disable) {
+      const prevBtn = $('#tombol_previous');
+      const nextBtn = $('#tombol_next');
+
+      if (disable) {
+        prevBtn.addClass('nav-disabled').css('pointer-events', 'none').attr('tabindex', '-1');
+        nextBtn.addClass('nav-disabled').css('pointer-events', 'none').attr('tabindex', '-1');
+      } else {
+        if (currentPartai > 1) {
+          prevBtn.removeClass('nav-disabled').css('pointer-events', 'auto').attr('tabindex', '0');
         }
-
-        // Next button
-        if (currentId < maxId) {
-          $('#tombol_next').removeClass('disabled btn-disabled');
-          $('#tombol_next').attr('aria-disabled', 'false');
+        if (currentPartai < totalPartai) {
+          nextBtn.removeClass('nav-disabled').css('pointer-events', 'auto').attr('tabindex', '0');
         }
       }
+    }
+
+    function showServerNotification(title, message) {
+      $('#serverMessage').text(message);
+      $('#serverNotification').fadeIn(300);
+
+      setTimeout(function() {
+        $('#serverNotification').fadeOut(300);
+      }, 5000);
+    }
+
+    function closeNotification() {
+      $('#serverNotification').fadeOut(300);
+    }
+
+    function showServerStatus(message) {
+      $('#serverStatusText').text(message);
+      $('#serverStatusMessage').fadeIn(300).addClass('selesai');
     }
 
     function renderBabakButtons(jumlah) {
       const bar = $('#babak-bar');
       bar.empty();
+      $('#total-babak').text(jumlah);
+
       for (let i = jumlah; i >= 1; i--) {
-        const btn = $(`<button class="btn btn-light rounded-3 py-2 w-100" data-babak="${i}">${i}</button>`);
-        btn.on('click keypress', function(e) {
-          if (e.type === 'click' || (e.type === 'keypress' && (e.key === 'Enter' || e.key === ' '))) {
-            setBabakUI(i);
-            localStorage.setItem('babak', i);
-            sendBabakToServer(i);
-          }
+        const btn = $(`<button class="babak-btn" data-babak="${i}">${i}</button>`);
+        btn.on('click', function() {
+          setBabakUI(i);
+          localStorage.setItem('babak', i);
+          sendBabakToServer(i);
         });
         bar.append(btn);
       }
+
+      const finishedRounds = JSON.parse(localStorage.getItem('finishedRounds') || '[]');
+      finishedRounds.forEach(round => {
+        $(`[data-babak="${round}"]`).addClass('completed');
+      });
+
       setBabakUI(currentBabak > jumlah ? 1 : currentBabak);
+      $('#current-babak').text(currentBabak);
     }
 
     function setBabakUI(babak) {
       currentBabak = babak;
-      $('#babak-bar button').each(function() {
+      $('.babak-btn').each(function() {
         const btn = $(this);
         if (parseInt(btn.data('babak')) === babak) {
-          btn.removeClass('btn-light').addClass('btn-warning text-dark').attr({
-            'aria-selected': 'true',
-            tabindex: 0
-          });
+          btn.removeClass('btn-light').addClass('active');
         } else {
-          btn.removeClass('btn-warning text-dark').addClass('btn-light').attr({
-            'aria-selected': 'false',
-            tabindex: -1
-          });
+          btn.removeClass('active');
         }
       });
+      $('#current-babak').text(babak);
     }
 
     function sendBabakToServer(babak) {
-      ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify({
-        type: 'set_round',
-        round: babak,
-        partai: "<?= htmlspecialchars($id_partai) ?>"
-      }));
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'set_round',
+          round: babak,
+          partai: "<?= htmlspecialchars($id_partai) ?>"
+        }));
+      }
     }
 
     function updateTimerDisplay() {
-      const m = Math.floor(remaining / 60),
-        s = remaining % 60;
-      $('#waktu').text(`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`);
+      const m = Math.floor(remaining / 60);
+      const s = remaining % 60;
+      const timeStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      $('#waktu').text(timeStr);
+
+      $('#waktu').removeClass('warning danger');
+      if (remaining <= 10) {
+        $('#waktu').addClass('danger');
+      } else if (remaining <= 30) {
+        $('#waktu').addClass('warning');
+      }
     }
 
     function updateStatus() {
-      $('#status').text(status).removeClass('text-success text-warning text-danger text-muted').addClass(
-        status === 'Berjalan' ? 'text-success' : status === 'Jeda' ? 'text-warning' : status === 'Selesai' ? 'text-danger' : 'text-muted'
-      );
+      const statusEl = $('#status');
+      const statusP = $('.status-partai');
+      statusEl.removeClass('status-berjalan status-jeda status-selesai status-menunggu');
+
+      if (serverSelesai) {
+        statusEl.addClass('status-selesai');
+        statusEl.html('<i class="fas fa-check-circle me-2"></i>Selesai (Server)');
+        statusP.text('Selesai');
+      } else if (statusDB === 'selesai') {
+        statusEl.addClass('status-selesai');
+        statusEl.html('<i class="fas fa-check-circle me-2"></i>Selesai (DB)');
+        statusP.text('Selesai');
+      } else if (status === 'Berjalan') {
+        statusEl.addClass('status-berjalan');
+        statusEl.html('<i class="fas fa-play-circle me-2"></i>Berjalan');
+        statusP.text('Sedang Berjalan');
+      } else if (status === 'Jeda') {
+        statusEl.addClass('status-jeda');
+        statusEl.html('<i class="fas fa-pause-circle me-2"></i>Jeda');
+        statusP.text('Sedang Berjalan');
+      } else if (status === 'Selesai') {
+        statusEl.addClass('status-selesai');
+        statusEl.html('<i class="fas fa-stop-circle me-2"></i>Selesai');
+        statusP.text('Selesai');
+      } else {
+        statusEl.addClass('status-menunggu');
+        statusEl.html('<i class="fas fa-hourglass-half me-2"></i>Menunggu...');
+        statusP.text('Belum Dimulai');
+      }
     }
 
     function refreshpartai() {
-      const data = <?= json_encode([
-                      'type' => 'set_partai',
-                      'partai' => $jadwal['partai'],
-                      'gelanggang' => $jadwal['gelanggang'],
-                      'babak' => $currentBabak ?? 1,
-                      'bbk' => $jadwal['babak'] ?? '',
-                      'st' => $jadwal['status_babak'] ?? '',
-                      'kelas' => $jadwal['kelas'] ?? '',
-                      'biru' => [
-                        'nama' => $jadwal['nm_biru'] ?? '',
-                        'kontingen' => $jadwal['kontingen_biru'] ?? ''
-                      ],
-                      'merah' => [
-                        'nama' => $jadwal['nm_merah'] ?? '',
-                        'kontingen' => $jadwal['kontingen_merah'] ?? ''
-                      ]
-                    ], JSON_UNESCAPED_UNICODE) ?>;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        const data = {
+          type: 'set_partai',
+          partai: partaiData.partai,
+          gelanggang: partaiData.gelanggang,
+          babak: currentBabak,
+          bbk: partaiData.babak,
+          st: statusDB,
+          kelas: partaiData.kelas,
+          biru: {
+            nama: partaiData.nm_biru,
+            kontingen: partaiData.kontingen_biru
+          },
+          merah: {
+            nama: partaiData.nm_merah,
+            kontingen: partaiData.kontingen_merah
+          }
+        };
 
-      ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(data));
-      sendBabakToServer(currentBabak);
+        ws.send(JSON.stringify(data));
+        sendBabakToServer(currentBabak);
+      }
     }
 
+    // Event Listeners
     $('.tukarpartai').on('click', function() {
       localStorage.setItem('babak', 0);
-      ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify({
-        type: 'tukar_partai'
-      }));
       localStorage.removeItem('finishedRounds');
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'tukar_partai'
+        }));
+      }
+
       document.location.href = "daftar.php?status=";
     });
 
     $('#refreshBtn').on('click', refreshpartai);
 
-    ws.onopen = () => {
-      console.log('Connected');
-      renderBabakButtons(parseInt(localStorage.getItem('jumlahBabak')) || 3);
-      console.log('Babak', currentBabak);
-      sendBabakToServer(currentBabak);
-      refreshpartai();
-
-      $('#stat').html('Partai <?= $_GET['id_partai'] ?>');
-    };
-
-    ws.onmessage = (e) => {
-      const msg = JSON.parse(e.data);
-      if (typeof msg.remaining === 'number') remaining = msg.remaining;
-      switch (msg.type) {
-        case 'tick':
-        case 'started':
-          ws.send(JSON.stringify({
-            type: "set_status",
-            partai: <?= $_GET['id_partai'] ?>,
-          }));
-          break;
-        case 'resumed':
-          status = 'Berjalan';
-          isTimerRunning = true;
-          disableNavigationButtons(true);
-          break;
-        case 'paused':
-          status = 'Jeda';
-          break;
-        case 'ended':
-          $('.tukarpartai').prop('disabled', false);
-          if (localStorage.getItem('babak') == 3) {
-            isTimerRunning = false;
-            disableNavigationButtons(false);
-          }
-          break;
-        case 'stopped':
-          status = 'Selesai';
-          remaining = 0;
-          $('#stat').html('Partai <?= $_GET['id_partai'] ?> selesai');
-          break;
-        case 'set_round':
-          localStorage.setItem('babak', parseInt(msg.round));
-          break;
-        case 'set_jumlah_babak':
-          localStorage.setItem('jumlahBabak', msg.jumlah);
-          renderBabakButtons(msg.jumlah);
-          break;
-        case 'babak_data':
-          setBabakUI(msg.round);
-          break;
-        case 'response':
-          localStorage.setItem('status', msg.message)
-          $('#stat').html('Partai <?= $_GET['id_partai'] ?> ' + msg.message);
-          break;
-      }
-      updateTimerDisplay();
-      updateStatus();
-    };
-
+    // Fullscreen functions
     function openFullscreen() {
       const elem = document.documentElement;
       if (elem.requestFullscreen) elem.requestFullscreen();
       else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
       else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-      $('#openfull').addClass('d-none');
-      $('#exitfull').removeClass('d-none');
+      $('#openfull').hide();
+      $('#exitfull').show();
     }
 
     function closeFullscreen() {
       if (document.exitFullscreen) document.exitFullscreen();
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       else if (document.msExitFullscreen) document.msExitFullscreen();
-      $('#exitfull').addClass('d-none');
-      $('#openfull').removeClass('d-none');
+      $('#exitfull').hide();
+      $('#openfull').show();
     }
 
+    // Fullscreen change listener
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    function handleFullscreenChange() {
+      if (document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement) {
+        $('#openfull').hide();
+        $('#exitfull').show();
+      } else {
+        $('#openfull').show();
+        $('#exitfull').hide();
+      }
+    }
+
+    // Prevent text selection
     document.addEventListener('selectstart', e => e.preventDefault());
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+      if (ws) {
+        ws.close();
+      }
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+    });
   </script>
 </body>
 

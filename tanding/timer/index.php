@@ -4,131 +4,594 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Operator Pertandingan - Timer & Babak</title>
-  <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png">
-  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" /> -->
-
+  <title>Operator Timer & Babak</title>
+  <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png" />
   <link href="../../assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #0a0e17;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .timer-card {
+      background: linear-gradient(145deg, #1e2532 0%, #141b26 100%);
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.05);
+      padding: 2.5rem;
+      max-width: 900px;
+      width: 100%;
+      border: 1px solid rgba(0, 180, 255, 0.15);
+    }
+
+    .timer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .timer-header h3 {
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin: 0;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .fullscreen-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: scale(1.05);
+    }
+
+    .control-panel {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 28px;
+      padding: 1.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(5px);
+      margin-bottom: 2rem;
+    }
+
+    .form-label {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-select-custom,
+    .time-input-custom {
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      color: #e2e8f0;
+      border-radius: 20px;
+      padding: 14px 20px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .form-select-custom:focus,
+    .time-input-custom:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+      outline: none;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .time-input-custom {
+      font-family: 'Courier New', monospace;
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .timer-display {
+      font-family: 'Courier New', monospace;
+      font-size: 7rem;
+      font-weight: 800;
+      text-align: center;
+      color: #38bdf8;
+      text-shadow: 0 0 40px rgba(56, 189, 248, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 50px;
+      padding: 2rem 1rem;
+      margin: 1.5rem 0 2rem;
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      letter-spacing: 8px;
+    }
+
+    .timer-display.warning {
+      color: #fbbf24;
+      text-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    .timer-display.danger {
+      color: #f87171;
+      text-shadow: 0 0 40px rgba(248, 113, 113, 0.5);
+      border-color: rgba(248, 113, 113, 0.3);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .btn-timer {
+      border-radius: 40px;
+      font-weight: 700;
+      padding: 16px 36px;
+      font-size: 1.2rem;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-width: 150px;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-timer:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+    }
+
+    .btn-pause {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: white;
+    }
+
+    .btn-resume {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+    }
+
+    .btn-stop {
+      background: linear-gradient(135deg, #b91c1c, #dc2626);
+      color: white;
+    }
+
+    .babak-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin: 25px 0 20px;
+    }
+
+    .babak-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      color: #94a3b8;
+      border-radius: 60px;
+      padding: 14px 36px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      min-width: 130px;
+      cursor: pointer;
+    }
+
+    .babak-btn:hover:not(:disabled) {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .babak-btn.active {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      border-color: #fbbf24;
+      color: #000;
+      font-weight: 800;
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+    }
+
+    .babak-btn.completed {
+      border-color: #10b981;
+      color: #10b981;
+      position: relative;
+      padding-right: 50px;
+    }
+
+    .babak-btn.completed::after {
+      content: "✓";
+      position: absolute;
+      right: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .babak-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      border-radius: 30px;
+      transition: 0.3s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 2px;
+      background-color: #94a3b8;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    input:checked+.slider {
+      background-color: #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(28px);
+      background-color: white;
+    }
+
+    .status-badge {
+      padding: 8px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .status-active {
+      border: 1px solid #10b981;
+      color: #10b981;
+    }
+
+    .status-paused {
+      border: 1px solid #f59e0b;
+      color: #f59e0b;
+    }
+
+    .status-stopped {
+      border: 1px solid #ef4444;
+      color: #ef4444;
+    }
+
+    .preset-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .preset-btn {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: #94a3b8;
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .preset-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    @media (max-width: 768px) {
+      .timer-card {
+        padding: 1.5rem;
+      }
+
+      .timer-display {
+        font-size: 4rem;
+      }
+
+      .btn-timer {
+        padding: 12px 24px;
+        font-size: 1rem;
+        min-width: 120px;
+      }
+
+      .babak-btn {
+        padding: 10px 24px;
+        font-size: 1rem;
+        min-width: 100px;
+      }
+    }
+  </style>
 </head>
 
-<body class="bg-dark text-white d-flex align-items-center justify-content-center">
-  <div class="bg-dark bg-gradient text-white p-5 m-5 rounded-5">
-    <div class="d-flex justify-content-between align-items-start mb-4">
-      <h3 class="text-uppercase text-light mt-2">Operator TIMER</h3>
-      <div>
-        <button id="openfull" onclick="openFullscreen();" class="btn btn-outline-secondary me-2" title="Fullscreen">
-          <svg width="24" height="24" viewBox="0 0 24 24">
-            <path fill="#ffffff"
-              d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
-          </svg>
-        </button>
-        <button id="exitfull" onclick="closeFullscreen();" class="btn btn-outline-secondary d-none" title="Exit Fullscreen">
-          <svg width="24" height="24" viewBox="0 0 24 24">
-            <path fill="#ffffff"
-              d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
-          </svg>
-        </button>
-      </div>
-    </div>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="timer-card">
 
-    <div class="card-body">
-      <div class="row g-3 mb-4">
-        <div class="col-md-6">
-          <label for="jumlah-babak" class="form-label text-uppercase">Jumlah Babak</label>
-          <select class="form-select form-select-lg bg-secondary text-white border-0" id="jumlah-babak">
-            <option value="2">2</option>
-            <option value="3" selected>3</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="input-time" class="form-label text-uppercase">Waktu</label>
-          <style>
-            input[type="time"]::-webkit-datetime-edit-ampm-field {
-              display: none;
-            }
-          </style>
+          <!-- Header -->
+          <div class="timer-header">
+            <h3>⏱️ TIMER PERTANDINGAN</h3>
+            <div class="d-flex gap-2">
+              <button id="openfull" onclick="openFullscreen();" class="fullscreen-btn" title="Fullscreen">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                </svg>
+              </button>
+              <button id="exitfull" onclick="closeFullscreen();" class="fullscreen-btn" style="display: none;" title="Exit Fullscreen">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+                </svg>
+              </button>
+            </div>
+          </div>
 
-          <input type="time" class="form-control form-control-lg bg-secondary text-white border-0" id="input-time">
-        </div>
-      </div>
+          <!-- Control Panel -->
+          <div class="control-panel">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="form-label">📋 JUMLAH BABAK</div>
+                <select class="form-select-custom" id="jumlah-babak">
+                  <option value="1">1 Babak</option>
+                  <option value="2">2 Babak</option>
+                  <option value="3" selected>3 Babak</option>
+                  <option value="4">4 Babak</option>
+                  <option value="5">5 Babak</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <div class="form-label">⏱️ DURASI PER BABAK</div>
+                <input type="text"
+                  class="time-input-custom"
+                  id="manual-time"
+                  placeholder="2:00"
+                  value="2:00"
+                  oninput="validateManualTime(this)"
+                  onchange="updateTimerFromInput(this)"
+                  onblur="formatAndUpdateTime(this)"
+                  onkeyup="handleTimeKeyUp(event)">
+                <div class="preset-buttons">
+                  <button class="preset-btn" onclick="setTimePreset('1:00')">1:00</button>
+                  <button class="preset-btn" onclick="setTimePreset('1:30')">1:30</button>
+                  <button class="preset-btn" onclick="setTimePreset('2:00')">2:00</button>
+                  <button class="preset-btn" onclick="setTimePreset('3:00')">3:00</button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="text-center my-5">
-        <div id="waktu" class="display-3 fw-bold text-info">02:00</div>
-      </div>
+          <!-- Timer Display -->
+          <div id="timer" class="timer-display">02:00</div>
 
-      <div class="d-flex justify-content-center flex-wrap gap-3 mb-4">
-        <button id="btn-start" class="btn btn-success btn-lg px-4 rounded-pill" disabled>
-          <i class="fas fa-play me-2"></i>Start
-        </button>
-        <button id="btn-pause" class="btn btn-warning btn-lg px-4 rounded-pill d-none">
-          <i class="fas fa-pause me-2"></i>Pause
-        </button>
-        <button id="btn-resume" class="btn btn-info btn-lg px-4 rounded-pill d-none">
-          <i class="fas fa-play me-2"></i>Resume
-        </button>
-        <button id="btn-stop" class="btn btn-danger btn-lg px-4 rounded-pill d-none">
-          <i class="fas fa-stop me-2"></i>Stop
-        </button>
-      </div>
+          <!-- Timer Controls -->
+          <div class="d-flex justify-content-center flex-wrap gap-3 mb-4">
+            <button id="btn-start" class="btn-timer btn-start" onclick="startTimer()" disabled>
+              <i class="fas fa-play me-2"></i>Start
+            </button>
+            <button id="btn-pause" class="btn-timer btn-pause" onclick="pauseTimer()" style="display: none;">
+              <i class="fas fa-pause me-2"></i>Pause
+            </button>
+            <button id="btn-resume" class="btn-timer btn-resume" onclick="resumeTimer()" style="display: none;">
+              <i class="fas fa-play me-2"></i>Resume
+            </button>
+            <button id="btn-stop" class="btn-timer btn-stop" onclick="stopTimer()" style="display: none;">
+              <i class="fas fa-stop me-2"></i>Stop
+            </button>
+          </div>
 
-      <div class="text-center mb-3">
-        <h6 class="mb-3 text-uppercase">Pilih Babak</h6>
-        <div id="babak-container" class="d-flex justify-content-center"></div>
-      </div>
+          <!-- Babak Selection -->
+          <div class="text-center">
+            <div class="form-label mb-3">🎯 PILIH BABAK</div>
+            <div id="babak-container" class="babak-container"></div>
 
-      <div class="d-flex justify-content-center align-items-center mt-5">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="aktifkan-semua">
+            <!-- Footer -->
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
+              <div class="d-flex align-items-center gap-3">
+                <label class="switch">
+                  <input type="checkbox" id="aktifkan-semua">
+                  <span class="slider"></span>
+                </label>
+                <span class="text-light">Aktifkan Semua</span>
+              </div>
+              <div id="status-indicator" class="status-badge status-stopped">
+                <i class="fas fa-stop-circle me-2"></i>Stopped
+              </div>
+            </div>
+
+            <div class="mt-4 text-secondary small">
+              <kbd>Space</kbd> Start/Pause/Resume ·
+              <kbd>S</kbd> Stop ·
+              <kbd>R</kbd> Reset Waktu ·
+              <kbd>F</kbd> Fullscreen
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <script src="../../assets/jquery/jquery-3.6.0.min.js"></script>
   <script src="../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    const waktuElem = $('#waktu');
+    const timerDisplay = $('#timer');
     const btnStart = $('#btn-start');
     const btnPause = $('#btn-pause');
     const btnResume = $('#btn-resume');
     const btnStop = $('#btn-stop');
-    const inputTime = $('#input-time');
+    const manualTime = $('#manual-time');
     const jumlahBabak = $('#jumlah-babak');
     const aktifkanSemua = $('#aktifkan-semua');
     const babakContainer = $('#babak-container');
+    const statusIndicator = $('#status-indicator');
 
-    const ws = new WebSocket('ws://192.168.30.2:3000');
+    const hostname = window.location.hostname;
+    const ws = new WebSocket('ws://' + hostname + ':3000');
 
-    let remaining = (parseInt(localStorage.getItem('timer')) || 120); // Default 2 minutes
+    let remaining = 120;
     let currentRound = null;
-    console.log(currentRound);
-    let maxBabak = parseInt(jumlahBabak.val());
-    let lastState = 'stopped';
+    let maxBabak = 3;
+    let timerState = 'stopped';
+    let lastValidTime = '2:00';
+    let initialTime = 120; // Menyimpan waktu awal dari input
 
+    // WebSocket
+    ws.onopen = () => {
+      console.log("Timer Connected");
+      updateStatus('connected');
+      loadSavedData();
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (typeof data.remaining === 'number') {
+        remaining = data.remaining;
+        updateDisplay();
+      }
+
+      if (data.type === 'tick') {
+        timerState = 'active';
+        updateButtons('active');
+        updateStatus('active');
+      } else if (data.type === 'stopped') {
+        timerState = 'stopped';
+        updateButtons('stopped');
+        updateStatus('stopped');
+
+        // KEMBALIKAN KE WAKTU AWAL DARI INPUT
+        resetToInitialTime();
+
+      } else if (data.type === 'paused') {
+        timerState = 'paused';
+        updateButtons('paused');
+        updateStatus('paused');
+      } else if (data.type === 'resumed') {
+        timerState = 'active';
+        updateButtons('active');
+        updateStatus('active');
+      } else if (data.type === 'ended') {
+        timerState = 'stopped';
+        updateButtons('stopped');
+        updateStatus('stopped');
+        playNotification();
+
+        // KEMBALIKAN KE WAKTU AWAL DARI INPUT
+        resetToInitialTime();
+
+        handleRoundEnd();
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket Disconnected');
+      updateStatus('disconnected');
+    };
+
+    // Initialize
     $(document).ready(() => {
-      const savedWaktu = localStorage.getItem('waktu') || '02:00';
-      inputTime.val(savedWaktu);
-      setRemaining(false);
+      loadSavedData();
+      setupEventListeners();
+      renderBabakButtons(maxBabak);
+    });
+
+    function loadSavedData() {
+      const savedWaktu = localStorage.getItem('waktu') || '2:00';
+      manualTime.val(savedWaktu);
+      lastValidTime = savedWaktu;
+      initialTime = parseTimeToSeconds(savedWaktu);
+      remaining = initialTime;
+      updateDisplay();
 
       maxBabak = parseInt(localStorage.getItem('jumlahBabak')) || 3;
       jumlahBabak.val(maxBabak);
+    }
 
-      renderBabakButtons(maxBabak);
-      updateButtons('stopped');
+    function setupEventListeners() {
+      // Event listeners untuk manual time
+      manualTime.on('input', function() {
+        validateManualTime(this);
+      });
 
-      inputTime.on('change input', () => setRemaining());
+      manualTime.on('change', function() {
+        console.log('Change event triggered');
+        updateTimerFromInput(this);
+      });
 
-      jumlahBabak.on('change', () => {
+      manualTime.on('blur', function() {
+        console.log('Blur event triggered');
+        formatAndUpdateTime(this);
+      });
+
+      jumlahBabak.on('change', function() {
         maxBabak = parseInt(jumlahBabak.val());
         localStorage.setItem('jumlahBabak', maxBabak);
         renderBabakButtons(maxBabak);
         currentRound = null;
         btnStart.prop('disabled', true);
-
-        // Reset toggle
         aktifkanSemua.prop('checked', false);
         toggleBabakMode();
 
@@ -146,83 +609,274 @@
       btnPause.on('click', pauseTimer);
       btnResume.on('click', resumeTimer);
       btnStop.on('click', stopTimer);
-    });
+    }
+
+    // Fungsi untuk mereset ke waktu awal dari input
+    function resetToInitialTime() {
+      const timeValue = manualTime.val();
+      initialTime = parseTimeToSeconds(timeValue);
+      remaining = initialTime;
+      localStorage.setItem('timer', remaining);
+      updateDisplay();
+      console.log('Reset to initial time:', timeValue, '(', remaining, 'seconds)');
+    }
+
+    // Time Functions
+    function parseTimeToSeconds(timeString) {
+      if (!timeString) return 120;
+      timeString = timeString.trim();
+
+      // Format MM:SS atau M:SS
+      if (timeString.match(/^\d{1,2}:\d{2}$/)) {
+        const parts = timeString.split(':');
+        const minutes = parseInt(parts[0]) || 0;
+        const seconds = parseInt(parts[1]) || 0;
+
+        // Validasi detik tidak boleh lebih dari 59
+        if (seconds > 59) {
+          return (minutes * 60) + 59;
+        }
+
+        return (minutes * 60) + seconds;
+      }
+
+      // Format hanya angka (dianggap menit)
+      if (timeString.match(/^\d+$/)) {
+        return parseInt(timeString) * 60;
+      }
+
+      return 120;
+    }
+
+    function secondsToDisplayTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function validateManualTime(input) {
+      let value = input.value.replace(/[^0-9:]/g, '');
+
+      // Auto-format while typing
+      if (value.length === 2 && !value.includes(':')) {
+        value = value + ':';
+      }
+
+      // Prevent multiple colons
+      const colonCount = (value.match(/:/g) || []).length;
+      if (colonCount > 1) {
+        value = value.replace(/:/g, '');
+        if (value.length > 2) {
+          value = value.substring(0, 2) + ':' + value.substring(2, 4);
+        }
+      }
+
+      // Limit length
+      if (value.length > 5) {
+        value = value.substring(0, 5);
+      }
+
+      input.value = value;
+    }
+
+    function handleTimeKeyUp(event) {
+      if (event.key === 'Enter') {
+        formatAndUpdateTime(event.target);
+      }
+    }
+
+    function formatAndUpdateTime(input) {
+      // Format waktu ketika kehilangan fokus atau enter
+      const timeString = input.value.trim();
+
+      if (!timeString) {
+        input.value = lastValidTime;
+        updateTimerFromInput(input);
+        return;
+      }
+
+      // Jika hanya angka (contoh: "2" -> "2:00")
+      if (timeString.match(/^\d+$/)) {
+        const minutes = parseInt(timeString);
+        const formattedTime = `${minutes}:00`;
+        input.value = formattedTime;
+        updateTimerFromInput(input);
+        return;
+      }
+
+      // Jika format tidak lengkap (contoh: "2:" -> "2:00")
+      if (timeString.match(/^\d+:$/)) {
+        const minutes = timeString.replace(':', '');
+        const formattedTime = `${minutes}:00`;
+        input.value = formattedTime;
+        updateTimerFromInput(input);
+        return;
+      }
+
+      // Jika format M:SS tetapi detik > 59
+      if (timeString.match(/^\d+:\d{2}$/)) {
+        const parts = timeString.split(':');
+        const seconds = parseInt(parts[1]);
+        if (seconds > 59) {
+          const minutes = parseInt(parts[0]);
+          const formattedTime = `${minutes}:59`;
+          input.value = formattedTime;
+          updateTimerFromInput(input);
+          return;
+        }
+      }
+
+      updateTimerFromInput(input);
+    }
+
+    function updateTimerFromInput(input) {
+      const timeString = input.value.trim();
+      console.log('Updating timer from input:', timeString);
+
+      if (!timeString) {
+        input.value = lastValidTime;
+        return;
+      }
+
+      const totalSeconds = parseTimeToSeconds(timeString);
+      console.log('Total seconds:', totalSeconds);
+
+      if (isNaN(totalSeconds) || totalSeconds <= 0) {
+        input.value = lastValidTime;
+        return;
+      }
+
+      if (totalSeconds > 599) { // Max 9:59
+        input.value = '9:59';
+        remaining = 599;
+        initialTime = 599;
+        localStorage.setItem('timer', 599);
+        localStorage.setItem('waktu', '9:59');
+        updateDisplay();
+        return;
+      }
+
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+      console.log('Formatted time:', formattedTime);
+
+      input.value = formattedTime;
+      lastValidTime = formattedTime;
+      remaining = totalSeconds;
+      initialTime = totalSeconds; // Update initial time
+      localStorage.setItem('timer', remaining);
+      localStorage.setItem('waktu', formattedTime);
+      updateDisplay();
+
+      // Kirim update ke WebSocket jika diperlukan
+      if (ws.readyState === WebSocket.OPEN && currentRound && timerState === 'stopped') {
+        ws.send(JSON.stringify({
+          type: 'update_time',
+          remaining: remaining,
+          round: currentRound
+        }));
+      }
+    }
+
+    function setTimePreset(timeString) {
+      console.log('Setting time preset:', timeString);
+      manualTime.val(timeString);
+      updateTimerFromInput(manualTime[0]);
+    }
+
+    function updateDisplay() {
+      const displayTime = secondsToDisplayTime(remaining);
+      console.log('Updating display to:', displayTime);
+      timerDisplay.text(displayTime);
+
+      // Update color based on time
+      timerDisplay.removeClass('warning danger');
+      if (remaining <= 10) {
+        timerDisplay.addClass('danger');
+      } else if (remaining <= 30) {
+        timerDisplay.addClass('warning');
+      }
+    }
+
+    function updateStatus(status) {
+      statusIndicator.removeClass('status-active status-paused status-stopped');
+      if (status === 'active') {
+        statusIndicator.addClass('status-active').html('<i class="fas fa-play-circle me-2"></i>Active');
+      } else if (status === 'paused') {
+        statusIndicator.addClass('status-paused').html('<i class="fas fa-pause-circle me-2"></i>Paused');
+      } else if (status === 'stopped') {
+        statusIndicator.addClass('status-stopped').html('<i class="fas fa-stop-circle me-2"></i>Stopped');
+      } else if (status === 'connected') {
+        statusIndicator.addClass('status-stopped').html('<i class="fas fa-circle me-2" style="color: #10b981;"></i>Connected');
+      } else {
+        statusIndicator.addClass('status-stopped').html('<i class="fas fa-circle me-2" style="color: #ef4444;"></i>Disconnected');
+      }
+    }
+
+    function updateButtons(state) {
+      btnStart.hide();
+      btnPause.hide();
+      btnResume.hide();
+      btnStop.hide();
+
+      if (state === 'stopped') {
+        btnStart.show();
+      } else if (state === 'active') {
+        btnPause.show();
+        btnStop.show();
+      } else if (state === 'paused') {
+        btnResume.show();
+        btnStop.show();
+      }
+    }
 
     function renderBabakButtons(total) {
       babakContainer.empty();
       for (let i = 1; i <= total; i++) {
-        const btn = $(`<button class="btn bg-success bg-gradient mx-3 px-4 tombol-babak text-dark rounded-pill" id="babak${i}" disabled>Babak ${i}</button>`);
+        const btn = $(`<button class="babak-btn" id="babak${i}" disabled>Babak ${i}</button>`);
         btn.on('click', () => setRound(i));
         babakContainer.append(btn);
       }
-      enableFirstRound();
 
       const savedRound = parseInt(localStorage.getItem('babak'));
       if (!isNaN(savedRound) && savedRound <= total) {
         highlightActiveRound(savedRound);
         currentRound = savedRound;
         btnStart.prop('disabled', false);
+      } else {
+        setRound(1);
       }
 
-      if (!aktifkanSemua.is(':checked')) {
-        $('.tombol-babak').prop('disabled', true);
-        $(`#babak${savedRound}`).prop('disabled', false);
-      }
-    }
-
-    function enableFirstRound() {
-      $('#babak1').prop('disabled', false);
+      toggleBabakMode();
     }
 
     function toggleBabakMode() {
       if (aktifkanSemua.is(':checked')) {
-        $('.tombol-babak').prop('disabled', false);
+        $('.babak-btn').prop('disabled', false);
       } else {
+        $('.babak-btn').prop('disabled', true);
         if (currentRound) {
-          // Jika ada babak aktif, hanya itu yang enable
-          $('.tombol-babak').prop('disabled', true);
           $(`#babak${currentRound}`).prop('disabled', false);
-        } else {
-          enableFirstRound(); // Kalau belum ada babak dipilih
         }
       }
     }
 
     function highlightActiveRound(round) {
-      $('.tombol-babak')
-        .removeClass('btn-warning text-dark')
-        .addClass('bg-success text-dark');
-
-      $(`#babak${round}`)
-        .removeClass('bg-success')
-        .addClass('btn-warning text-dark');
-
-      // Kontrol enable/disable sesuai toggle
-      if (!aktifkanSemua.is(':checked')) {
-        $('.tombol-babak').prop('disabled', true);
-        $(`#babak${round}`).prop('disabled', false);
+      $('.babak-btn').removeClass('active completed');
+      for (let i = 1; i < round; i++) {
+        $(`#babak${i}`).addClass('completed');
       }
-    }
-
-    function setRemaining(saveToLocal = true) {
-      const timeValue = inputTime.val();
-      const parts = timeValue.split(':').map(Number);
-      if (parts.length === 2) remaining = (parts[0] * 60) + parts[1];
-      else if (parts.length === 3) remaining = (parts[0] * 3600) + (parts[1] * 60) + parts[2];
-      updateDisplay();
-      if (saveToLocal) {
-        localStorage.setItem('waktu', timeValue);
-        localStorage.setItem('timer', remaining);
-      }
+      $(`#babak${round}`).addClass('active');
     }
 
     function setRound(round) {
       currentRound = round;
-      highlightActiveRound(round); // Gunakan fungsi ini agar toggle & tombol lain ikut update
+      highlightActiveRound(round);
       btnStart.prop('disabled', false);
       localStorage.setItem('babak', round);
-
-      console.log(round);
+      toggleBabakMode();
 
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
@@ -232,180 +886,153 @@
       }
     }
 
-    function updateDisplay() {
-      const m = Math.floor(remaining / 60);
-      const s = remaining % 60;
-      waktuElem.text(`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
-    }
-
-    function updateButtons(state) {
-      lastState = state;
-      btnStart.addClass('d-none');
-      btnPause.addClass('d-none');
-      btnResume.addClass('d-none');
-      btnStop.addClass('d-none');
-      switch (state) {
-        case 'stopped':
-        case 'ended':
-          btnStart.removeClass('d-none');
-          break;
-        case 'started':
-        case 'resumed':
-        case 'tick':
-          btnPause.removeClass('d-none');
-          btnStop.removeClass('d-none');
-          break;
-        case 'paused':
-          btnResume.removeClass('d-none');
-          btnStop.removeClass('d-none');
-          break;
-      }
-    }
-
-    function startTimer() {
-      if (currentRound) ws.send(JSON.stringify({
-        type: 'start',
-        remaining,
-        round: currentRound
-      }));
-    }
-
-    function pauseTimer() {
-      ws.send(JSON.stringify({
-        type: 'pause',
-        round: currentRound
-      }));
-    }
-
-    function resumeTimer() {
-      ws.send(JSON.stringify({
-        type: 'resume',
-        round: currentRound
-      }));
-    }
-
-    function stopTimer() {
-      ws.send(JSON.stringify({
-        type: 'stop',
-        round: currentRound
-      }));
-    }
-
-    ws.onopen = () => {
-      console.log("OPERATOR Timer Connected");
-    };
-
-    ws.onmessage = event => {
-      const msg = JSON.parse(event.data);
-      if (typeof msg.remaining === 'number') {
-        remaining = msg.remaining;
-        updateDisplay();
-      }
-      if (['tick', 'started', 'resumed', 'paused', 'stopped', 'ended'].includes(msg.type)) updateButtons(msg.type);
-
-      if (msg.type === 'stopped') {
-        remaining = parseInt(localStorage.getItem('timer'), 10) || 120; // konversi ke angka
-        var inputTime = $('#input-time');
-        inputTime.val(localStorage.getItem('waktu') || '02:00'); // set input time
-
-        updateDisplay(); // panggil fungsi update tampilan timer agar UI sinkron
-        console.log('Timer stopped, remaining:', remaining);
-      }
-
-      if (msg.type === 'ended') {
-        remaining = localStorage.getItem('timer');
-        if (parseInt(localStorage.getItem('babak')) === localStorage.getItem('jumlahBabak')) {
-          btnStart
-            .removeClass('btn-success')
-            .addClass('btn-secondary')
-            .html('<i class="fas fa-redo me-2"></i>Reset')
-            .prop('disabled', false)
-            .off('click')
-            .on('click', resetBabak);
-        }
-        updateDisplay();
-        console.log(currentRound, maxBabak);
-
-        if (currentRound < maxBabak) {
-          // Disable babak sebelumnya
-          $(`#babak${currentRound}`).prop('disabled', true);
-
-          // Pindah ke babak berikutnya
-          currentRound++;
-          localStorage.setItem('babak', currentRound);
-
-          // Enable babak berikutnya & highlight
+    function handleRoundEnd() {
+      if (currentRound < maxBabak) {
+        $(`#babak${currentRound}`).removeClass('active').addClass('completed');
+        currentRound++;
+        localStorage.setItem('babak', currentRound);
+        $(`#babak${currentRound}`).addClass('active');
+        if (!aktifkanSemua.is(':checked')) {
+          $('.babak-btn').prop('disabled', true);
           $(`#babak${currentRound}`).prop('disabled', false);
-          highlightActiveRound(currentRound);
-
-          // Sinkron ke server
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-              type: 'set_round',
-              round: currentRound
-            }));
-          }
-
-          btnStart.prop('disabled', false);
-        } else {
-          // Semua babak telah selesai
-          btnStart
-            .removeClass('btn-success')
-            .addClass('btn-secondary')
-            .html('<i class="fas fa-redo me-2"></i>Reset')
-            .removeClass('d-none')
-            .prop('disabled', false)
-            .off('click') // Hapus event lama
-            .on('click', resetBabak);
         }
-      }
 
-    };
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'set_round',
+            round: currentRound
+          }));
+        }
+        btnStart.prop('disabled', false);
+      } else {
+        $(`#babak${maxBabak}`).removeClass('active').addClass('completed');
+        btnStart.hide().off('click');
+        btnStart
+          .removeClass('btn-start btn-success')
+          .addClass('btn-secondary')
+          .html('<i class="fas fa-redo me-2"></i>Reset')
+          .show()
+          .prop('disabled', false)
+          .on('click', resetBabak);
+        btnStop.hide();
+      }
+    }
 
     function resetBabak() {
       localStorage.removeItem('babak');
       currentRound = null;
-      console.log(currentRound);
       renderBabakButtons(maxBabak);
       btnStart
         .removeClass('btn-secondary')
-        .addClass('btn-success')
+        .addClass('btn-start btn-success')
         .html('<i class="fas fa-play me-2"></i>Start')
         .prop('disabled', true)
-        .off('click')
         .on('click', startTimer);
-
-      updateDisplay();
-      $(`#babak1`)
-        .removeClass('bg-success')
-        .addClass('btn-warning text-dark');
-      btnStart.prop('disabled', false);
       setRound(1);
+
+      // Reset waktu ke input
+      resetToInitialTime();
     }
 
+    function startTimer() {
+      if (!currentRound) {
+        alert('Pilih babak terlebih dahulu!');
+        return;
+      }
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'start',
+          remaining,
+          round: currentRound
+        }));
+      }
+    }
+
+    function pauseTimer() {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'pause',
+          round: currentRound
+        }));
+      }
+    }
+
+    function resumeTimer() {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'resume',
+          round: currentRound
+        }));
+      }
+    }
+
+    function stopTimer() {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'stop',
+          round: currentRound
+        }));
+      }
+    }
+
+    function playNotification() {
+      try {
+        const audio = new AudioContext();
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+        oscillator.frequency.value = 800;
+        gain.gain.setValueAtTime(0.3, audio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.5);
+        oscillator.start();
+        oscillator.stop(audio.currentTime + 0.5);
+      } catch (e) {}
+    }
+
+    // Fullscreen
     function openFullscreen() {
       const elem = document.documentElement;
       if (elem.requestFullscreen) elem.requestFullscreen();
       else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
       else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-      $('#openfull').addClass('d-none');
-      $('#exitfull').removeClass('d-none');
+      $('#openfull').hide();
+      $('#exitfull').show();
     }
 
     function closeFullscreen() {
       if (document.exitFullscreen) document.exitFullscreen();
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       else if (document.msExitFullscreen) document.msExitFullscreen();
-      $('#openfull').removeClass('d-none');
-      $('#exitfull').addClass('d-none');
+      $('#openfull').show();
+      $('#exitfull').hide();
     }
-  </script>
 
-  <script>
-    // Nonaktifkan drag teks
-    document.addEventListener('selectstart', function(e) {
-      e.preventDefault();
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.target.matches('input, select')) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (timerState === 'stopped') startTimer();
+        else if (timerState === 'active') pauseTimer();
+        else if (timerState === 'paused') resumeTimer();
+      }
+      if (e.code === 'KeyS') {
+        e.preventDefault();
+        stopTimer();
+      }
+      if (e.code === 'KeyR') {
+        e.preventDefault();
+        resetToInitialTime();
+      }
+      if (e.code === 'KeyF') {
+        e.preventDefault();
+        document.fullscreenElement ? closeFullscreen() : openFullscreen();
+      }
     });
+
+    document.addEventListener('selectstart', (e) => e.preventDefault());
   </script>
 </body>
 
