@@ -146,6 +146,12 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
             cursor: pointer;
         }
 
+        .player-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .player-card:before {
             content: '';
             position: absolute;
@@ -278,6 +284,12 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
             cursor: not-allowed;
         }
 
+        .btn-pilih.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .btn-pilih.refresh {
             background: linear-gradient(135deg, #ffc107, #ffca2c);
             color: #212529;
@@ -334,6 +346,12 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
             font-size: 1.1rem;
             width: 100%;
             cursor: pointer;
+        }
+
+        .partai-dropdown.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .partai-dropdown option {
@@ -549,13 +567,13 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-nav" onclick="navigatePartai('prev')" <?= !$prev_partai ? 'disabled' : '' ?>>
+                                <button class="btn btn-nav" id="prevPartaiBtn" onclick="navigatePartai('prev')" <?= !$prev_partai ? 'disabled' : '' ?>>
                                     <i class="fas fa-arrow-left me-2"></i>Previous Partai
                                 </button>
-                                <button class="btn btn-secondary bg-gradient" onclick="tukarpartai()">
+                                <button class="btn btn-secondary bg-gradient" id="tukarPartaiBtn" onclick="tukarpartai()">
                                     <i class="fas fa-exchange-alt me-2"></i>Tukar Partai
                                 </button>
-                                <button class="btn btn-nav" onclick="navigatePartai('next')" <?= !$next_partai ? 'disabled' : '' ?>>
+                                <button class="btn btn-nav" id="nextPartaiBtn" onclick="navigatePartai('next')" <?= !$next_partai ? 'disabled' : '' ?>>
                                     <i class="fas fa-arrow-right me-2"></i>Next Partai
                                 </button>
                             </div>
@@ -566,7 +584,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                     <div class="row g-4">
                         <!-- Player Biru -->
                         <div class="col-md-4">
-                            <div class="player-card biru text-center" id="playerBiru" onclick="selectSudut('BIRU')">
+                            <div class="player-card biru text-center" id="playerBiru" onclick="if(!isTimerActive) selectSudut('BIRU')">
                                 <div class="mb-4">
                                     <span class="badge bg-primary px-4 py-2 fs-5">BIRU</span>
                                 </div>
@@ -577,7 +595,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                                     <i class="fas fa-flag me-2"></i>
                                     <?= htmlspecialchars($jadwal['kontingen_biru'] ?? '-') ?>
                                 </p>
-                                <button class="btn-pilih pilih-button" data-sudut="BIRU" onclick="event.stopPropagation(); selectSudut('BIRU')">
+                                <button class="btn-pilih pilih-button" id="pilihBiruBtn" data-sudut="BIRU" onclick="event.stopPropagation(); selectSudut('BIRU')">
                                     <i class="fas fa-check-circle me-2"></i>Pilih
                                 </button>
                             </div>
@@ -598,7 +616,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
 
                         <!-- Player Merah -->
                         <div class="col-md-4">
-                            <div class="player-card merah text-center" id="playerMerah" onclick="selectSudut('MERAH')">
+                            <div class="player-card merah text-center" id="playerMerah" onclick="if(!isTimerActive) selectSudut('MERAH')">
                                 <div class="mb-4">
                                     <span class="badge bg-danger px-4 py-2 fs-5">MERAH</span>
                                 </div>
@@ -609,7 +627,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                                     <i class="fas fa-flag me-2"></i>
                                     <?= htmlspecialchars($jadwal['kontingen_merah'] ?? '-') ?>
                                 </p>
-                                <button class="btn-pilih pilih-button" data-sudut="MERAH" onclick="event.stopPropagation(); selectSudut('MERAH')">
+                                <button class="btn-pilih pilih-button" id="pilihMerahBtn" data-sudut="MERAH" onclick="event.stopPropagation(); selectSudut('MERAH')">
                                     <i class="fas fa-check-circle me-2"></i>Pilih
                                 </button>
                             </div>
@@ -619,7 +637,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                     <!-- Refresh Button -->
                     <div class="row mt-4">
                         <div class="col-12 text-center">
-                            <button class="btn btn-info bg-gradient px-5 py-2 rounded-pill" onclick="refreshSelection()">
+                            <button class="btn btn-info bg-gradient px-5 py-2 rounded-pill" id="refreshBtn" onclick="refreshSelection()">
                                 <i class="fas fa-sync-alt me-2"></i>Refresh Pilihan
                             </button>
                         </div>
@@ -657,6 +675,10 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
         let reconnectAttempts = 0;
         const maxReconnectAttempts = 5;
 
+        // Variabel untuk melacak status timer
+        let isTimerActive = false;
+        let currentTimerStatus = 'stopped';
+
         function connectWebSocket() {
             ws = new WebSocket('ws://' + hostname + ':3000');
 
@@ -665,12 +687,6 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                 console.log("Server terhubung.");
                 updateConnectionStatus(true);
                 reconnectAttempts = 0;
-
-                // Request timer status for this partai
-                ws.send(JSON.stringify({
-                    type: 'request_status',
-                    id_partai: staticPartaiData.id_partai
-                }));
 
                 // Kirim data partai saat ini
                 const savedSelectedPartai = localStorage.getItem(`selectedPartai_${staticPartaiData.id_partai}`);
@@ -688,27 +704,33 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                     updateOperatorTimer(data.remaining);
                 }
 
-                // Update timer status display
+                // Update timer status display dan kontrol akses
                 if (data.type === 'timer_status') {
                     updateTimerStatusDisplay(data.status);
+                    updateTimerAccessControl(data.status);
                 }
 
                 // Handle timer states
                 if (data.type === 'tick') {
                     updateOperatorTimer(data.remaining);
                     updateTimerStatusDisplay('active');
+                    updateTimerAccessControl('active');
                 } else if (data.type === 'stopped') {
                     updateTimerStatusDisplay('stopped');
+                    updateTimerAccessControl('stopped');
                     // Reset timer to initial value
                     const savedWaktu = localStorage.getItem('waktu') || '2:00';
                     const totalSeconds = parseTimeToSeconds(savedWaktu);
                     updateOperatorTimer(totalSeconds);
                 } else if (data.type === 'paused') {
                     updateTimerStatusDisplay('paused');
+                    updateTimerAccessControl('paused');
                 } else if (data.type === 'resumed') {
                     updateTimerStatusDisplay('active');
+                    updateTimerAccessControl('active');
                 } else if (data.type === 'ended') {
                     updateTimerStatusDisplay('stopped');
+                    updateTimerAccessControl('stopped');
                     // Reset timer to initial value
                     const savedWaktu = localStorage.getItem('waktu') || '2:00';
                     const totalSeconds = parseTimeToSeconds(savedWaktu);
@@ -740,6 +762,64 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                 console.log('WebSocket error:', error);
                 updateConnectionStatus(false);
             };
+        }
+
+        // Fungsi untuk mengontrol akses berdasarkan status timer
+        function updateTimerAccessControl(status) {
+            isTimerActive = (status === 'active');
+            currentTimerStatus = status;
+
+            // Dapatkan elemen-elemen yang perlu dikontrol
+            const pilihBiruBtn = document.getElementById('pilihBiruBtn');
+            const pilihMerahBtn = document.getElementById('pilihMerahBtn');
+            const playerBiru = document.getElementById('playerBiru');
+            const playerMerah = document.getElementById('playerMerah');
+            const partaiSelect = document.getElementById('partaiSelect');
+            const prevBtn = document.getElementById('prevPartaiBtn');
+            const nextBtn = document.getElementById('nextPartaiBtn');
+            const tukarBtn = document.getElementById('tukarPartaiBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            if (status === 'active') {
+                // Timer sedang berjalan - nonaktifkan semua kontrol
+                if (pilihBiruBtn) {
+                    pilihBiruBtn.disabled = true;
+                    pilihBiruBtn.classList.add('disabled');
+                }
+                if (pilihMerahBtn) {
+                    pilihMerahBtn.disabled = true;
+                    pilihMerahBtn.classList.add('disabled');
+                }
+                if (playerBiru) playerBiru.classList.add('disabled');
+                if (playerMerah) playerMerah.classList.add('disabled');
+                if (partaiSelect) partaiSelect.classList.add('disabled');
+                if (prevBtn) prevBtn.disabled = true;
+                if (nextBtn) nextBtn.disabled = true;
+                if (tukarBtn) tukarBtn.disabled = true;
+                if (refreshBtn) refreshBtn.disabled = true;
+            } else {
+                // Timer tidak berjalan (stopped/paused) - aktifkan semua kontrol
+                if (pilihBiruBtn) {
+                    pilihBiruBtn.disabled = false;
+                    pilihBiruBtn.classList.remove('disabled');
+                }
+                if (pilihMerahBtn) {
+                    pilihMerahBtn.disabled = false;
+                    pilihMerahBtn.classList.remove('disabled');
+                }
+                if (playerBiru) playerBiru.classList.remove('disabled');
+                if (playerMerah) playerMerah.classList.remove('disabled');
+                if (partaiSelect) partaiSelect.classList.remove('disabled');
+
+                // Untuk tombol navigasi, tetap periksa apakah ada partai sebelumnya/selanjutnya
+                const prevAvailable = <?= $prev_partai ? 'true' : 'false' ?>;
+                const nextAvailable = <?= $next_partai ? 'true' : 'false' ?>;
+
+                if (prevBtn) prevBtn.disabled = !prevAvailable;
+                if (nextBtn) nextBtn.disabled = !nextAvailable;
+                if (tukarBtn) tukarBtn.disabled = false;
+                if (refreshBtn) refreshBtn.disabled = false;
+            }
         }
 
         // Initialize WebSocket connection
@@ -786,19 +866,63 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
 
         // Fungsi untuk refresh pilihan
         function refreshSelection() {
+            // Cek apakah timer aktif
+            if (isTimerActive) {
+                showNotification('Tidak dapat refresh saat timer sedang berjalan', 'error');
+                return;
+            }
+
             const currentSelection = localStorage.getItem(`selectedPartai_${staticPartaiData.id_partai}`);
             if (currentSelection) {
                 const selectedData = JSON.parse(currentSelection);
                 // Kirim ulang data ke server
                 if (ws.readyState === WebSocket.OPEN) {
                     sendPartaiToServer(selectedData);
+                    // Tampilkan notifikasi sukses
+                    showNotification('Data partai berhasil dikirim ulang ke server', 'success');
                 } else {
-                    alert('Koneksi server terputus. Menunggu koneksi kembali...');
+                    showNotification('Koneksi server terputus. Menunggu koneksi kembali...', 'error');
                 }
             } else {
                 // Jika belum ada pilihan, pilih BIRU
                 selectSudut('BIRU', false);
+                showNotification('Pilih sudut terlebih dahulu', 'info');
             }
+        }
+
+        // Fungsi notifikasi sederhana
+        function showNotification(message, type) {
+            // Buat elemen notifikasi
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 25px';
+            notification.style.borderRadius = '10px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = 'bold';
+            notification.style.zIndex = '9999';
+            notification.style.transition = 'all 0.3s ease';
+
+            if (type === 'success') {
+                notification.style.backgroundColor = '#28a745';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#dc3545';
+            } else {
+                notification.style.backgroundColor = '#17a2b8';
+            }
+
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Hapus setelah 3 detik
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
         }
 
         // Timer Functions
@@ -881,6 +1005,12 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
         }
 
         function selectSudut(sudut, fromStorage = false) {
+            // Cek apakah timer sedang aktif
+            if (isTimerActive) {
+                showNotification('Tidak dapat mengganti sudut saat timer sedang berjalan', 'error');
+                return;
+            }
+
             let namaPesilat = '';
             let kontingenSudut = '';
 
@@ -903,7 +1033,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                 kontingen: kontingenSudut
             };
 
-            // Save selection
+            // Save selection - HANYA menyimpan pilihan sudut, TIDAK mereset data penilaian
             localStorage.setItem('currentPartai', JSON.stringify(partaiToSave));
             localStorage.setItem(`selectedPartai_${staticPartaiData.id_partai}`, JSON.stringify(partaiToSave));
 
@@ -920,7 +1050,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                 }
             });
 
-            // Send to server
+            // Send to server - HANYA mengirim data partai, TIDAK mereset database
             if (!fromStorage) {
                 sendPartaiToServer(partaiToSave);
             }
@@ -946,29 +1076,27 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
             }
         }
 
-        function resetPilihan() {
-            pilihButtons.html('<i class="fas fa-check-circle me-2"></i>Pilih').prop('disabled', false);
-            $('.player-card').removeClass('selected');
-
-            localStorage.removeItem(`selectedPartai_${staticPartaiData.id_partai}`);
-            localStorage.removeItem('currentPartai');
-
-            // Clear from server
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'clear_partai_data'
-                }));
-            }
-        }
-
         pilihButtons.on('click', function(e) {
             e.stopPropagation();
+
+            // Cek apakah timer aktif
+            if (isTimerActive) {
+                showNotification('Tidak dapat mengganti sudut saat timer sedang berjalan', 'error');
+                return;
+            }
+
             const $btn = $(this);
             const selectedSudut = $btn.data('sudut');
             selectSudut(selectedSudut);
         });
 
         function navigatePartai(direction) {
+            // Cek apakah timer aktif
+            if (isTimerActive) {
+                showNotification('Tidak dapat berpindah partai saat timer sedang berjalan', 'error');
+                return;
+            }
+
             let targetId = '';
 
             if (direction === 'prev' && <?= $prev_partai ? 'true' : 'false' ?>) {
@@ -983,10 +1111,22 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
         }
 
         function changePartai(id_partai) {
+            // Cek apakah timer aktif
+            if (isTimerActive) {
+                showNotification('Tidak dapat berpindah partai saat timer sedang berjalan', 'error');
+                return;
+            }
+
             window.location.href = `?id_partai=${id_partai}`;
         }
 
         function tukarpartai() {
+            // Cek apakah timer aktif
+            if (isTimerActive) {
+                showNotification('Tidak dapat menukar partai saat timer sedang berjalan', 'error');
+                return;
+            }
+
             // Clear all selections
             localStorage.removeItem('currentPartai');
             localStorage.removeItem(`selectedPartai_${staticPartaiData.id_partai}`);

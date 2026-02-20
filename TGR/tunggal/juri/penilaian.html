@@ -6,6 +6,7 @@
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
   <meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <link rel="shortcut icon" href="../../../assets/img/LogoIPSI.png" />
   <link rel="stylesheet prefetch" href="../../../assets/bootstrap/dist/css/bootstrap.min.css" />
   <style>
@@ -40,99 +41,278 @@
     }
 
     .button-active {
-      background-color: #198754 !important;
+      background-color: #dc3545 !important;
       color: white !important;
-      border-color: #198754 !important;
+      border-color: #dc3545 !important;
     }
 
-    .btn-next-jurus {
-      font-size: 30px !important;
-      padding: 15px !important;
+    /* Style untuk tombol stamina */
+    .stamina-btn {
+      width: calc(33.333% - 4px);
+      margin: 2px;
+      padding: 5px 0;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      border: 1px solid #dee2e6;
     }
 
-    .progress-jurus {
-      height: 20px;
+    .stamina-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .stamina-btn:active {
+      transform: translateY(0);
+    }
+
+    .stamina-btn.button-active {
+      background-color: #28a745 !important;
+      border-color: #28a745 !important;
+      color: white !important;
+    }
+
+    /* Style untuk tombol aksi (wrong & ready) */
+    .action-btn {
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-width: 5px !important;
+      transition: all 0.3s ease;
+      border-radius: 25px !important;
+    }
+
+    .action-btn i {
+      font-size: 85px;
       margin-bottom: 10px;
     }
 
-    .current-jurus-active {
-      background-color: #ffc107;
-      color: black;
-      font-weight: bold;
-      padding: 5px;
-      border-radius: 5px;
-    }
-
-    /* Styling untuk modal ready yang lebih menarik */
-    .modal-ready .modal-content {
-      border: 5px solid #28a745;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-
-    .modal-ready .modal-header {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      color: white;
-      text-align: center;
-    }
-
-    .modal-ready .modal-body {
-      background-color: #f8f9fa;
-      text-align: center;
-      padding: 30px;
-    }
-
-    .modal-ready .btn-ready {
-      font-size: 24px;
-      padding: 15px 40px;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #28a745, #20c997);
-      border: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-    }
-
-    .modal-ready .btn-ready:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-    }
-
-    .modal-ready .countdown {
+    .action-btn .count-display {
       font-size: 48px;
       font-weight: bold;
-      color: #28a745;
-      margin: 20px 0;
+      margin-top: 5px;
     }
 
-    .instruction-box {
-      background-color: #e9f7ef;
-      border-left: 4px solid #28a745;
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 20px;
-    }
-
-    .jurus-badge {
-      display: inline-block;
-      padding: 5px 15px;
-      background-color: #198754;
+    /* Style untuk tombol wrong - default disabled (abu-abu) */
+    .btn-wrong {
+      background-color: #6c757d;
       color: white;
-      border-radius: 20px;
-      font-size: 14px;
-      margin: 5px;
+      border-color: #495057 !important;
+      opacity: 0.5;
     }
 
-    .total-wrong-display {
-      font-size: 24px;
+    /* Style untuk tombol wrong ketika ready (merah tapi tetap disabled) */
+    .btn-wrong.ready-state {
+      background-color: #dc3545 !important;
+      border-color: #990000 !important;
+      opacity: 0.7;
+    }
+
+    /* Style untuk tombol wrong ketika aktif (timer berjalan) */
+    .btn-wrong.active-state {
+      background-color: #dc3545 !important;
+      border-color: #990000 !important;
+      opacity: 1;
+    }
+
+    .btn-wrong.active-state:hover:not(:disabled) {
+      background-color: #bb2d3b;
+      transform: scale(1.02);
+    }
+
+    .btn-wrong i {
+      color: white;
+    }
+
+    /* Style untuk tombol READY - hijau */
+    .btn-ready {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      border-color: #1e7e34 !important;
+    }
+
+    .btn-ready:hover:not(:disabled) {
+      background: linear-gradient(135deg, #34ce57, #28a745);
+      transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-ready:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Style untuk tombol READY setelah diklik */
+    .btn-ready.ready-clicked {
+      background: linear-gradient(135deg, #166b2c, #0f8543);
+      opacity: 0.8;
+    }
+
+    .btn-ready.ready-clicked i {
+      color: #ffd700;
+    }
+
+    /* Container stamina */
+    .stamina-container {
+      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      border-radius: 20px;
+      padding: 8px 5px;
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border: 2px solid #dee2e6;
+    }
+
+    .stamina-value {
+      font-size: 26px;
+      font-weight: bold;
+      color: #28a745;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+
+    .stamina-label {
+      font-size: 12px;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    /* Container untuk tombol stamina */
+    .stamina-buttons-wrapper {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-content: flex-start;
+      padding: 0;
+      gap: 0;
+      height: auto;
+      overflow: visible;
+    }
+
+    /* Panel Total Nilai */
+    .total-score-panel {
+      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      border-radius: 15px;
+      padding: 5px 12px;
+      border: 2px solid #ffc107;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+    }
+
+    .total-score-label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-right: 5px;
+    }
+
+    .total-score-value {
+      font-size: 22px;
       font-weight: bold;
       color: #dc3545;
-      margin-top: 10px;
+      background-color: #f8f9fa;
+      padding: 2px 12px;
+      border-radius: 30px;
+      border: 2px solid #ffc107;
+    }
+
+    .score-detail {
+      font-size: 11px;
+      color: #495057;
+      margin-top: 2px;
+    }
+
+    .score-detail span {
+      font-weight: bold;
+      color: #28a745;
     }
 
     .btn-control-group {
       display: flex;
-      gap: 5px;
+      gap: 3px;
       align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Style untuk notification */
+    #temp-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      z-index: 9999;
+      display: none;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Responsif untuk layar kecil */
+    @media (max-width: 768px) {
+      .action-btn {
+        height: 190px;
+      }
+
+      .action-btn i {
+        font-size: 70px;
+      }
+
+      .action-btn .count-display {
+        font-size: 40px;
+      }
+
+      .stamina-container {
+        height: 190px;
+        padding: 5px 3px;
+      }
+
+      .stamina-value {
+        font-size: 22px;
+      }
+
+      .stamina-btn {
+        padding: 4px 0;
+        font-size: 11px;
+        margin: 1px;
+        width: calc(33.333% - 2px);
+      }
+
+      .total-score-value {
+        font-size: 18px;
+        padding: 2px 8px;
+      }
+
+      .score-detail {
+        font-size: 10px;
+      }
+
+      #status-message {
+        font-size: 11px !important;
+      }
     }
 
     /* Menghilangkan backdrop modal yang tertinggal */
@@ -143,162 +323,202 @@
     .modal {
       z-index: 1050 !important;
     }
+
+    /* Row dengan tinggi sama */
+    .equal-height-row {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .equal-height-row>[class*='col-'] {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Status ready badge */
+    .ready-status {
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 20px;
+      background-color: #ffc107;
+      color: black;
+      font-weight: bold;
+      margin-left: 2px;
+      white-space: nowrap;
+    }
+
+    .ready-status.ready {
+      background-color: #28a745;
+      color: white;
+    }
+
+    /* Animasi pulse untuk ready button */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .btn-ready:not(:disabled):not(.ready-clicked) {
+      animation: pulse 2s infinite;
+    }
+
+    /* Counter wrong move */
+    .wrong-counter {
+      font-size: 48px;
+      font-weight: bold;
+      line-height: 1;
+      margin: 5px 0;
+      color: white;
+    }
+
+    /* Header table responsive */
+    .table td {
+      padding: 0.2rem;
+    }
+
+    /* Icon X merah */
+    .fa-times-circle {
+      color: white;
+    }
+
+    /* Container spacing */
+    .container-fluid {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
+    .row {
+      margin-left: -3px;
+      margin-right: -3px;
+    }
+
+    [class*="col-"] {
+      padding-left: 3px;
+      padding-right: 3px;
+    }
   </style>
 
   <title>JURI - IPSI Kota Dumai</title>
 </head>
 
 <body class="bg-light bg-gradient">
-  <div class="container-fluid">
+  <div class="container-fluid px-1">
     <div class="row">
       <div class="col">
         <!-- Tabel Header -->
-        <table width="100%" class="table mt-1">
+        <table width="100%" class="table mt-1 mb-1">
           <tr>
-            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-4 text-white" colspan="3">
-              <b id="juri"></b> ( Kategori : <b class="kategori"></b>/<b class="kelas"></b>)
-              <div class="btn-control-group d-inline-flex align-items-center ms-3">
-                <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24">
-                    <path fill="#ffffff"
-                      d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
-                  </svg>
-                </button>
-                <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
-                  <svg width="24" height="24" viewBox="0 0 24 24">
-                    <path fill="#ffffff"
-                      d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
-                  </svg>
-                </button>
-                <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="konfirmasiKeluar()">
-                  KELUAR
-                </button>
-                <a href="#" class="btn btn-light bg-gradient btn-sm reload-btn small"
-                  onclick="konfirmasiRefresh(event)">
-                  Refresh
-                </a>
-                <b id="timer"
-                  style="font-size: 17px; font-weight: bold; background-color: black;color: white;padding:4px 8px;border:2px solid white;border-radius: 5px;margin-left: 10px;">
-                  ⏱️ 00:00
-                </b>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-uppercase text-primary fw-bold" width="40%">
-              <b class="nm"></b>
-            </td>
-            <td class="text-uppercase text-center" width="20%">
-              <!-- Kosongkan bagian tengah -->
-            </td>
-            <td class="text-uppercase text-danger fw-bold text-end" width="40%">
-              Kontingen<br><small class="kontingen"></small>
-            </td>
-          </tr>
-        </table>
-
-        <!-- Tabel Kesalahan & Jurus -->
-        <table class="table table-bordered bg-white">
-          <tr>
-            <td colspan="2">
-              <div class="row align-items-center">
-                <div class="col-md-8">
-                  <!-- Progress Bar -->
-                  <div class="progress progress-jurus">
-                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" id="progress-status"
-                      role="progressbar" style="width: 0%">
-                      <span id="progress-text">Menunggu...</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="text-center">
-                    <div class="fs-1 text-danger fw-bold"><b id="kesalahan">0</b></div>
-                    <div class="small">TOTAL WRONG</div>
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Tombol Wrong Move & Submit -->
-          <tr>
-            <td colspan="2">
-              <div class="row g-1">
-                <div class="col-12 text-center">
-                  <button class="btn btn-danger big-btn w-100 py-5 border border-5 rounded-5 border-dark" id="btn-wrong"
-                    disabled>
-                    <b style="font-size: 50px;">WRONG MOVE</b>
-                    <br><small>Tekan setiap terjadi kesalahan</small>
+            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-3 text-white" colspan="3">
+              <div class="d-flex flex-wrap align-items-center justify-content-center" style="font-size: 13px;">
+                <b id="juri" class="me-1"></b>
+                <span>(<b class="kategori"></b>/<b class="kelas"></b>)</span>
+                <div class="btn-control-group d-inline-flex align-items-center ms-1">
+                  <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
+                    <svg width="14" height="14" viewBox="0 0 24 24">
+                      <path fill="#ffffff"
+                        d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                    </svg>
+                  </button>
+                  <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
+                    <svg width="14" height="14" viewBox="0 0 24 24">
+                      <path fill="#ffffff"
+                        d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
+                    </svg>
                   </button>
                 </div>
               </div>
             </td>
           </tr>
-
-          <!-- STAMINA -->
-          <tr class="bg-light align-middle">
-            <td colspan="4">
-              <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <div class="flex-grow-1 text-center bg-light text-dark fs-5 fw-bold">STAMINA: <span
-                    id="stamina-value">+0.00</span></div>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Tombol Stamina -->
           <tr>
-            <td colspan="4" class="text-center bg-light fs-6">
-              <div class="d-flex flex-wrap justify-content-center mt-2" id="stamina-buttons-container">
-                <!-- Tombol stamina dibuat otomatis JS -->
-              </div>
+            <td class="text-uppercase text-primary fw-bold small" width="40%" style="font-size: 11px;">
+              <h6 class="nm"></h6>
+            </td>
+            <td class="text-uppercase text-center" width="20%">
+              <button class="btn btn-danger bg-gradient btn-sm keluar small p-1" style="font-size: 10px;"
+                onclick="konfirmasiKeluar()">
+                KELUAR
+              </button>
+              <b id="timer" class="p-1"
+                style="font-size: 14px; font-weight: bold; background-color: black;color: white;padding:2px 3px;border:1px solid white;border-radius: 4px;">
+                ⏱️ 00:00
+              </b>
+              <a href="#" class="btn btn-light bg-gradient border border-1 border-secondary btn-sm reload-btn small p-1 ms-1"
+                style="font-size: 10px;" onclick="konfirmasiRefresh(event)">
+                REFRESH
+              </a>
+            </td>
+            <td class="text-uppercase text-danger fw-bold text-end small" width="40%" style="font-size: 11px;">
+              <h6 class="kontingen"></h6>
             </td>
           </tr>
         </table>
+
+        <!-- Tabel 3 Kolom: Wrong Move | Stamina | Ready -->
+        <div class="row equal-height-row g-1">
+          <!-- Kolom 1: Wrong Move -->
+          <div class="col-4">
+            <button class="btn btn-wrong action-btn w-100 border border-4 rounded-4" id="btn-wrong" disabled>
+              <i class="fas fa-times-circle"></i>
+              <span class="wrong-counter" id="kesalahan-count">0</span>
+            </button>
+          </div>
+
+          <!-- Kolom 2: Stamina -->
+          <div class="col-4">
+            <div class="stamina-container">
+              <div class="text-center">
+                <span class="stamina-label">STAMINA</span>
+                <div class="stamina-value" id="stamina-value">+0.00</div>
+              </div>
+              <div class="stamina-buttons-wrapper" id="stamina-buttons-container">
+                <!-- Tombol stamina akan diisi JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Kolom 3: READY (Tombol Hijau Langsung) -->
+          <div class="col-4">
+            <button class="btn btn-ready action-btn w-100 border border-4 rounded-4" id="btn-ready">
+              <i class="fas fa-play-circle"></i>
+              <span class="wrong-counter" id="ready-icon-text">READY</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel Total Nilai dan Informasi Status -->
+        <div class="row mt-1">
+          <div class="col-12">
+            <div class="d-flex flex-wrap align-items-center justify-content-between bg-white p-1 rounded-3 shadow-sm">
+              <div class="total-score-panel">
+                <span class="total-score-label">TOTAL:</span>
+                <span class="total-score-value" id="total-nilai">9.90</span>
+              </div>
+              <!-- <div class="score-detail">
+                <span id="wrong-detail">0</span>×0.01=<span id="pengurangan-detail">0.00</span> |
+                +<span id="stamina-detail">0.00</span>
+              </div> -->
+              <div class="alert text-center py-0 px-2 mb-0" id="status-message"
+                style="font-size: 14px; font-weight: 500; line-height: 1.5;">
+                Menunggu data...
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal READY - Dimodifikasi tampilannya -->
-  <div class="modal fade modal-ready" id="modalReady" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="modalReadyLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <!-- <h5 class="modal-title w-100 text-center" id="modalReadyLabel">SIAP MENILAI</h5> -->
-        </div>
-        <!-- <div class="modal-body">
-          <div class="countdown">READY</div>
-          <p class="fw-bold">Selamat datang, <span id="nama-juri-ready"></span>!</p>
-          <p>Anda akan menilai:</p>
-          <div class="jurus-badge">
-            <i class="fas fa-user"></i> <span id="nama-peserta-ready"></span>
-          </div>
-          <div class="jurus-badge" style="background-color: #0d6efd;">
-            <i class="fas fa-tag"></i> <span id="kategori-ready"></span>
-          </div>
-          <div class="jurus-badge" style="background-color: #6f42c1;">
-            <i class="fas fa-layer-group"></i> <span id="kelas-ready"></span>
-          </div>
-
-          <div class="instruction-box mt-3">
-            <h6><i class="fas fa-info-circle"></i> Petunjuk Penilaian:</h6>
-            <ol class="text-start small mb-0">
-              <li>Tekan tombol <strong>WRONG MOVE</strong> setiap terjadi kesalahan</li>
-              <li>Pilih bonus <strong>STAMINA</strong> di akhir penampilan</li>
-              <li>Skor akan otomatis terhitung</li>
-              <li>Sistem akan mengirim skor ke server</li>
-            </ol>
-          </div>
-        </div> -->
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-ready text-white btn-lg px-5 btnReady" data-bs-dismiss="modal">
-            <i class="fas fa-play-circle"></i> READY
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- <div id="temp-notification"></div> -->
 
   <script type="text/javascript" src="../../../assets/jquery/jquery.min.js"></script>
   <script type="text/javascript" src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -314,19 +534,122 @@
     let selectedStamina = 0.00;
     let isReady = false;
     let isStarted = false;
+    let isTimerRunning = false;
     let currentPartaiData = null;
-    let modalReadyInstance = null;
-    let isModalShowing = false;
+    let hasUserClickedReady = false;
+
+    // ======= FUNGSI NOTIFIKASI =======
+    // function showNotification(message, isError = false) {
+    //   let notif = $('#temp-notification');
+    //   notif.css('background', isError ? '#dc3545' : '#28a745');
+    //   notif.text(message).fadeIn(200).delay(1500).fadeOut(200);
+    // }
+
+    // ======= FUNGSI LOCALSTORAGE =======
+    function simpanDataKeLocalStorage() {
+      if (!currentPartaiData) return;
+
+      const totalData = hitungTotalNilai();
+      const dataPenilaian = {
+        wrong_count: wrongCount,
+        selected_stamina: selectedStamina,
+        total_nilai: totalData.totalFormatted,
+        pengurangan: totalData.pengurangan.toFixed(2),
+        timestamp: new Date().toISOString(),
+        partai_id: localStorage.getItem('partai'),
+        sudut: currentPartaiData.peserta.sudut,
+        nama_peserta: currentPartaiData.peserta.nama
+      };
+
+      localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
+      localStorage.setItem('wrong_count', wrongCount.toString());
+      localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+
+      console.log('💾 Data tersimpan di localStorage:', dataPenilaian);
+    }
+
+    function loadDataDariLocalStorage() {
+      const savedPenilaian = localStorage.getItem('penilaian_data');
+      if (savedPenilaian && currentPartaiData) {
+        try {
+          const data = JSON.parse(savedPenilaian);
+          // Validasi apakah data untuk partai yang sama
+          if (data.partai_id === localStorage.getItem('partai') &&
+            data.sudut === currentPartaiData.peserta.sudut) {
+
+            wrongCount = data.wrong_count || 0;
+            selectedStamina = data.selected_stamina || 0;
+
+            localStorage.setItem('wrong_count', wrongCount);
+            localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+
+            console.log('✅ Data dimuat dari localStorage:', data);
+            return true;
+          }
+        } catch (e) {
+          console.error('Error loading saved data:', e);
+        }
+      }
+      return false;
+    }
+
+    // Fungsi baru untuk memuat data dari server ke localStorage
+    function simpanDataDariServerKeLocalStorage(dataServer) {
+      if (!currentPartaiData || !dataServer) return false;
+
+      try {
+        // Data server bisa dalam bentuk array atau object
+        let dataNilai = dataServer;
+
+        // Jika dataServer adalah array, cari data untuk sudut yang sesuai
+        if (Array.isArray(dataServer)) {
+          dataNilai = dataServer.find(item => item.sudut === currentPartaiData.peserta.sudut);
+        }
+
+        if (!dataNilai) return false;
+
+        // Update nilai dari server
+        if (dataNilai.wrong !== undefined) {
+          wrongCount = parseFloat(dataNilai.wrong) || 0;
+          localStorage.setItem('wrong_count', wrongCount);
+        }
+
+        if (dataNilai.stamina !== undefined) {
+          selectedStamina = parseFloat(dataNilai.stamina) || 0;
+          localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+        }
+
+        // Simpan ke penilaian_data
+        const totalData = hitungTotalNilai();
+        const dataPenilaian = {
+          wrong_count: wrongCount,
+          selected_stamina: selectedStamina,
+          total_nilai: totalData.totalFormatted,
+          pengurangan: totalData.pengurangan.toFixed(2),
+          timestamp: new Date().toISOString(),
+          partai_id: localStorage.getItem('partai'),
+          sudut: currentPartaiData.peserta.sudut,
+          nama_peserta: currentPartaiData.peserta.nama,
+          sumber: 'server' // Menandakan data berasal dari server
+        };
+
+        localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
+
+        console.log('💾 Data dari server tersimpan di localStorage:', dataPenilaian);
+        return true;
+      } catch (e) {
+        console.error('Error saving server data to localStorage:', e);
+        return false;
+      }
+    }
 
     // ======= FUNGSI UTAMA ========
     function loadDataFromLocalStorage() {
-      // Load data juri
       const namaJuri = localStorage.getItem('nama_juri');
       if (namaJuri) {
         $('#juri').text(namaJuri);
       }
 
-      // Cek login
       if (localStorage.getItem('is_login') < 1) {
         console.log('❌ Tidak login, redirect ke halaman login');
         localStorage.clear();
@@ -334,25 +657,17 @@
         return false;
       }
 
-      // Load data partai dari localStorage jika ada
       const savedPartaiData = localStorage.getItem('currentPartai');
       if (savedPartaiData) {
         try {
           currentPartaiData = JSON.parse(savedPartaiData);
-          console.log('✅ Data partai dimuat dari localStorage:', currentPartaiData.peserta.nama);
-
-          // Tampilkan data partai
+          console.log('✅ Data partai dimuat:', currentPartaiData.peserta.nama);
           updatePartaiDisplay();
 
-          // Cek apakah penilaian sedang berjalan
           const isStartedFromStorage = localStorage.getItem('is_started') === 'true';
           if (isStartedFromStorage) {
             isStarted = true;
-            $('#btn-wrong').prop('disabled', false);
-            $('#progress-status')
-              .removeClass('bg-primary')
-              .addClass('bg-success');
-            $('#progress-text').text('Sedang berjalan...');
+            isTimerRunning = true;
           }
 
         } catch (e) {
@@ -360,20 +675,19 @@
         }
       }
 
-      // Load wrong count
       const savedWrongCount = localStorage.getItem('wrong_count');
       if (savedWrongCount) {
         wrongCount = parseInt(savedWrongCount);
+        $('#kesalahan-count').text(wrongCount);
       }
 
-      // Load stamina
       const savedStamina = localStorage.getItem('selected_stamina');
       if (savedStamina) {
         selectedStamina = parseFloat(savedStamina);
       }
 
-      // Load status ready
       isReady = localStorage.getItem('is_ready') === 'true' || false;
+      hasUserClickedReady = localStorage.getItem('has_clicked_ready') === 'true' || false;
 
       return true;
     }
@@ -387,54 +701,127 @@
       }
     }
 
-    function updateDisplay() {
-      // Update wrong count
-      $('#kesalahan').text(wrongCount);
-      $('#stamina-value').text(`+${selectedStamina.toFixed(2)}`);
-    }
-
-    function hitungSkorAkhir() {
+    function hitungTotalNilai() {
       const pengurangan = wrongCount * 0.01;
-      const skorAkhir = Math.max(0, 9.90 - pengurangan + selectedStamina);
+      const total = 9.90 - pengurangan + selectedStamina;
       return {
-        wrong: wrongCount,
         pengurangan: pengurangan,
-        stamina: selectedStamina,
-        skorAkhir: skorAkhir
+        total: total,
+        totalFormatted: total.toFixed(2)
       };
     }
 
-    function kirimDataKeServer() {
-      if (!currentPartaiData) {
-        console.log('❌ Tidak ada data partai');
-        return;
+    function updateWrongButtonStyle() {
+      const btnWrong = $('#btn-wrong');
+
+      if (isStarted && isTimerRunning) {
+        // Timer sedang berjalan - aktif (merah terang, enabled)
+        btnWrong.removeClass('ready-state').addClass('active-state');
+        btnWrong.prop('disabled', false);
+      } else if (isReady) {
+        // Sudah ready tapi timer belum jalan - merah tapi disabled
+        btnWrong.removeClass('active-state').addClass('ready-state');
+        btnWrong.prop('disabled', true);
+      } else {
+        // Belum ready - abu-abu disabled
+        btnWrong.removeClass('ready-state active-state');
+        btnWrong.prop('disabled', true);
+      }
+    }
+
+    function updateDisplay() {
+      // Update wrong count
+      $('#kesalahan-count').text(wrongCount);
+      $('#stamina-value').text(`+${selectedStamina.toFixed(2)}`);
+
+      // Hitung dan tampilkan total nilai
+      const totalData = hitungTotalNilai();
+      $('#total-nilai').text(totalData.totalFormatted);
+
+      // Tampilkan detail perhitungan
+      $('#wrong-detail').text(wrongCount);
+      $('#pengurangan-detail').text(totalData.pengurangan.toFixed(2));
+      $('#stamina-detail').text(selectedStamina.toFixed(2));
+
+      // Update status ready badge
+      // const readyBadge = $('#ready-status-badge');
+      // if (isReady) {
+      //   readyBadge.text('✓ SIAP').addClass('ready').removeClass('bg-warning');
+      // } else {
+      //   readyBadge.text('⏳ BELUM').removeClass('ready').addClass('bg-warning');
+      // }
+
+      // Update tombol ready
+      const btnReady = $('#btn-ready');
+      const readyIconText = $('#ready-icon-text');
+
+      if (isTimerRunning) {
+        btnReady.prop('disabled', true).removeClass('ready-clicked');
+        btnReady.css('animation', 'none');
+        readyIconText.text('RUNNING');
+      } else if (isReady) {
+        btnReady.prop('disabled', true).addClass('ready-clicked');
+        btnReady.css('animation', 'none');
+        readyIconText.text('✓ SIAP');
+      } else if (currentPartaiData && !hasUserClickedReady) {
+        btnReady.prop('disabled', false).removeClass('ready-clicked');
+        btnReady.css('animation', 'pulse 2s infinite');
+        readyIconText.text('READY');
+      } else {
+        btnReady.prop('disabled', true).removeClass('ready-clicked');
+        btnReady.css('animation', 'none');
+        readyIconText.text('READY');
       }
 
-      const rekap = hitungSkorAkhir();
+      // Update style tombol wrong
+      updateWrongButtonStyle();
 
-      // Kirim ke server via WebSocket
+      // Update status message dengan info lengkap
+      let statusMsg = '';
+      if (!currentPartaiData) {
+        statusMsg = '⏳ Menunggu data...';
+      } else if (isTimerRunning) {
+        statusMsg = `⚡ Berjalan | Wrong: ${wrongCount} | Stamina: +${selectedStamina.toFixed(2)} | Total: ${totalData.totalFormatted}`;
+      } else if (isReady && !isTimerRunning) {
+        statusMsg = `✅ Siap | Wrong: ${wrongCount} | Stamina: +${selectedStamina.toFixed(2)} | Total: ${totalData.totalFormatted}`;
+      } else if (!isReady && !hasUserClickedReady) {
+        statusMsg = `🟢 Tekan READY | Wrong: ${wrongCount} | Stamina: +${selectedStamina.toFixed(2)} | Total: ${totalData.totalFormatted}`;
+      }
+
+      $('#status-message').text(statusMsg);
+
+      // Update kelas alert berdasarkan status
+      $('#status-message')
+        .removeClass('alert-info alert-warning alert-success')
+        .addClass(isTimerRunning ? 'alert-success' : (isReady ? 'alert-success' : 'alert-warning'));
+    }
+
+    function kirimDataKeServer() {
+      if (!currentPartaiData) return;
+
+      const totalData = hitungTotalNilai();
+
+      // Simpan ke localStorage TERLEBIH DAHULU
+      simpanDataKeLocalStorage();
+
       if (ws.readyState === WebSocket.OPEN) {
         const dataToSend = {
           type: 'simpan_data_seni_tunggal',
           id_jadwal: localStorage.getItem('partai'),
           id_juri: localStorage.getItem('juri'),
           sudut: currentPartaiData.peserta.sudut,
-          wrong: rekap.wrong,
-          stamina: rekap.stamina,
-          skor_akhir: rekap.skorAkhir.toFixed(2),
+          wrong: wrongCount,
+          stamina: selectedStamina,
+          skor_akhir: totalData.totalFormatted,
           timestamp: new Date().toISOString()
         };
 
         ws.send(JSON.stringify(dataToSend));
-        console.log(`📤 Data dikirim: Wrong=${rekap.wrong}, Stamina=${rekap.stamina}`);
+        console.log(`📤 Data dikirim: Total=${totalData.totalFormatted}`);
+        // showNotification(`Data tersimpan: Total ${totalData.totalFormatted}`);
       } else {
-        console.log('❌ WebSocket tidak terbuka, data disimpan lokal');
-        localStorage.setItem('last_skor', JSON.stringify({
-          wrong: rekap.wrong,
-          stamina: rekap.stamina,
-          skor_akhir: rekap.skorAkhir.toFixed(2),
-          timestamp: new Date().toISOString()
-        }));
+        console.log('⚠️ WebSocket tidak tersambung, data hanya tersimpan di localStorage');
+        // showNotification('Data tersimpan lokal (offline)', true);
       }
     }
 
@@ -442,46 +829,43 @@
       const container = document.getElementById("stamina-buttons-container");
       container.innerHTML = "";
 
-      console.log('Membuat tombol stamina...');
-
+      // Membuat 11 tombol (0.00 sampai 0.10)
       for (let i = 0; i <= 10; i++) {
         const val = (i / 100).toFixed(2);
         const btn = document.createElement("button");
-        btn.className = "btn btn-outline-dark stamina-btn m-1";
-        btn.textContent = `+${val}`;
-        btn.setAttribute("data-stamina", val);
-        btn.title = `Stamina: +${val}`;
+        btn.className = "btn btn-outline-dark stamina-btn";
 
-        // Tombol khusus untuk 0.00
+        // Format tampilan
         if (i === 0) {
-          btn.textContent = "0.00";
-          btn.title = "Tidak ada bonus stamina";
+          btn.textContent = "0";
+        } else {
+          btn.textContent = `+${i}`;
         }
 
-        // Tandai tombol aktif jika sesuai
+        btn.setAttribute("data-stamina", val);
+        btn.setAttribute("data-value", i);
+
+        // Tandai tombol aktif
         if (parseFloat(val) === selectedStamina) {
           btn.classList.add("button-active");
         }
 
         btn.onclick = function () {
-          // Hapus aktif dari semua tombol
           document.querySelectorAll(".stamina-btn").forEach(b => {
             b.classList.remove("button-active");
           });
-          // Tambahkan aktif ke tombol ini
           this.classList.add("button-active");
 
-          // Update nilai stamina
-          selectedStamina = parseFloat(val);
+          selectedStamina = parseFloat(this.getAttribute("data-stamina"));
           localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
 
-          console.log(`🎯 Stamina dipilih: +${selectedStamina.toFixed(2)}`);
+          // Update display
+          updateDisplay();
 
-          // Kirim update ke server
+          // Kirim ke server dan simpan ke localStorage
           kirimDataKeServer();
 
-          // Update tampilan
-          updateDisplay();
+          // showNotification(`Stamina: +${selectedStamina.toFixed(2)}`);
         };
 
         container.appendChild(btn);
@@ -490,173 +874,173 @@
       updateDisplay();
     }
 
-    function resetPenilaian() {
-      wrongCount = 0;
-      selectedStamina = 0.00;
+    function sendReadyToServer() {
+      if (!currentPartaiData) {
+        alert('Data partai belum tersedia');
+        return false;
+      }
 
-      localStorage.setItem('wrong_count', wrongCount);
-      localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+      isReady = true;
+      hasUserClickedReady = true;
+      localStorage.setItem('is_ready', 'true');
+      localStorage.setItem('has_clicked_ready', 'true');
 
-      // Reset tombol stamina
-      document.querySelectorAll(".stamina-btn").forEach(b => {
-        b.classList.remove("button-active");
-      });
-
-      // Aktifkan tombol 0.00
-      const zeroBtn = document.querySelector('.stamina-btn[data-stamina="0.00"]');
-      if (zeroBtn) {
-        zeroBtn.classList.add("button-active");
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: "ready",
+          id_juri: localStorage.getItem('juri'),
+          nama_juri: localStorage.getItem('nama_juri'),
+          id_jadwal: localStorage.getItem('partai'),
+          timestamp: new Date().toISOString()
+        }));
       }
 
       updateDisplay();
-      console.log('🔄 Penilaian direset');
+      // showNotification('Siap memulai penilaian');
+      return true;
     }
 
-    // FUNGSI UNTUK MENUTUP MODAL SEBELUM MEMBUKA YANG BARU
-    function closeExistingModal() {
-      if (isModalShowing && modalReadyInstance) {
-        console.log('🔒 Menutup modal yang sedang terbuka...');
-        modalReadyInstance.hide();
-
-        // Force remove backdrop jika ada
-        const existingBackdrops = document.querySelectorAll('.modal-backdrop');
-        existingBackdrops.forEach(backdrop => {
-          backdrop.parentNode.removeChild(backdrop);
-        });
-
-        // Force remove modal jika ada
-        const existingModals = document.querySelectorAll('.modal');
-        existingModals.forEach(modal => {
-          if (modal.classList.contains('show')) {
-            modal.classList.remove('show');
-            modal.style.display = 'none';
-          }
-        });
-
-        // Hapus class dari body
-        document.body.classList.remove('modal-open');
-        document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
-
-        isModalShowing = false;
-        modalReadyInstance = null;
-      }
-    }
-
-    function showModalReady() {
-      // Tutup modal yang sedang terbuka terlebih dahulu
-      closeExistingModal();
-
-      // Tunggu sebentar sebelum membuka modal baru
-      setTimeout(() => {
-        console.log('🎬 Membuka modal READY...');
-
-        // Update data di modal
-        const namaJuri = localStorage.getItem('nama_juri') || 'Juri';
-        $('#nama-juri-ready').text(namaJuri);
-
-        if (currentPartaiData) {
-          $('#nama-peserta-ready').text(currentPartaiData.peserta.nama);
-          $('#kategori-ready').text(currentPartaiData.kategori);
-          $('#kelas-ready').text(currentPartaiData.kelas);
+    // Fungsi untuk update tampilan tombol stamina
+    function updateStaminaButtons() {
+      document.querySelectorAll(".stamina-btn").forEach(b => {
+        const btnValue = parseFloat(b.getAttribute("data-stamina"));
+        if (btnValue === selectedStamina) {
+          b.classList.add("button-active");
+        } else {
+          b.classList.remove("button-active");
         }
-
-        // Buat instance modal baru
-        const modalElement = document.getElementById('modalReady');
-        modalReadyInstance = new bootstrap.Modal(modalElement, {
-          backdrop: 'static',
-          keyboard: false
-        });
-
-        // Event listener untuk modal
-        modalElement.addEventListener('show.bs.modal', function () {
-          console.log('Modal READY akan ditampilkan');
-        });
-
-        modalElement.addEventListener('shown.bs.modal', function () {
-          console.log('Modal READY ditampilkan');
-          isModalShowing = true;
-        });
-
-        modalElement.addEventListener('hidden.bs.modal', function () {
-          console.log('Modal READY ditutup, mengirim status READY ke server');
-          isModalShowing = false;
-          isReady = true;
-          localStorage.setItem('is_ready', 'true');
-
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-              type: "ready",
-              id_juri: localStorage.getItem('juri'),
-              nama_juri: localStorage.getItem('nama_juri'),
-              timestamp: new Date().toISOString()
-            }));
-          }
-        });
-
-        // Tampilkan modal
-        modalReadyInstance.show();
-      }, 100); // Delay 100ms untuk memastikan modal lama sudah tertutup
+      });
     }
 
     // ======= EVENT LISTENERS =======
     document.addEventListener('DOMContentLoaded', function () {
-      console.log('DOM loaded, inisialisasi aplikasi...');
-
-      // Load data dari localStorage terlebih dahulu
       if (loadDataFromLocalStorage()) {
-        // Inisialisasi tombol stamina
         buatTombolStamina();
 
-        // Update tampilan awal
+        // Load data dari localStorage setelah partai dimuat
+        if (currentPartaiData) {
+          loadDataDariLocalStorage();
+          updateStaminaButtons();
+        }
+
         updateDisplay();
       }
 
-      // Event untuk tombol WRONG MOVE
       $('#btn-wrong').on('click', function () {
         if (!isStarted) {
-          console.log('❌ Penilaian belum dimulai');
+          alert('Penilaian belum dimulai oleh operator');
           return;
         }
 
         wrongCount++;
         localStorage.setItem('wrong_count', wrongCount);
 
-        console.log(`✗ WRONG MOVE: Total ${wrongCount} wrong`);
-
-        // Update tampilan
+        // Update display dulu
         updateDisplay();
 
-        // Kirim data ke server
+        // Kirim ke server dan simpan ke localStorage
         kirimDataKeServer();
+
+        // showNotification(`Wrong: ${wrongCount}`);
+      });
+
+      // Tombol READY langsung di sini (tanpa modal)
+      $('#btn-ready').on('click', function () {
+        if (isTimerRunning) {
+          alert('Tidak bisa ready saat penilaian sedang berjalan');
+          return;
+        }
+
+        if (!currentPartaiData) {
+          alert('Data partai belum tersedia');
+          return;
+        }
+
+        if (isReady) {
+          return;
+        }
+
+        sendReadyToServer();
       });
     });
 
-    // ======= WEBSOCKET HANDLERS =======
+    // ======= WEBSOCKET =======
     let ws;
 
     function initWebSocket() {
       ws = new WebSocket('ws://' + hostname + ':3000');
 
       ws.onopen = function () {
-        console.log('✅ WebSocket connected to server');
-
-        // Kirim status koneksi
-        ws.send(JSON.stringify({
-          type: "juri_connected",
-          id_juri: localStorage.getItem('juri'),
-          nama_juri: localStorage.getItem('nama_juri')
-        }));
+        console.log('✅ WebSocket connected');
       };
 
       ws.onmessage = function (event) {
         try {
           const message = JSON.parse(event.data);
-          console.log(`📥 Pesan dari server: ${message.type}`);
+          console.log(`📥 Pesan: ${message.type}`);
 
           switch (message.type) {
             case 'partai_data_tunggal':
+              if (isTimerRunning == false) {
+                $('#btn-ready').prop('disabled', false).removeClass('ready-clicked');
+                $('#status-message').text('🟢 Tekan READY').removeClass('alert-info alert-success').addClass('alert-warning');
+
+                const readyIconText = $('#ready-icon-text');
+                readyIconText.text('READY');
+              }
               handlePartaiData(message.data);
+              break;
+
+            case 'update_total_nilai':
+              handleUpdateTotalNilai(message.data);
+              console.log("DATA SERVER");
+              console.log(message.data);
+              break;
+
+            case 'ambil_nilai_terkini_success':
+              console.log('📥 Nilai terkini diterima:', message.data);
+              // Cek apakah data kosong (array kosong)
+              if (message.data && Array.isArray(message.data) && message.data.length === 0) {
+                console.log('⚠️ Data nilai terkini kosong, mereset nilai ke 0');
+
+                // Reset nilai ke 0
+                wrongCount = 0;
+                selectedStamina = 0.00;
+
+                // Simpan ke localStorage
+                localStorage.setItem('wrong_count', '0');
+                localStorage.setItem('selected_stamina', '0.00');
+
+                // Simpan ke penilaian_data dengan nilai 0
+                if (currentPartaiData) {
+                  const totalData = hitungTotalNilai(); // Akan menghitung dengan wrongCount=0, selectedStamina=0
+                  const dataPenilaian = {
+                    wrong_count: 0,
+                    selected_stamina: 0.00,
+                    total_nilai: totalData.totalFormatted,
+                    pengurangan: '0.00',
+                    timestamp: new Date().toISOString(),
+                    partai_id: localStorage.getItem('partai'),
+                    sudut: currentPartaiData.peserta.sudut,
+                    nama_peserta: currentPartaiData.peserta.nama,
+                    sumber: 'server_kosong'
+                  };
+
+                  localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
+                  console.log('💾 Data reset ke 0 disimpan ke localStorage:', dataPenilaian);
+                }
+
+                // Update tampilan
+                updateStaminaButtons();
+                updateDisplay();
+
+                // showNotification('Data nilai direset ke 0');
+              } else if (currentPartaiData) {
+                // Jika data tidak kosong, simpan data dari server ke localStorage
+                simpanDataDariServerKeLocalStorage(message.data);
+                updateStaminaButtons();
+                updateDisplay();
+              }
               break;
 
             case 'tick':
@@ -671,69 +1055,152 @@
               handleStopped();
               break;
 
-            case 'reset':
-              handleReset();
+            case 'ended':
+              localStorage.setItem('is_started', 'false');
+              localStorage.setItem('is_ready', 'false');
+              localStorage.setItem('has_clicked_ready', 'false');
+              $('#btn-ready').prop('disabled', false).removeClass('ready-clicked');
+              $('#status-message').text('🟢 Tekan READY').removeClass('alert-info alert-success').addClass('alert-warning');
+
+              const readyIconText = $('#ready-icon-text');
+              readyIconText.text('READY');
               break;
 
             case 'data_saved':
-              console.log('✅ Server konfirmasi data tersimpan');
+              console.log('✅ Data tersimpan');
               break;
-
-            case 'connection_ack':
-              console.log('✅ Terhubung ke server');
-              break;
-
-            default:
-              console.log(`📨 Pesan tidak dikenali: ${message.type}`);
           }
         } catch (e) {
-          console.log(`❌ Error parsing message: ${e.message}`);
+          console.log(`❌ Error: ${e.message}`);
         }
       };
 
       ws.onclose = function () {
-        console.log('❌ WebSocket disconnected');
-        // Coba reconnect setelah 3 detik
         setTimeout(initWebSocket, 3000);
-      };
-
-      ws.onerror = function (error) {
-        console.log(`❌ WebSocket error: ${error}`);
       };
     }
 
-    // Inisialisasi WebSocket
     initWebSocket();
 
-    // ======= HANDLER FUNCTIONS =======
+    // ======= HANDLER =======
     function handlePartaiData(data) {
-      console.log('🔄 Menerima data partai baru dari server');
-
       currentPartaiData = data;
-
-      // Simpan data baru ke localStorage
       localStorage.setItem('partai', data.partai);
       localStorage.setItem('currentPartai', JSON.stringify(data));
+      console.log(`📥 Data partai diterima: ${data.peserta.nama} (Sudut ${data.peserta.sudut})`);
 
-      // Reset state untuk partai baru
-      resetPenilaian();
+      const dataNilai = {
+        type: 'ambil_nilai_terkini',
+        id_jadwal: data.partai,
+        sudut: data.peserta.sudut,
+        juri: localStorage.getItem('juri')
+      };
 
-      // Update tampilan
+      ws.send(JSON.stringify(dataNilai));
+
+      // CEK DATA DARI LOCALSTORAGE TERLEBIH DAHULU
+      let dataLoaded = loadDataDariLocalStorage();
+
+      // Jika tidak ada data di localStorage, cek dari server
+      if (!dataLoaded && data.nilai_terkini) {
+        if (data.nilai_terkini && data.nilai_terkini[data.peserta.sudut]) {
+          const nilaiSudut = data.nilai_terkini[data.peserta.sudut];
+
+          if (nilaiSudut.wrong !== undefined) {
+            wrongCount = nilaiSudut.wrong;
+            localStorage.setItem('wrong_count', wrongCount);
+          }
+
+          if (nilaiSudut.stamina !== undefined) {
+            selectedStamina = nilaiSudut.stamina;
+            localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+          }
+
+          // Simpan ke penilaian_data
+          const totalData = hitungTotalNilai();
+          const dataPenilaian = {
+            wrong_count: wrongCount,
+            selected_stamina: selectedStamina,
+            total_nilai: totalData.totalFormatted,
+            pengurangan: totalData.pengurangan.toFixed(2),
+            timestamp: new Date().toISOString(),
+            partai_id: localStorage.getItem('partai'),
+            sudut: data.peserta.sudut,
+            nama_peserta: data.peserta.nama,
+            sumber: 'server_nilai_terkini'
+          };
+
+          localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
+
+          console.log(`📥 Memuat data dari server: Wrong=${wrongCount}, Stamina=${selectedStamina}`);
+          dataLoaded = true;
+        }
+      }
+
+      // RESET STATE: Matikan timer dan ready status
+      isStarted = false;
+      isTimerRunning = false;
+      isReady = false;
+
+      // Simpan ke localStorage
+      localStorage.setItem('is_started', 'false');
+      localStorage.setItem('is_ready', 'false');
+
+      // Jangan reset hasUserClickedReady agar tombol ready bisa diklik lagi
+      // Tapi kita perlu set agar user bisa klik ready lagi
+      if (hasUserClickedReady) {
+        // Jika sebelumnya sudah pernah klik ready, reset agar bisa klik lagi
+        hasUserClickedReady = false;
+        localStorage.setItem('has_clicked_ready', 'false');
+      }
+
       updatePartaiDisplay();
 
-      // Update progress bar
-      $('#progress-status').css('width', '0%');
-      $('#progress-text').text('Menunggu mulai...');
+      // Simpan data ke localStorage setelah memuat
+      simpanDataKeLocalStorage();
 
-      // Nonaktifkan tombol sampai mulai
-      $('#btn-wrong').prop('disabled', true);
-      isStarted = false;
-      localStorage.setItem('is_started', 'false');
+      // Update tampilan tombol stamina dengan nilai yang sudah di-load
+      updateStaminaButtons();
+      updateDisplay();
 
-      // Tampilkan modal ready menggunakan fungsi baru
-      showModalReady();
+      console.log('✅ State direset: Timer mati, ready status false, wrong button disabled');
+    }
 
-      console.log(`📋 Partai baru: ${data.peserta.nama} (${data.kategori}/${data.kelas})`);
+    function handleUpdateTotalNilai(message) {
+      console.log('📥 Menerima update total nilai:', message);
+
+      // Cek apakah pesan untuk partai yang sedang aktif
+      const currentPartaiId = localStorage.getItem('partai');
+      if (message.partai !== currentPartaiId) {
+        return; // Bukan untuk partai ini
+      }
+
+      // Cek apakah untuk sudut yang sama
+      if (currentPartaiData && message.sudut === currentPartaiData.peserta.sudut) {
+        const data = message.data;
+
+        // Update wrong count jika ada
+        if (data.wrong !== undefined) {
+          wrongCount = data.wrong;
+          localStorage.setItem('wrong_count', wrongCount);
+        }
+
+        // Update stamina jika ada
+        if (data.stamina !== undefined) {
+          selectedStamina = data.stamina;
+          localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+        }
+
+        // Update tampilan
+        updateStaminaButtons();
+        updateDisplay();
+
+        // Simpan ke localStorage dengan format penilaian_data
+        simpanDataKeLocalStorage();
+
+        console.log(`✅ Nilai diupdate dari broadcast: Wrong=${wrongCount}, Stamina=${selectedStamina}`);
+        // showNotification('Data diupdate dari server');
+      }
     }
 
     function updateTimer(seconds) {
@@ -742,89 +1209,50 @@
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         timerElement.textContent = `⏱️ ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
 
-        // Update progress bar berdasarkan waktu
-        if (seconds <= 180) { // Maksimal 3 menit
-          const progressPercent = ((180 - seconds) / 180) * 100;
-          $('#progress-status').css('width', `${progressPercent}%`);
+      const wasRunning = isTimerRunning;
+      isTimerRunning = seconds > 0;
 
-          if (seconds > 0) {
-            $('#progress-text').text(`Berjalan: ${m}:${String(s).padStart(2, '0')}`);
-          }
-        }
+      if (wasRunning !== isTimerRunning) {
+        updateDisplay();
       }
     }
 
     function handleStarted() {
-      console.log('▶️ PENILAIAN DIMULAI');
-      $('#btn-wrong').prop('disabled', false);
       isStarted = true;
+      isTimerRunning = true;
       localStorage.setItem('is_started', 'true');
 
-      $('#progress-status')
-        .removeClass('bg-primary')
-        .addClass('bg-success')
-        .css('width', '0%');
-      $('#progress-text').text('Sedang berjalan...');
-
-      // Tutup modal jika masih terbuka
-      if (isModalShowing && modalReadyInstance) {
-        modalReadyInstance.hide();
-      }
+      updateDisplay();
+      // showNotification('Penilaian dimulai');
     }
 
     function handleStopped() {
-      console.log('⏹️ PENILAIAN DIHENTIKAN');
-      $('#btn-wrong').prop('disabled', true);
       isStarted = false;
+      isTimerRunning = false;
       localStorage.setItem('is_started', 'false');
+      localStorage.setItem('is_ready', 'false');
+      localStorage.setItem('has_clicked_ready', 'false');
 
-      $('#progress-status')
-        .removeClass('bg-success')
-        .addClass('bg-danger')
-        .css('width', '100%');
-      $('#progress-text').text('Selesai');
-
-      // Kirim data final
       kirimDataKeServer();
-    }
-
-    function handleReset() {
-      console.log('🔄 RESET dari server');
-      resetPenilaian();
-
-      // Reset tampilan
-      $('#progress-status')
-        .removeClass('bg-danger bg-success')
-        .addClass('bg-primary')
-        .css('width', '0%');
-      $('#progress-text').text('Menunggu partai baru...');
-
-      // Tampilkan modal ready untuk partai baru
-      if (currentPartaiData) {
-        showModalReady();
-      }
+      updateDisplay();
+      // showNotification('Penilaian selesai');
     }
 
     // ======= FUNGSI TAMBAHAN =======
     function konfirmasiKeluar() {
-      const rekap = hitungSkorAkhir();
+      const totalData = hitungTotalNilai();
       const yakin = confirm(
         "Apakah Anda yakin ingin keluar?\n\n" +
-        `Wrong: ${rekap.wrong}\n` +
-        `Stamina: +${rekap.stamina.toFixed(2)}\n\n` +
+        `Wrong: ${wrongCount}\n` +
+        `Stamina: +${selectedStamina.toFixed(2)}\n` +
+        `Total Nilai: ${totalData.totalFormatted}\n\n` +
         "Data akan dikirim sebelum keluar."
       );
 
       if (yakin) {
-        console.log('👋 Keluar dari aplikasi juri');
-        kirimDataKeServer(); // Kirim data terakhir
-
-        // Tutup modal jika terbuka
-        if (isModalShowing && modalReadyInstance) {
-          modalReadyInstance.hide();
-        }
-
+        kirimDataKeServer();
         localStorage.clear();
         window.location.href = 'index.html';
       }
@@ -834,31 +1262,18 @@
       event.preventDefault();
       const yakin = confirm("Refresh halaman?\nData akan disimpan sebelum refresh.");
       if (yakin) {
-        console.log('🔄 Me-refresh halaman');
-        kirimDataKeServer(); // Kirim data sebelum refresh
-
-        // Tutup modal jika terbuka
-        if (isModalShowing && modalReadyInstance) {
-          modalReadyInstance.hide();
-        }
-
+        kirimDataKeServer();
         window.location.href = 'penilaian.html';
       }
     }
 
-    // Fungsi fullscreen
+    // Fullscreen functions
     window.openFullscreen = () => {
       const elem = document.documentElement;
       if (elem.requestFullscreen) elem.requestFullscreen();
       else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
       $("#openfull").hide();
       $("#exitfull").show();
-      console.log('📺 Masuk mode fullscreen');
-
-      // Tutup modal jika terbuka saat masuk fullscreen
-      if (isModalShowing && modalReadyInstance) {
-        modalReadyInstance.hide();
-      }
     };
 
     window.closeFullscreen = () => {
@@ -866,7 +1281,6 @@
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       $("#openfull").show();
       $("#exitfull").hide();
-      console.log('📱 Keluar dari fullscreen');
     };
   </script>
 </body>

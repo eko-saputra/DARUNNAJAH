@@ -899,11 +899,11 @@
 
       ws.onopen = function () {
         console.log('✅ WebSocket connected to server');
-        ws.send(JSON.stringify({
-          type: 'dewan_connected',
-          id_juri: localStorage.getItem('juri'),
-          nama_juri: localStorage.getItem('nama_juri')
-        }));
+        // ws.send(JSON.stringify({
+        //   type: 'dewan_connected',
+        //   id_juri: localStorage.getItem('juri'),
+        //   nama_juri: localStorage.getItem('nama_juri')
+        // }));
       };
 
       ws.onmessage = handleWebSocketMessage;

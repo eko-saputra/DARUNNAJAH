@@ -246,6 +246,26 @@ ORDER BY peserta.nm_lengkap ASC;
               simpan_nilai_seni_regu_dewan(db, payload);
               break;
 
+            case "ambil_nilai_terkini":
+              console.log(payload);
+              const sqlnilai = "SELECT * FROM nilai_seni_tunggal WHERE id_jadwal = ? AND sudut = ? AND id_juri = ?";
+              db.query(sqlnilai, [payload.id_jadwal, payload.sudut, payload.juri], function (err, result) {
+                if (err) {
+                  console.error("❌ Gagal mengambil nilai terkini:", err);
+                  return;
+                }
+
+                console.log("✅ Nilai terkini berhasil diambil:", result);
+
+                ws.send(
+                  JSON.stringify({
+                    type: "ambil_nilai_terkini_success",
+                    data: result,
+                  })
+                );
+              });
+              break;
+
             case "partai_finish":
               console.log(payload);
               const id_partai = payload.partai;
@@ -536,15 +556,7 @@ ORDER BY peserta.nm_lengkap ASC;
             case "set_partai_tunggal":
               console.log("Menerima data partai, menyiarkan ke semua klien...");
               console.log(JSON.stringify(payload));
-              // Iterasi (ulangi) ke semua klien yang terhubung ke server ini
               broadcast({ type: "partai_data_tunggal", data: payload });
-              // wss.clients.forEach(client => {
-              //   // Pastikan klien dalam keadaan terbuka (siap menerima pesan)
-              //   if (client.readyState === WebSocket.OPEN) {
-              //     // Kirim kembali data yang sama ke klien tersebut
-              //     client.send(JSON.stringify(data));
-              //   }
-              // });
               break;
 
             case "kirim_verifikasi":
@@ -1918,18 +1930,16 @@ function simpan_nilai_seni_tunggal(db, payload) {
   }
 
   // Konversi tipe data - wrong adalah INTEGER (jumlah kesalahan)
-  // Contoh: wrong = 5 (artinya 5 kesalahan)
   const wrongCount = parseInt(wrong) || 0;
   const staminaValue = parseFloat(stamina) || 0;
 
   // Wrong disimpan sebagai decimal di database (4,2)
-  // Contoh: wrongCount = 5 → wrongValue = 5.00
   const wrongValue = wrongCount.toFixed(2);
 
   // Data untuk disimpan sesuai struktur tabel
   const data = [
-    wrongValue,        // wrong (decimal 4,2) - contoh: 5.00
-    staminaValue,      // stamina (decimal 4,2) - contoh: 0.05
+    wrongValue,        // wrong (decimal 4,2)
+    staminaValue,      // stamina (decimal 4,2)
     id_jadwal,
     id_juri,
     sudut
@@ -1954,9 +1964,8 @@ function simpan_nilai_seni_tunggal(db, payload) {
       // Hitung total nilai untuk broadcast ke monitor
       const nilaiTerkini = rows.map((row) => {
         // Rumus: 9.90 - (wrong × 0.01) + stamina
-        // wrong di database adalah decimal (contoh: 5.00)
         const wrongCount = parseFloat(row.wrong) || 0;
-        const wrongPenalty = wrongCount * 0.01; // Setiap wrong = -0.01
+        const wrongPenalty = wrongCount * 0.01;
         const totalNilai = 9.90 - wrongPenalty + (parseFloat(row.stamina) || 0);
 
         return {
@@ -1994,7 +2003,7 @@ function simpan_nilai_seni_tunggal(db, payload) {
     }
 
     if (results.length === 0) {
-      // 🔹 INSERT data baru
+      // INSERT data baru
       const insertSql = `
         INSERT INTO nilai_seni_tunggal 
         (wrong, stamina, id_jadwal, id_juri, sudut) 
@@ -2006,14 +2015,14 @@ function simpan_nilai_seni_tunggal(db, payload) {
           console.error("Error details:", err.message);
         } else {
           console.log(
-            `✅ INSERT nilai seni tunggal sukses (Partai ${id_jadwal}, Sudut ${sudut}, Juri ${id_juri})`
+            `✅ INSERT nilai_seni_tunggal (Partai ${id_jadwal}, Sudut ${sudut}, Juri ${id_juri})`
           );
           console.log(`   Wrong: ${wrongValue}, Stamina: ${staminaValue}`);
           broadcastNilai();
         }
       });
     } else {
-      // 🔄 UPDATE data yang sudah ada
+      // UPDATE data yang sudah ada
       const updateSql = `
         UPDATE nilai_seni_tunggal SET 
           wrong = ?, 
@@ -2026,7 +2035,7 @@ function simpan_nilai_seni_tunggal(db, payload) {
           console.error("Error details:", err.message);
         } else {
           console.log(
-            `🔄 UPDATE nilai seni tunggal sukses (Partai ${id_jadwal}, Sudut ${sudut}, Juri ${id_juri})`
+            `🔄 UPDATE nilai_seni_tunggal (Partai ${id_jadwal}, Sudut ${sudut}, Juri ${id_juri})`
           );
           console.log(`   Wrong: ${wrongValue}, Stamina: ${staminaValue}`);
           broadcastNilai();
