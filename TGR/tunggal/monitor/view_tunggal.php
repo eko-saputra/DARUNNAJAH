@@ -702,7 +702,7 @@
     <!-- Smooth Marquee Footer -->
     <div class="footer-marquee">
         <div class="marquee-content">
-            APLIKASI DigitalScore Pencak Silat Kota Dumai &copy; <?= date('Y') ?> - IPSI Kota
+            APLIKASI DigitalScore Pencak Silat Kota Dumai &copy; 2025 - IPSI Kota
             Dumai
         </div>
     </div>
@@ -713,6 +713,34 @@
         let judgeElements = [];
         let currentTimer = 0;
         let totalNilaiJuri = [];
+
+        // Tambahkan variabel global untuk menyimpan nilai dewan
+        let dewanValues = {
+            hukum_1: 0,
+            hukum_2: 0,
+            hukum_3: 0,
+            hukum_4: 0,
+            hukum_5: 0
+        };
+
+        // Flag untuk menandai apakah rekap harus ditampilkan (hanya dari broadcast_selesai_seni)
+        let shouldShowRekap = false;
+
+        // Fungsi untuk menghitung total penalty dari dewan
+        function calculateDewanPenalty(dewanData) {
+            if (!dewanData) return 0;
+
+            // Jumlahkan semua nilai hukum (biasanya negatif)
+            const total = Object.keys(dewanData).reduce((sum, key) => {
+                if (key.startsWith('hukum_')) {
+                    return sum + (parseFloat(dewanData[key]) || 0);
+                }
+                return sum;
+            }, 0);
+
+            console.log('📊 Total penalty dari dewan:', total);
+            return Math.abs(total); // Mengembalikan nilai absolut untuk penalty
+        }
 
         // Fungsi untuk menyimpan semua data ke localStorage
         function saveAllData() {
@@ -732,7 +760,10 @@
             // Simpan status juri
             localStorage.setItem('judge_status', JSON.stringify(judgeStatus));
 
-            console.log('All data saved to localStorage');
+            // Simpan nilai dewan
+            localStorage.setItem('dewan_values', JSON.stringify(dewanValues));
+
+            // console.log('All data saved to localStorage');
         }
 
         // Fungsi untuk memuat semua data dari localStorage
@@ -744,9 +775,6 @@
                     judgeStatus[id_juri - 1] = true;
                 }
             });
-
-            // Load total nilai juri
-            totalNilaiJuri = JSON.parse(localStorage.getItem('total_nilai_juri') || '[]');
 
             // Load timer
             currentTimer = parseInt(localStorage.getItem('current_timer') || '0');
@@ -760,7 +788,34 @@
                 judgeStatus = storedJudgeStatus;
             }
 
-            console.log('All data loaded from localStorage');
+            // Load nilai dewan
+            const storedDewan = JSON.parse(localStorage.getItem('dewan_values') || 'null');
+            if (storedDewan) {
+                dewanValues = storedDewan;
+            }
+
+            // Cek apakah ada partai yang sedang aktif
+            const currentPartai = JSON.parse(localStorage.getItem('currentPartai') || 'null');
+            if (currentPartai && ws && ws.readyState === WebSocket.OPEN) {
+                // Minta data nilai terkini dari server
+                const dataNilai = {
+                    type: 'ambil_nilai_terkini_monitor',
+                    id_jadwal: currentPartai.partai,
+                    sudut: currentPartai.peserta.sudut,
+                };
+
+                const dataNilai1 = {
+                    type: 'ambil_nilai_dewan_monitor',
+                    id_jadwal: currentPartai.partai,
+                    sudut: currentPartai.peserta.sudut,
+                };
+
+                console.log('📤 Memuat ulang: meminta data nilai dari server');
+                ws.send(JSON.stringify(dataNilai));
+                ws.send(JSON.stringify(dataNilai1));
+            }
+
+            // console.log('All data loaded from localStorage');
             return totalNilaiJuri;
         }
 
@@ -899,7 +954,7 @@
             // Set timer untuk auto-hide setelah 5 detik
             rekapAutoHideTimer = setTimeout(() => {
                 closeRekapFullscreen();
-            }, 5000); // 5000ms = 5 detik
+            }, 5000);
 
             // Untuk debugging
             console.log('Rekap ditampilkan, auto-hide dalam 5 detik');
@@ -970,6 +1025,23 @@
                         $('.babak').text(data.babak.toUpperCase());
                         $('.kategori').text("SENI " + data.kategori.toUpperCase());
                         $('.kelas').text(data.kelas.toUpperCase());
+
+                        // Minta data nilai terkini dari server saat koneksi terbuka
+                        const dataNilai = {
+                            type: 'ambil_nilai_terkini_monitor',
+                            id_jadwal: data.partai,
+                            sudut: data.peserta.sudut,
+                        };
+
+                        const dataNilai1 = {
+                            type: 'ambil_nilai_dewan_monitor',
+                            id_jadwal: data.partai,
+                            sudut: data.peserta.sudut,
+                        };
+
+                        console.log('📤 Koneksi terbuka: meminta data nilai dari server');
+                        ws.send(JSON.stringify(dataNilai));
+                        ws.send(JSON.stringify(dataNilai1));
                     } catch (e) {
                         console.error("Error parsing data:", e);
                     }
@@ -985,6 +1057,13 @@
                         // Reset data untuk partai baru
                         judgeStatus.fill(false);
                         totalNilaiJuri = [];
+                        dewanValues = {
+                            hukum_1: 0,
+                            hukum_2: 0,
+                            hukum_3: 0,
+                            hukum_4: 0,
+                            hukum_5: 0
+                        };
 
                         // Bersihkan localStorage untuk partai baru
                         localStorage.removeItem('juri_ready');
@@ -994,11 +1073,17 @@
                         localStorage.removeItem('hasil_per_gerakan');
                         localStorage.removeItem('selected_stamina');
                         localStorage.removeItem('current_stats');
+                        localStorage.removeItem('dewan_values');
+                        localStorage.removeItem('penalty');
+                        
+                        // Reset flag rekap
+                        shouldShowRekap = false;
 
                         generateJudgeTable();
                         updateJudgeDisplay();
 
                         const p = message.data;
+                        console.log('📥 Data partai diterima:', p);
                         localStorage.setItem('partai', p.partai);
                         localStorage.setItem('currentPartai', JSON.stringify(p));
 
@@ -1009,11 +1094,137 @@
                         $('.kategori').text(p.kategori.toUpperCase());
                         $('.kelas').text(p.kelas.toUpperCase());
 
+                        // Minta data nilai terkini dari server
+                        const dataNilai = {
+                            type: 'ambil_nilai_terkini_monitor',
+                            id_jadwal: p.partai,
+                            sudut: p.peserta.sudut,
+                        };
+
+                        const dataNilai1 = {
+                            type: 'ambil_nilai_dewan_monitor',
+                            id_jadwal: p.partai,
+                            sudut: p.peserta.sudut,
+                        };
+
+                        ws.send(JSON.stringify(dataNilai));
+                        ws.send(JSON.stringify(dataNilai1));
                         saveAllData();
                     }
 
+                    if (message.type === 'ambil_nilai_terkini_monitor_success') {
+                        console.log('📥 Nilai terkini diterima dari server:', message.data);
+
+                        // Reset totalNilaiJuri
+                        totalNilaiJuri = [];
+
+                        // Proses data dari server
+                        if (message.data && Array.isArray(message.data) && message.data.length > 0) {
+                            // Konversi data dari server ke format yang digunakan aplikasi
+                            message.data.forEach(item => {
+                                const wrong = parseFloat(item.wrong) || 0;
+                                const stamina = parseFloat(item.stamina) || 0;
+
+                                // Rumus: total = 9.90 - (wrong * 0.01) + stamina
+                                const total = (9.90 - (wrong * 0.01)) + stamina;
+
+                                totalNilaiJuri.push({
+                                    juri: parseInt(item.id_juri),
+                                    id_nilai: item.id_nilai,
+                                    wrong: wrong,
+                                    stamina: stamina,
+                                    total: parseFloat(total)
+                                });
+                            });
+
+                            console.log('✅ Data nilai setelah diproses:', totalNilaiJuri);
+
+                            // Update tampilan nilai juri
+                            totalNilaiJuri.forEach((item) => {
+                                const juriIndex = item.juri - 1;
+                                if (judgeElements[juriIndex]) {
+                                    judgeElements[juriIndex].score.textContent = item.total.toFixed(2);
+                                }
+                            });
+
+                            // Hitung statistik jika semua juri sudah ada nilainya
+                            if (totalNilaiJuri.length === 4) {
+                                // Ambil penalty dari dewan yang sudah tersimpan
+                                const totalPenalty = calculateDewanPenalty(dewanValues);
+                                localStorage.setItem('penalty', totalPenalty.toString());
+                                calculateStats(totalPenalty);
+                            }
+
+                            // Simpan ke localStorage sebagai cache
+                            saveAllData();
+                        } else {
+                            console.log('⚠️ Data nilai kosong dari server');
+                            // Reset nilai ke 9.90 untuk semua juri
+                            for (let i = 1; i <= 4; i++) {
+                                totalNilaiJuri.push({
+                                    juri: i,
+                                    wrong: 0,
+                                    stamina: 0,
+                                    total: 9.90
+                                });
+
+                                const juriIndex = i - 1;
+                                if (judgeElements[juriIndex]) {
+                                    judgeElements[juriIndex].score.textContent = "9.90";
+                                }
+                            }
+                            saveAllData();
+                        }
+                    }
+
+                    // Handler untuk data dewan
+                    if (message.type === 'ambil_nilai_terkini_dewan_monitor_success') {
+                        // console.log('📥 Nilai dewan terkini diterima dari server:', message.data);
+
+                        // Simpan nilai dewan
+                        if (message.data && message.data.length > 0) {
+                            const dewanData = message.data[0]; // Ambil data pertama
+                            console.log('📥 Nilai dewan:', dewanData);
+                            dewanValues = {
+                                hukum_1: parseFloat(dewanData.hukum_1) || 0,
+                                hukum_2: parseFloat(dewanData.hukum_2) || 0,
+                                hukum_3: parseFloat(dewanData.hukum_3) || 0,
+                                hukum_4: parseFloat(dewanData.hukum_4) || 0,
+                                hukum_5: parseFloat(dewanData.hukum_5) || 0
+                            };
+
+                            // Hitung total penalty
+                            const totalPenalty = calculateDewanPenalty(dewanValues);
+                            localStorage.setItem('penalty', totalPenalty.toString());
+                            localStorage.setItem('dewan_values', JSON.stringify(dewanValues));
+
+                            console.log('✅ Nilai dewan tersimpan:', dewanValues);
+                            console.log('✅ Total penalty:', totalPenalty);
+
+                            // Update statistik jika data juri sudah ada
+                            if (totalNilaiJuri.length === 4) {
+                                calculateStats(totalPenalty);
+                            }
+                        }
+                    }
+
+                    // if (message.type === 'ambil_nilai_terkini_dewan_monitor_success') {
+                    //     console.log('📥 Nilai dewan terkini diterima dari server:', message.data);
+
+                    //     // Proses data jurus aktif dan hasil per gerakan
+                    //     if (message.data && message.data.jurus_aktif) {
+                    //         localStorage.setItem('jurus_aktif', JSON.stringify(message.data.jurus_aktif));
+                    //     }
+
+                    //     if (message.data && message.data.hasil_per_gerakan) {
+                    //         localStorage.setItem('hasil_per_gerakan', JSON.stringify(message.data.hasil_per_gerakan));
+                    //     }
+                    // }
+
                     if (message.type === 'update_total_nilai') {
-                        // Update total nilai juri
+                        // Update total nilai juri dari server
+                        console.log('📥 Update total nilai:', message.data);
+
                         message.data.forEach(newItem => {
                             const index = totalNilaiJuri.findIndex(item => item.juri === newItem.juri);
                             if (index !== -1) {
@@ -1059,15 +1270,18 @@
                         // Hitung dan tampilkan statistik
                         const stats = calculateStats(penalty);
 
+                        // Set flag bahwa rekap harus ditampilkan
+                        shouldShowRekap = true;
+
                         // Tampilkan rekap fullscreen secara otomatis
                         setTimeout(() => {
                             showRekapFullscreen();
 
                             // Auto-close setelah 5 detik
                             setTimeout(() => {
-                                closeRekapFullscreen(); // PERBAIKAN: Tambahkan ()
-                            }, 5000); // 5000ms = 5 detik
-                        }, 1000); // Delay 1 detik sebelum menampilkan
+                                closeRekapFullscreen();
+                            }, 5000);
+                        }, 1000);
 
                         saveAllData();
                     }
@@ -1175,6 +1389,10 @@
             generateJudgeTable();
             updateJudgeDisplay();
 
+            // HAPUS bagian yang menampilkan rekap otomatis saat load
+            // Rekap hanya akan muncul dari event broadcast_selesai_seni
+            // atau dari shortcut keyboard Ctrl+R
+
             // Inisialisasi marquee
             function createSmoothMarquee() {
                 const marqueeContent = document.querySelector(".marquee-content");
@@ -1188,14 +1406,6 @@
                 // Sesuaikan durasi animasi berdasarkan panjang konten
                 const duration = Math.max(20, contentWidth / 50);
                 marqueeContent.style.animationDuration = duration + "s";
-            }
-
-            // Cek jika ada data statistik, tampilkan rekap
-            const stats = JSON.parse(localStorage.getItem('current_stats') || '{}');
-            if (Object.keys(stats).length > 0) {
-                setTimeout(() => {
-                    showRekapFullscreen();
-                }, 1000);
             }
 
             createSmoothMarquee();

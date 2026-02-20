@@ -266,6 +266,46 @@ ORDER BY peserta.nm_lengkap ASC;
               });
               break;
 
+            case "ambil_nilai_terkini_monitor":
+              console.log(payload);
+              const sqlnilaimonitor = "SELECT * FROM nilai_seni_tunggal WHERE id_jadwal = ? AND sudut = ?";
+              db.query(sqlnilaimonitor, [payload.id_jadwal, payload.sudut], function (err, result) {
+                if (err) {
+                  console.error("❌ Gagal mengambil nilai terkini:", err);
+                  return;
+                }
+
+                console.log("✅ Nilai terkini berhasil diambil:", result);
+
+                ws.send(
+                  JSON.stringify({
+                    type: "ambil_nilai_terkini_monitor_success",
+                    data: result,
+                  })
+                );
+              });
+              break;
+
+            case "ambil_nilai_dewan_monitor":
+              console.log(payload);
+              const sqlnilaidewanmonitor = "SELECT * FROM nilai_dewan_seni_tunggal WHERE id_jadwal = ? AND sudut = ?";
+              db.query(sqlnilaidewanmonitor, [payload.id_jadwal, payload.sudut], function (err, result) {
+                if (err) {
+                  console.error("❌ Gagal mengambil nilai terkini:", err);
+                  return;
+                }
+
+                console.log("✅ Nilai terkini berhasil diambil:", result);
+
+                ws.send(
+                  JSON.stringify({
+                    type: "ambil_nilai_terkini_dewan_monitor_success",
+                    data: result,
+                  })
+                );
+              });
+              break;
+
             case "partai_finish":
               console.log(payload);
               const id_partai = payload.partai;
@@ -353,12 +393,11 @@ ORDER BY peserta.nm_lengkap ASC;
               console.log("selesai");
               const { partai, sudut } = payload;
 
-              // Query ambil semua nilai jurus dan stamina
-              const sqlNilai =
-                "SELECT * FROM nilai_seni_tunggal WHERE id_jadwal = ? AND sudut = ?";
+              // Query ambil semua nilai seni tunggal (wrong dan stamina)
+              const sqlNilai = "SELECT * FROM nilai_seni_tunggal WHERE id_jadwal = ? AND sudut = ?";
+
               // Query ambil penalty dari nilai_dewan_seni_tunggal
-              const sqlPenalty =
-                "SELECT * FROM nilai_dewan_seni_tunggal WHERE id_jadwal = ? AND sudut = ?";
+              const sqlPenalty = "SELECT * FROM nilai_dewan_seni_tunggal WHERE id_jadwal = ? AND sudut = ?";
 
               // Ambil nilai seni tunggal
               db.query(sqlNilai, [partai, sudut], (err, rows) => {
@@ -378,36 +417,33 @@ ORDER BY peserta.nm_lengkap ASC;
                   let penaltyTotal = 0;
                   if (penaltyRows.length > 0) {
                     const p = penaltyRows[0]; // ambil record pertama (asumsi 1 row per jadwal + sudut)
-                    penaltyTotal =
+                    penaltyTotal = Math.abs(
                       (parseFloat(p.hukum_1) || 0) +
                       (parseFloat(p.hukum_2) || 0) +
                       (parseFloat(p.hukum_3) || 0) +
                       (parseFloat(p.hukum_4) || 0) +
-                      (parseFloat(p.hukum_5) || 0);
+                      (parseFloat(p.hukum_5) || 0)
+                    );
                   }
 
+                  // Hitung rekap nilai berdasarkan wrong dan stamina
                   const rekap = rows.map((row) => {
-                    let totalJurus = 0;
-                    for (let i = 1; i <= 14; i++) {
-                      totalJurus += parseFloat(row[`jurus${i}`] || 0);
-                    }
-
-                    // const rataJurus = totalJurus / 14;
-                    const rataJurus = 9.9 - totalJurus;
-                    console.log(rataJurus);
-                    console.log(totalJurus);
+                    const wrong = parseFloat(row.wrong || 0);
                     const stamina = parseFloat(row.stamina || 0);
-                    const total = parseFloat((rataJurus + stamina).toFixed(2));
+
+                    // Rumus: total = 9.90 - (wrong * 0.01) + stamina
+                    const total = parseFloat((9.90 - (wrong * 0.01) + stamina).toFixed(2));
 
                     return {
                       id_juri: row.id_juri,
-                      rata_rata_jurus: parseFloat(rataJurus.toFixed(2)),
-                      stamina,
-                      total,
+                      wrong: wrong,
+                      stamina: stamina,
+                      total: total
                     };
                   });
 
-                  console.log(penaltyTotal);
+                  console.log("Penalty total:", penaltyTotal);
+                  console.log("Rekap nilai:", rekap);
 
                   // Siapkan data untuk dikirim ke client, termasuk penaltyTotal
                   const dataBroadcast = {

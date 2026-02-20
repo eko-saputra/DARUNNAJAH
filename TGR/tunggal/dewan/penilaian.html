@@ -246,6 +246,81 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
+    /* SCORES TABLE SECTION */
+    .scores-table-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 15px;
+      overflow-x: auto;
+    }
+
+    .scores-table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #e6e6e6;
+    }
+
+    .scores-table th {
+      background: rgba(0, 229, 255, 0.2);
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #00e5ff;
+      border-bottom: 2px solid #00e5ff;
+      text-align: center;
+    }
+
+    .scores-table td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .scores-table tr:hover td {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sudut-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sudut-biru {
+      background: rgba(0, 229, 255, 0.2);
+      color: #00e5ff;
+      border: 1px solid #00e5ff;
+    }
+
+    .sudut-merah {
+      background: rgba(255, 71, 87, 0.2);
+      color: #ff4757;
+      border: 1px solid #ff4757;
+    }
+
+    .score-value {
+      font-family: 'Courier New', monospace;
+      font-weight: 900;
+      color: #ffd700;
+    }
+
+    .wrong-value {
+      color: #ff6b6b;
+    }
+
+    .stamina-value {
+      color: #51cf66;
+    }
+
     /* SUMMARY SECTION */
     .summary-column {
       background: rgba(255, 255, 255, 0.05);
@@ -255,7 +330,22 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
+      overflow-y: auto;
+    }
+
+    .summary-column::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .summary-column::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    .summary-column::-webkit-scrollbar-thumb {
+      background: #00e5ff;
+      border-radius: 3px;
     }
 
     .total-box {
@@ -570,6 +660,11 @@
       .penalty-column {
         max-height: 50vh;
       }
+
+      .scores-table-container {
+        max-height: 40vh;
+        overflow-y: auto;
+      }
     }
 
     @media (max-width: 768px) {
@@ -605,6 +700,16 @@
 
       .sudut-info {
         grid-template-columns: 1fr;
+      }
+
+      .scores-table th {
+        font-size: 12px;
+        padding: 8px;
+      }
+
+      .scores-table td {
+        font-size: 14px;
+        padding: 8px;
       }
     }
 
@@ -753,7 +858,30 @@
 
       <!-- SUMMARY COLUMN -->
       <div class="summary-column">
-        <div class="text-center">
+        <!-- Tabel Penilaian Real-time -->
+        <div class="scores-table-container">
+          <h5 class="text-center mb-3" style="color: #00e5ff; font-weight: 700;">
+            <i class="fas fa-chart-line me-2"></i>PENILAIAN REAL-TIME
+          </h5>
+          <table class="scores-table" id="scores-table">
+            <thead>
+              <tr>
+                <th>Sudut</th>
+                <th>Juri</th>
+                <th>Wrong</th>
+                <th>Stamina</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="scores-table-body">
+              <tr>
+                <td colspan="5" class="text-center text-muted">Belum ada data penilaian</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="total-box">
           <div class="total-label">
             <h1>TOTAL PENALTY</h1>
           </div>
@@ -874,6 +1002,10 @@
     let ws;
     let currentPartaiData = null;
     let lastResultData = null;
+    let scoresData = {
+      biru: [],
+      merah: []
+    };
 
     // INISIALISASI
     $(document).ready(function () {
@@ -899,11 +1031,10 @@
 
       ws.onopen = function () {
         console.log('✅ WebSocket connected to server');
-        // ws.send(JSON.stringify({
-        //   type: 'dewan_connected',
-        //   id_juri: localStorage.getItem('juri'),
-        //   nama_juri: localStorage.getItem('nama_juri')
-        // }));
+        // Minta data penilaian terkini untuk partai yang aktif
+        if (currentPartaiData) {
+          requestScoresData();
+        }
       };
 
       ws.onmessage = handleWebSocketMessage;
@@ -916,6 +1047,24 @@
       ws.onerror = function (error) {
         console.log(`❌ WebSocket error: ${error}`);
       };
+    }
+
+    function requestScoresData() {
+      if (!currentPartaiData) return;
+
+      // Minta data untuk sudut biru
+      ws.send(JSON.stringify({
+        type: 'request_scores_seni',
+        partai: currentPartaiData.partai,
+        sudut: 'biru'
+      }));
+
+      // Minta data untuk sudut merah
+      ws.send(JSON.stringify({
+        type: 'request_scores_seni',
+        partai: currentPartaiData.partai,
+        sudut: 'merah'
+      }));
     }
 
     function setupEventListeners() {
@@ -963,6 +1112,58 @@
       } else {
         statusElement.text('MENUNGGU').removeClass('status-active');
       }
+    }
+
+    // FUNGSI UNTUK MENAMPILKAN DATA PENILAIAN
+    function updateScoresTable(sudut, data) {
+      if (!data || data.length === 0) return;
+
+      // Simpan data berdasarkan sudut
+      if (sudut === 'biru') {
+        scoresData.biru = data;
+      } else if (sudut === 'merah') {
+        scoresData.merah = data;
+      }
+
+      // Gabungkan semua data untuk ditampilkan
+      const allScores = [
+        ...scoresData.biru.map(item => ({ ...item, sudut: 'biru' })),
+        ...scoresData.merah.map(item => ({ ...item, sudut: 'merah' }))
+      ];
+
+      if (allScores.length === 0) {
+        $('#scores-table-body').html('<tr><td colspan="5" class="text-center text-muted">Belum ada data penilaian</td></tr>');
+        return;
+      }
+
+      // Urutkan berdasarkan juri
+      allScores.sort((a, b) => {
+        if (a.sudut === b.sudut) {
+          return a.id_juri - b.id_juri;
+        }
+        return a.sudut.localeCompare(b.sudut);
+      });
+
+      let html = '';
+      allScores.forEach(score => {
+        const total = (9.90 - (parseFloat(score.wrong || 0) * 0.01) + parseFloat(score.stamina || 0)).toFixed(2);
+
+        html += `
+          <tr>
+            <td>
+              <span class="sudut-badge ${score.sudut === 'biru' ? 'sudut-biru' : 'sudut-merah'}">
+                ${score.sudut.toUpperCase()}
+              </span>
+            </td>
+            <td>Juri ${score.id_juri}</td>
+            <td class="wrong-value">${parseFloat(score.wrong || 0).toFixed(2)}</td>
+            <td class="stamina-value">${parseFloat(score.stamina || 0).toFixed(2)}</td>
+            <td class="score-value">${total}</td>
+          </tr>
+        `;
+      });
+
+      $('#scores-table-body').html(html);
     }
 
     // FUNGSI BARU: Load penalty berdasarkan partai + sudut
@@ -1477,6 +1678,13 @@
             resetTimer();
             break;
 
+          case 'scores_seni_response':
+            // Update tabel penilaian real-time
+            if (message.data && message.sudut) {
+              updateScoresTable(message.sudut, message.data);
+            }
+            break;
+
           case 'partai_result_response':
             // Tanggapi hasil dari server
             showNotification('✅ Data hasil partai diterima!', 'success');
@@ -1510,6 +1718,16 @@
 
       // Load penalty untuk sudut ini
       loadPenaltyScoresForSudut(data);
+
+      // Reset data scores
+      scoresData = {
+        biru: [],
+        merah: []
+      };
+      $('#scores-table-body').html('<tr><td colspan="5" class="text-center text-muted">Belum ada data penilaian</td></tr>');
+
+      // Minta data penilaian terkini untuk partai yang aktif
+      requestScoresData();
 
       // Update status
       updateStatus(data.partai);
