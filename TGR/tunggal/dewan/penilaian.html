@@ -35,6 +35,7 @@
       border-radius: 15px;
       padding: 15px 20px;
       margin-bottom: 15px;
+      margin-top: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -92,6 +93,7 @@
       text-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
       background: rgba(0, 0, 0, 0.6);
       padding: 10px 25px;
+      margin-top: 20px;
       border-radius: 12px;
       border: 3px solid rgba(0, 229, 255, 0.4);
       letter-spacing: 2px;
@@ -132,10 +134,10 @@
       color: #1a1a2e;
     }
 
-    /* MAIN CONTENT - TWO COLUMN GRID */
+    /* MAIN CONTENT - THREE COLUMN GRID */
     .main-content {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 0.8fr 1.2fr 0.8fr;
       gap: 15px;
       height: calc(100vh - 140px);
     }
@@ -182,8 +184,20 @@
     }
 
     .penalty-item.active {
-      background: rgba(220, 53, 69, 0.15);
-      border-color: #dc3545;
+      background: linear-gradient(135deg, rgba(220, 53, 69, 0.2), rgba(200, 35, 51, 0.2));
+      border: 2px solid #dc3545;
+      box-shadow: 0 0 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .penalty-item.active .penalty-title {
+      color: #ff8a8a;
+      font-weight: 700;
+    }
+
+    .penalty-item.active .penalty-score {
+      border-color: #ff8a8a;
+      color: #ff8a8a;
+      animation: glow 1.5s ease-in-out infinite alternate;
     }
 
     .penalty-title {
@@ -192,6 +206,49 @@
       color: #e2e8f0;
       margin-bottom: 12px;
       line-height: 1.3;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .penalty-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    .penalty-indicator {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(220, 53, 69, 0.15);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #ff6b6b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .penalty-indicator i {
+      font-size: 14px;
+      color: #dc3545;
+    }
+
+    .penalty-indicator .penalty-value {
+      font-weight: 700;
+      color: #dc3545;
+      font-size: 14px;
+      margin-left: 5px;
     }
 
     .penalty-controls {
@@ -246,82 +303,212 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
-    /* SCORES TABLE SECTION */
-    .scores-table-container {
+    /* BROADCAST COLUMN */
+    .broadcast-column {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
       border-radius: 15px;
       padding: 20px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 15px;
-      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
     }
 
-    .scores-table {
-      width: 100%;
-      border-collapse: collapse;
-      color: #e6e6e6;
+    .broadcast-column::-webkit-scrollbar {
+      width: 5px;
     }
 
-    .scores-table th {
-      background: rgba(0, 229, 255, 0.2);
-      padding: 12px;
-      font-size: 14px;
+    .broadcast-column::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    .broadcast-column::-webkit-scrollbar-thumb {
+      background: #00e5ff;
+      border-radius: 3px;
+    }
+
+    .broadcast-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid rgba(0, 229, 255, 0.3);
+    }
+
+    .broadcast-header h3 {
+      font-size: 18px;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
       color: #00e5ff;
-      border-bottom: 2px solid #00e5ff;
-      text-align: center;
+      margin: 0;
     }
 
-    .scores-table td {
-      padding: 10px;
-      text-align: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 16px;
+    .broadcast-badge {
+      background: rgba(0, 229, 255, 0.2);
+      color: #00e5ff;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
       font-weight: 600;
     }
 
-    .scores-table tr:hover td {
+    .broadcast-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .broadcast-card.biru {
+      border-left: 5px solid #00e5ff;
+    }
+
+    .broadcast-card.merah {
+      border-left: 5px solid #ff4757;
+    }
+
+    .broadcast-sudut {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .sudut-label-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .sudut-label-badge.biru {
+      background: rgba(0, 229, 255, 0.2);
+      color: #00e5ff;
+    }
+
+    .sudut-label-badge.merah {
+      background: rgba(255, 71, 87, 0.2);
+      color: #fff;
+    }
+
+    .broadcast-total {
+      font-size: 15px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .stats-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #a0aec0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #a78bfa;
+      font-family: 'Courier New', monospace;
+    }
+
+    .stat-value.deviation {
+      color: #ffd700;
+    }
+
+    .broadcast-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 12px;
+    }
+
+    .broadcast-table th {
+      background: rgba(0, 0, 0, 0.3);
+      color: #a0aec0;
+      font-weight: 600;
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .broadcast-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+    }
+
+    .broadcast-table tr:hover {
       background: rgba(255, 255, 255, 0.05);
     }
 
-    .sudut-badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
+    .badge-wrong {
+      background: rgba(220, 53, 69, 0.2);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .badge-stamina {
+      background: rgba(72, 187, 120, 0.2);
+      color: #48bb78;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .badge-total {
+      background: rgba(0, 229, 255, 0.2);
+      color: #00e5ff;
+      padding: 2px 8px;
+      border-radius: 12px;
       font-size: 12px;
       font-weight: 700;
     }
 
-    .sudut-biru {
-      background: rgba(0, 229, 255, 0.2);
-      color: #00e5ff;
-      border: 1px solid #00e5ff;
-    }
-
-    .sudut-merah {
-      background: rgba(255, 71, 87, 0.2);
-      color: #ff4757;
-      border: 1px solid #ff4757;
-    }
-
-    .score-value {
-      font-family: 'Courier New', monospace;
-      font-weight: 900;
+    .penalty-summary {
+      background: rgba(255, 193, 7, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 12px;
       color: #ffd700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .wrong-value {
-      color: #ff6b6b;
+    .penalty-summary .title {
+      color: #a0aec0;
     }
 
-    .stamina-value {
-      color: #51cf66;
-    }
-
-    /* SUMMARY SECTION */
+    /* SUMMARY COLUMN */
     .summary-column {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
@@ -330,30 +517,15 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      overflow-y: auto;
-    }
-
-    .summary-column::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .summary-column::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 3px;
-    }
-
-    .summary-column::-webkit-scrollbar-thumb {
-      background: #00e5ff;
-      border-radius: 3px;
+      gap: 20px;
     }
 
     .total-box {
-      background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(66, 153, 225, 0.1));
+      background: linear-gradient(135deg, rgba(220, 53, 69, 0.2), rgba(255, 71, 87, 0.2));
       border-radius: 15px;
       padding: 30px;
       text-align: center;
-      border: 2px solid rgba(0, 229, 255, 0.2);
+      border: 2px solid rgba(220, 53, 69, 0.3);
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -365,15 +537,36 @@
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 2px;
-      color: #a0aec0;
+      color: #ff6b6b;
       margin-bottom: 15px;
+    }
+
+    .total-label h1 {
+      font-size: 18px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .total-label span {
+      font-size: 12px;
+      background: #dc3545;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
     }
 
     .total-value {
       font-size: 56px;
       font-weight: 900;
-      color: #00e5ff;
-      text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+      color: #dc3545;
+      text-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
+    }
+
+    .total-value h1 {
+      font-size: 56px;
+      margin: 0;
     }
 
     .action-buttons {
@@ -408,9 +601,25 @@
       color: white;
     }
 
+    .btn-winner-biru {
+      background: linear-gradient(135deg, #00e5ff, #4299e1);
+      color: white;
+    }
+
+    .btn-winner-merah {
+      background: linear-gradient(135deg, #ff4757, #ff6b81);
+      color: white;
+    }
+
     .btn-action:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
     }
 
     /* MODAL STYLES */
@@ -580,14 +789,27 @@
     @keyframes pulse {
       0% {
         transform: scale(1);
+        opacity: 1;
       }
 
       50% {
         transform: scale(1.05);
+        opacity: 0.8;
       }
 
       100% {
         transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+      }
+
+      to {
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.8);
       }
     }
 
@@ -658,12 +880,11 @@
       }
 
       .penalty-column {
-        max-height: 50vh;
+        max-height: 40vh;
       }
 
-      .scores-table-container {
+      .broadcast-column {
         max-height: 40vh;
-        overflow-y: auto;
       }
     }
 
@@ -688,6 +909,10 @@
         font-size: 12px;
       }
 
+      .stats-container {
+        flex-direction: column;
+      }
+
       .sudut-header {
         flex-direction: column;
         gap: 10px;
@@ -700,16 +925,6 @@
 
       .sudut-info {
         grid-template-columns: 1fr;
-      }
-
-      .scores-table th {
-        font-size: 12px;
-        padding: 8px;
-      }
-
-      .scores-table td {
-        font-size: 14px;
-        padding: 8px;
       }
     }
 
@@ -741,42 +956,72 @@
   <div class="container-fluid fade-in">
     <!-- HEADER -->
     <div class="header-bar bg-dark bg-gradient fade-in">
+      <!-- LEFT SECTION - Player Info -->
       <div class="player-info">
-        <div class="player-name"><span class="nm">-</span></div>
-        <div class="player-details text-uppercase">
-          <h4><span class="kontingen">-</span></h4>
-          <h4><span class="kategori">-</span>/<span class="kelas">-</span></h4>
-          <h4 class="text-uppercase">A <span id="current-partai">-</span></h4>
-          <h4 class="text-uppercase" style="margin-left: 10px;"><span id="current-sudut">-</span></h4>
+        <div class="player-name d-flex align-items-center">
+          <i class="fas fa-user-circle me-2" style="color: #00e5ff;"></i>
+          <span class="nm">-</span>
+        </div>
+        <div class="player-details d-flex flex-wrap align-items-center gap-2 mt-2">
+          <span class="badge bg-info text-dark"><i class="fas fa-flag me-1"></i> <span class="kontingen">-</span></span>
+          <span class="badge bg-secondary text-dark"><i class="fas fa-tag me-1"></i> <span
+              class="kategori">-</span>/<span class="kelas">-</span></span>
+          <span class="badge bg-primary text-dark"><i class="fas fa-hashtag me-1"></i> PARTAI <span
+              id="current-partai">-</span></span>
+          <span class="badge" style="background: #00e5ff; color: #1a1a2e;" id="current-sudut-badge">
+            <i class="fas fa-arrow-right me-1"></i> <span id="current-sudut">-</span>
+          </span>
         </div>
       </div>
 
-      <div class="timer-section">
-        <div id="timer" class="timer-display mb-2">⏱️ 02:00</div>
-        <div class="control-buttons">
-          <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="control-btn">
-            <i class="fas fa-expand"></i>
+      <!-- RIGHT SECTION - Timer & Controls -->
+      <div class="d-flex align-items-center gap-4">
+        <!-- Timer with icon -->
+        <div class="timer-wrapper d-flex align-items-center">
+          <div id="timer" class="timer-display">02:00</div>
+        </div>
+
+        <!-- Separator -->
+        <div class="vr text-white-50" style="height: 100px;"></div>
+
+        <!-- Control buttons -->
+        <div class="d-flex align-items-center gap-2">
+          <!-- Fullscreen toggles - digabung dalam satu grup -->
+          <div class="btn-group" role="group">
+            <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="control-btn"
+              title="Fullscreen">
+              <i class="fas fa-expand"></i>
+            </button>
+            <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="control-btn d-none"
+              title="Exit Fullscreen">
+              <i class="fas fa-compress"></i>
+            </button>
+          </div>
+
+          <!-- Action buttons dengan warna konsisten -->
+          <button class="control-btn btn-danger" onclick="konfirmasiKeluar()" title="Keluar">
+            <i class="fas fa-sign-out-alt me-1"></i> EXIT
           </button>
-          <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="control-btn d-none">
-            <i class="fas fa-compress"></i>
-          </button>
-          <button class="control-btn btn-danger" onclick="konfirmasiKeluar()">
-            <i class="fas fa-sign-out-alt"></i> KELUAR
-          </button>
-          <a href="#" class="control-btn btn-light" onclick="konfirmasiRefresh(event)">
-            <i class="fas fa-redo"></i> REFRESH
+          <a href="#" class="control-btn btn-light" onclick="konfirmasiRefresh(event)" style="text-decoration: none;"
+            title="Refresh">
+            <i class="fas fa-sync-alt me-1"></i> REFRESH
           </a>
         </div>
       </div>
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN CONTENT - THREE COLUMN GRID -->
     <div class="main-content">
       <!-- PENALTY COLUMN -->
       <div class="penalty-column">
         <!-- Penalty 1 -->
         <div class="penalty-item" id="penalty-1">
-          <div class="penalty-title">1. Performanya Melampaui Arena 10m x 10m</div>
+          <div class="penalty-title">
+            1. Performanya Melampaui Arena 10m x 10m
+            <span class="penalty-badge" id="penalty-badge-1" style="display: none;">
+              <i class="fas fa-exclamation-triangle"></i> PENALTY
+            </span>
+          </div>
           <div class="penalty-controls">
             <div class="penalty-buttons">
               <button class="btn-penalty btn-clear" data-target="1">
@@ -792,7 +1037,12 @@
 
         <!-- Penalty 2 -->
         <div class="penalty-item" id="penalty-2">
-          <div class="penalty-title">2. Menjatuh Kan Senjata Dan Memegang Matras</div>
+          <div class="penalty-title">
+            2. Menjatuh Kan Senjata Dan Memegang Matras
+            <span class="penalty-badge" id="penalty-badge-2" style="display: none;">
+              <i class="fas fa-exclamation-triangle"></i> PENALTY
+            </span>
+          </div>
           <div class="penalty-controls">
             <div class="penalty-buttons">
               <button class="btn-penalty btn-clear" data-target="2">
@@ -808,7 +1058,12 @@
 
         <!-- Penalty 3 -->
         <div class="penalty-item" id="penalty-3">
-          <div class="penalty-title">3. Pakaian Tidak Sesuai Dengan Aturan (Tanjak atau Samping lepas)</div>
+          <div class="penalty-title">
+            3. Pakaian Tidak Sesuai Dengan Aturan (Tanjak atau Samping lepas)
+            <span class="penalty-badge" id="penalty-badge-3" style="display: none;">
+              <i class="fas fa-exclamation-triangle"></i> PENALTY
+            </span>
+          </div>
           <div class="penalty-controls">
             <div class="penalty-buttons">
               <button class="btn-penalty btn-clear" data-target="3">
@@ -820,11 +1075,20 @@
             </div>
             <div class="penalty-score target3">0.00</div>
           </div>
+          <!-- <div class="penalty-indicator" id="penalty-indicator-3" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> Penalty aktif: <span class="penalty-value"
+              id="penalty-value-3">0.00</span>
+          </div> -->
         </div>
 
         <!-- Penalty 4 -->
         <div class="penalty-item" id="penalty-4">
-          <div class="penalty-title">4. Atlet Bertahan Pada Satu Gerakan Selama Lebih Dari 5 Detik</div>
+          <div class="penalty-title">
+            4. Atlet Bertahan Pada Satu Gerakan Selama Lebih Dari 5 Detik
+            <span class="penalty-badge" id="penalty-badge-4" style="display: none;">
+              <i class="fas fa-exclamation-triangle"></i> PENALTY
+            </span>
+          </div>
           <div class="penalty-controls">
             <div class="penalty-buttons">
               <button class="btn-penalty btn-clear" data-target="4">
@@ -836,12 +1100,20 @@
             </div>
             <div class="penalty-score target4">0.00</div>
           </div>
+          <!-- <div class="penalty-indicator" id="penalty-indicator-4" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> Penalty aktif: <span class="penalty-value"
+              id="penalty-value-4">0.00</span>
+          </div> -->
         </div>
 
         <!-- Penalty 5 -->
         <div class="penalty-item" id="penalty-5">
-          <div class="penalty-title">5. Waktu Penampilan +/- <span
-              style="font-size: 12px; color: #a0aec0;">(berulang)</span></div>
+          <div class="penalty-title">
+            5. Waktu Penampilan +/- <span style="font-size: 12px; color: #a0aec0;">(berulang)</span>
+            <span class="penalty-badge" id="penalty-badge-5" style="display: none;">
+              <i class="fas fa-exclamation-triangle"></i> PENALTY
+            </span>
+          </div>
           <div class="penalty-controls">
             <div class="penalty-buttons">
               <button class="btn-penalty btn-clear" data-target="5">
@@ -853,49 +1125,103 @@
             </div>
             <div class="penalty-score target5">0.00</div>
           </div>
+          <!-- <div class="penalty-indicator" id="penalty-indicator-5" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> Penalty aktif: <span class="penalty-value"
+              id="penalty-value-5">0.00</span>
+          </div> -->
         </div>
       </div>
 
-      <!-- SUMMARY COLUMN -->
-      <div class="summary-column">
-        <!-- Tabel Penilaian Real-time -->
-        <div class="scores-table-container">
-          <h5 class="text-center mb-3" style="color: #00e5ff; font-weight: 700;">
-            <i class="fas fa-chart-line me-2"></i>PENILAIAN REAL-TIME
-          </h5>
-          <table class="scores-table" id="scores-table">
+      <!-- BROADCAST COLUMN -->
+      <div class="broadcast-column">
+
+        <!-- Biru Broadcast Card -->
+        <div class="broadcast-card biru" id="broadcast-biru" style="display: none;">
+          <div class="broadcast-sudut">
+            <span class="sudut-label-badge biru"><i class="fas fa-user me-1"></i>BIRU</span>
+            <span class="broadcast-total" id="broadcast-total-biru">0.00</span>
+          </div>
+
+          <div class="stats-container">
+            <div class="stat-item">
+              <div class="stat-label">MEDIAN</div>
+              <div class="stat-value" id="broadcast-median-biru">0.000</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">PENALTY</div>
+              <span id="broadcast-penalty-value-biru">0.00</span>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">DEVIASI</div>
+              <div class="stat-value deviation" id="broadcast-stddev-biru">0.000000</div>
+            </div>
+          </div>
+
+          <table class="broadcast-table">
             <thead>
               <tr>
-                <th>Sudut</th>
                 <th>Juri</th>
                 <th>Wrong</th>
                 <th>Stamina</th>
                 <th>Total</th>
               </tr>
             </thead>
-            <tbody id="scores-table-body">
-              <tr>
-                <td colspan="5" class="text-center text-muted">Belum ada data penilaian</td>
-              </tr>
-            </tbody>
+            <tbody id="broadcast-table-biru"></tbody>
           </table>
         </div>
 
-        <div class="total-box">
-          <div class="total-label">
-            <h1>TOTAL PENALTY</h1>
+        <!-- Merah Broadcast Card -->
+        <div class="broadcast-card merah" id="broadcast-merah" style="display: none;">
+          <div class="broadcast-sudut">
+            <span class="sudut-label-badge merah"><i class="fas fa-user me-1"></i>MERAH</span>
+            <span class="broadcast-total" id="broadcast-total-merah">0.00</span>
           </div>
-          <div class="total-value mb-5" id="total-penalty">
-            <h1>0.00</h1>
+
+          <div class="stats-container">
+            <div class="stat-item">
+              <div class="stat-label">MEDIAN</div>
+              <div class="stat-value" id="broadcast-median-merah">0.000</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">PENALTY</div>
+              <span id="broadcast-penalty-value-merah">0.00</span>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">DEVIASI</div>
+              <div class="stat-value deviation" id="broadcast-stddev-merah">0.000000</div>
+            </div>
           </div>
+
+          <table class="broadcast-table">
+            <thead>
+              <tr>
+                <th>Juri</th>
+                <th>Wrong</th>
+                <th>Stamina</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="broadcast-table-merah"></tbody>
+          </table>
         </div>
 
+        <div class="text-center text-muted small" id="broadcast-empty" style="display: none;">
+          <i class="fas fa-info-circle me-1"></i>Belum ada data broadcast
+        </div>
+      </div>
+
+      <!-- SUMMARY COLUMN -->
+      <div class="summary-column">
+
         <div class="action-buttons">
+          <button class="btn-action btn-winner-biru" id="winner-biru-btn" onclick="declareWinner('BIRU')" disabled>
+            <i class="fas fa-crown me-2"></i> WINNER BIRU
+          </button>
+          <button class="btn-action btn-winner-merah" id="winner-merah-btn" onclick="declareWinner('MERAH')" disabled>
+            <i class="fas fa-crown me-2"></i> WINNER MERAH
+          </button>
           <button class="btn-action btn-selesai selesai_seni">
             <i class="fas fa-flag-checkered"></i> SELESAI PENILAIAN
-          </button>
-          <button class="btn-action btn-finish" onclick="partai_finish()">
-            <i class="fas fa-stop-circle"></i> PARTAI FINISH
           </button>
         </div>
       </div>
@@ -906,17 +1232,14 @@
   <div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
-        <!-- Modal Header -->
         <div class="modal-header" style="background: linear-gradient(135deg, #1a1a2e, #16213e); color: white;">
           <h4 class="modal-title fw-bold">
-            <i class="fas fa-trophy me-2"></i>HASIL PARTAI <span id="modal-partai-title"></span>
+            <i class="fas fa-trophy me-2"></i>HASIL PARTAI</span>
           </h4>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
 
-        <!-- Modal Body -->
         <div class="modal-body p-0">
-          <!-- Container untuk hasil -->
           <div class="result-container">
             <!-- Biru Section -->
             <div class="sudut-section biru-section">
@@ -925,20 +1248,6 @@
                   <i class="fas fa-user me-2"></i>SUDUT BIRU
                 </div>
                 <div class="total-nilai" id="total-biru">0.00</div>
-              </div>
-              <div class="sudut-info">
-                <div class="info-item">
-                  <span class="label">Nama:</span>
-                  <span class="value" id="nama-biru">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Kontingen:</span>
-                  <span class="value" id="kontingen-biru">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Penalty:</span>
-                  <span class="value" id="penalty-biru">0.00</span>
-                </div>
               </div>
             </div>
 
@@ -950,20 +1259,6 @@
                 </div>
                 <div class="total-nilai" id="total-merah">0.00</div>
               </div>
-              <div class="sudut-info">
-                <div class="info-item">
-                  <span class="label">Nama:</span>
-                  <span class="value" id="nama-merah">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Kontingen:</span>
-                  <span class="value" id="kontingen-merah">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">Penalty:</span>
-                  <span class="value" id="penalty-merah">0.00</span>
-                </div>
-              </div>
             </div>
 
             <!-- Pemenang Section -->
@@ -973,19 +1268,8 @@
               </div>
               <div class="winner-name" id="winner-name">MENUNGGU HASIL</div>
               <div class="winner-score" id="winner-score">0.00</div>
-              <div class="winner-kontingen" id="winner-kontingen">-</div>
             </div>
           </div>
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            <i class="fas fa-times me-2"></i>Tutup
-          </button>
-          <button type="button" class="btn btn-success" onclick="printResult()">
-            <i class="fas fa-print me-2"></i>Cetak Hasil
-          </button>
         </div>
       </div>
     </div>
@@ -998,14 +1282,10 @@
   <script>
     // ======== KONSTANTA & VAR GLOBAL ========
     const hostname = window.location.hostname;
-    const baseUrl = "http://" + hostname + "/DARUNNAJAH";
     let ws;
     let currentPartaiData = null;
     let lastResultData = null;
-    let scoresData = {
-      biru: [],
-      merah: []
-    };
+    let broadcastData = null;
 
     // INISIALISASI
     $(document).ready(function () {
@@ -1013,8 +1293,6 @@
     });
 
     function initializeApp() {
-      $('#juri').text(localStorage.getItem('nama_juri') || 'DEWAN JURI');
-
       if (localStorage.getItem('is_login') < 1) {
         localStorage.clear();
         document.location.href = "http://" + hostname + "/DARUNNAJAH/TGR/tunggal/dewan";
@@ -1030,52 +1308,28 @@
       ws = new WebSocket('ws://' + hostname + ':3000');
 
       ws.onopen = function () {
-        console.log('✅ WebSocket connected to server');
-        // Minta data penilaian terkini untuk partai yang aktif
-        if (currentPartaiData) {
-          requestScoresData();
+        console.log('✅ WebSocket connected');
+        if (localStorage.getItem('partai')) {
+          ws.send(JSON.stringify({
+            type: 'getNilaiSeniAll',
+            partai: localStorage.getItem('partai')
+          }));
         }
       };
 
       ws.onmessage = handleWebSocketMessage;
-
-      ws.onclose = function () {
-        console.log('❌ WebSocket disconnected');
-        setTimeout(initWebSocket, 3000);
-      };
-
-      ws.onerror = function (error) {
-        console.log(`❌ WebSocket error: ${error}`);
-      };
-    }
-
-    function requestScoresData() {
-      if (!currentPartaiData) return;
-
-      // Minta data untuk sudut biru
-      ws.send(JSON.stringify({
-        type: 'request_scores_seni',
-        partai: currentPartaiData.partai,
-        sudut: 'biru'
-      }));
-
-      // Minta data untuk sudut merah
-      ws.send(JSON.stringify({
-        type: 'request_scores_seni',
-        partai: currentPartaiData.partai,
-        sudut: 'merah'
-      }));
+      ws.onclose = () => setTimeout(initWebSocket, 3000);
     }
 
     function setupEventListeners() {
       $(document).on('click', '.btn-clear', function () {
         const target = $(this).data('target');
-        handleClearPenalty(target);
+        handlePenalty(target, 'clear');
       });
 
       $(document).on('click', '.btn-minus', function () {
         const target = $(this).data('target');
-        handleAddPenalty(target);
+        handlePenalty(target, 'add');
       });
 
       $('.selesai_seni').on('click', handleSelesaiSeni);
@@ -1085,14 +1339,319 @@
       const dataString = localStorage.getItem('currentPartai');
       if (dataString) {
         try {
-          const data = JSON.parse(dataString);
-          currentPartaiData = data;
-          updateDisplay(data);
-          loadPenaltyScoresForSudut(data);
+          currentPartaiData = JSON.parse(dataString);
+          updateDisplay(currentPartaiData);
         } catch (e) {
-          console.error("❌ Gagal parsing data dari localStorage:", e);
+          console.error("Error parsing data:", e);
         }
       }
+    }
+
+    // ======== FUNGSI STATISTIK ========
+    function calculateMedian(values) {
+      if (!values || values.length === 0) return 0;
+      const sorted = [...values].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+    }
+
+    function calculateStdDev(values) {
+      if (!values || values.length === 0) return 0;
+      const mean = values.reduce((a, b) => a + b, 0) / values.length;
+      const variance = values.map(v => Math.pow(v - mean, 2)).reduce((a, b) => a + b, 0) / values.length;
+      return Math.sqrt(variance);
+    }
+
+    // ======== FUNGSI PENALTY - UPDATE FROM BROADCAST ========
+    function getPenaltyKey(partai, sudut) {
+      return `penalty_${partai}_${sudut}`;
+    }
+
+    // UPDATE PENALTY UI DARI BROADCAST DATA
+    function updatePenaltyFromBroadcast() {
+      if (!broadcastData || !currentPartaiData) return;
+
+      const currentSudut = currentPartaiData.peserta?.sudut;
+      if (!currentSudut) return;
+
+      // RESET TAMPILAN DULU
+      for (let i = 1; i <= 5; i++) {
+        $(`.target${i}`).text('0.00');
+        $(`#penalty-${i}`).removeClass('active');
+        $(`#penalty-badge-${i}`).hide();
+        $(`#penalty-indicator-${i}`).hide();
+      }
+
+      const penalty = broadcastData.penalties?.find(p => p.sudut === currentSudut);
+
+      if (penalty && penalty.detail) {
+        const key = getPenaltyKey(currentPartaiData.partai, currentSudut);
+        localStorage.setItem(key, JSON.stringify(penalty.detail));
+
+        // Update UI dengan data baru
+        let total = 0;
+        let activeCount = 0;
+
+        for (let i = 1; i <= 5; i++) {
+          const score = penalty.detail[`hukum_${i}`] || 0;
+          $(`.target${i}`).text(score.toFixed(2));
+
+          if (score !== 0) {
+            $(`#penalty-${i}`).addClass('active');
+            $(`#penalty-badge-${i}`).show();
+            $(`#penalty-indicator-${i}`).show();
+            $(`#penalty-value-${i}`).text(score.toFixed(2));
+            total += score;
+            activeCount++;
+          }
+        }
+      }
+    }
+
+    function handlePenalty(target, action) {
+      if (!currentPartaiData) return;
+
+      const key = getPenaltyKey(currentPartaiData.partai, currentPartaiData.peserta.sudut);
+      let penaltyData = JSON.parse(localStorage.getItem(key) || '{}');
+
+      if (action === 'add') {
+        if (target == 5) {
+          penaltyData[target] = (penaltyData[target] || 0) - 0.5;
+        } else {
+          penaltyData[target] = -0.5;
+        }
+      } else { // clear
+        if (target == 5 && penaltyData[target] < 0) {
+          penaltyData[target] = Math.min(0, (penaltyData[target] || 0) + 0.5);
+          if (penaltyData[target] === 0) delete penaltyData[target];
+        } else {
+          delete penaltyData[target];
+        }
+      }
+
+      localStorage.setItem(key, JSON.stringify(penaltyData));
+
+      // Update UI
+      for (let i = 1; i <= 5; i++) {
+        const score = penaltyData[i] || 0;
+        $(`.target${i}`).text(score.toFixed(2));
+
+        if (score !== 0) {
+          $(`#penalty-${i}`).addClass('active');
+          $(`#penalty-badge-${i}`).show();
+          $(`#penalty-indicator-${i}`).show();
+          $(`#penalty-value-${i}`).text(score.toFixed(2));
+        } else {
+          $(`#penalty-${i}`).removeClass('active');
+          $(`#penalty-badge-${i}`).hide();
+          $(`#penalty-indicator-${i}`).hide();
+        }
+      }
+
+      // Hitung total
+      const total = Object.values(penaltyData).reduce((a, b) => a + (b || 0), 0);
+      const activeCount = Object.values(penaltyData).filter(v => v !== 0).length;
+
+      // Kirim ke server
+      ws.send(JSON.stringify({
+        type: action === 'add' ? 'penalty_add_tunggal' : 'penalty_remove_tunggal',
+        partai: currentPartaiData.partai,
+        sudut: currentPartaiData.peserta.sudut,
+        target: target,
+        score: penaltyData[target] || 0
+      }));
+    }
+
+    // ======== FUNGSI BROADCAST ========
+    function updateBroadcastDisplay(data) {
+      if (!data) {
+        $('#broadcast-biru, #broadcast-merah').hide();
+        $('#broadcast-empty').show();
+        return;
+      }
+
+      broadcastData = data;
+      $('#broadcast-empty').hide();
+      $('#broadcast-partai').text(`Partai ${data.partai || '-'}`);
+
+      // Update Biru
+      if (data.rekap_per_sudut && data.rekap_per_sudut.BIRU) {
+        updateSudutBroadcast('BIRU', data.rekap_per_sudut.BIRU, data.penalties);
+      } else {
+        $('#broadcast-biru').hide();
+      }
+
+      // Update Merah
+      if (data.rekap_per_sudut && data.rekap_per_sudut.MERAH) {
+        updateSudutBroadcast('MERAH', data.rekap_per_sudut.MERAH, data.penalties);
+      } else {
+        $('#broadcast-merah').hide();
+      }
+
+      // Update penalty untuk sudut yang aktif
+      updatePenaltyFromBroadcast();
+
+      // Aktifkan tombol winner jika kedua sudut sudah memiliki data
+      if (data.rekap_per_sudut?.BIRU && data.rekap_per_sudut?.MERAH) {
+        $('#winner-biru-btn, #winner-merah-btn').prop('disabled', false);
+      }
+    }
+
+    function updateSudutBroadcast(sudut, dataJuri, penalties) {
+      const sudutLower = sudut.toLowerCase();
+      const tableBody = $(`#broadcast-table-${sudutLower}`);
+      const totalEl = $(`#broadcast-total-${sudutLower}`);
+      const medianEl = $(`#broadcast-median-${sudutLower}`);
+      const stddevEl = $(`#broadcast-stddev-${sudutLower}`);
+      const penaltyEl = $(`#broadcast-penalty-${sudutLower}`);
+      const penaltyValueEl = $(`#broadcast-penalty-value-${sudutLower}`);
+
+      tableBody.empty();
+      const totalValues = [];
+
+      dataJuri.forEach(juri => {
+        tableBody.append(`
+          <tr>
+            <td>Juri ${juri.id_juri}</td>
+            <td><span class="badge-wrong">${juri.wrong}</span></td>
+            <td><span class="badge-stamina">${juri.stamina.toFixed(2)}</span></td>
+            <td><span class="badge-total">${juri.total.toFixed(2)}</span></td>
+          </tr>
+        `);
+        totalValues.push(juri.total);
+      });
+
+      const median = calculateMedian(totalValues);
+      const stdDev = calculateStdDev(totalValues);
+      const total = Math.ceil(median * 100) / 100;
+
+      medianEl.text(median.toFixed(3));
+      stddevEl.text(stdDev.toFixed(6));
+
+      const penalty = penalties?.find(p => p.sudut === sudut);
+      if (penalty && penalty.total > 0) {
+        totalEl.text((median - penalty.total).toFixed(2));
+        // console.log(penalty.total);
+        penaltyValueEl.text(penalty.total.toFixed(2));
+        penaltyEl.show();
+      } else {
+        penaltyEl.hide();
+      }
+
+      $(`#broadcast-${sudutLower}`).show();
+    }
+
+    // ======== FUNGSI WINNER ========
+    function declareWinner(sudut) {
+      if (!broadcastData) {
+        showNotification('⚠️ Tidak ada data penilaian!', 'error');
+        return;
+      }
+
+      const biruData = broadcastData.rekap_per_sudut?.BIRU || [];
+      const merahData = broadcastData.rekap_per_sudut?.MERAH || [];
+
+      if (biruData.length === 0 || merahData.length === 0) {
+        showNotification('⚠️ Data penilaian belum lengkap!', 'error');
+        return;
+      }
+
+      const biruMedian = calculateMedian(biruData.map(j => j.total));
+      const merahMedian = calculateMedian(merahData.map(j => j.total));
+
+      const biruPenalty = broadcastData.penalties?.find(p => p.sudut === 'BIRU');
+      const merahPenalty = broadcastData.penalties?.find(p => p.sudut === 'MERAH');
+
+      const biruFinal = biruMedian - (biruPenalty?.total || 0);
+      const merahFinal = merahMedian - (merahPenalty?.total || 0);
+
+      if (sudut === 'BIRU' && biruFinal < merahFinal) {
+        if (!confirm(`⚠️ PERHATIAN!\nSkor Biru: ${biruFinal.toFixed(2)}\nSkor Merah: ${merahFinal.toFixed(2)}\nTetap pilih BIRU?`)) return;
+      }
+      if (sudut === 'MERAH' && merahFinal < biruFinal) {
+        if (!confirm(`⚠️ PERHATIAN!\nSkor Merah: ${merahFinal.toFixed(2)}\nSkor Biru: ${biruFinal.toFixed(2)}\nTetap pilih MERAH?`)) return;
+      }
+
+      ws.send(JSON.stringify({
+        type: 'winner',
+        sudut: sudut,
+        currentPartai: { partai: broadcastData.partai, bbk: 'SENI' },
+        nilai_biru: biruFinal.toFixed(2),
+        nilai_merah: merahFinal.toFixed(2)
+      }));
+
+      showNotification(`✅ Pemenang ${sudut} dideklarasikan`, 'success');
+      showResultModal(sudut, biruFinal, merahFinal, biruPenalty?.total || 0, merahPenalty?.total || 0);
+    }
+
+    function showResultModal(winner, scoreBiru, scoreMerah, penaltyBiru, penaltyMerah) {
+      $('#modal-partai-title').text(`${broadcastData.partai} - ${currentPartaiData?.kategori || ''} ${currentPartaiData?.kelas || ''}`);
+      $('#nama-biru').text($('.nm').text());
+      $('#kontingen-biru').text($('.kontingen').text());
+      $('#penalty-biru').text(penaltyBiru.toFixed(2));
+      $('#total-biru').text(scoreBiru.toFixed(2));
+      $('#nama-merah').text('-');
+      $('#kontingen-merah').text('-');
+      $('#penalty-merah').text(penaltyMerah.toFixed(2));
+      $('#total-merah').text(scoreMerah.toFixed(2));
+
+      $('.biru-section, .merah-section').removeClass('winner');
+      if (winner === 'BIRU') {
+        $('.biru-section').addClass('winner');
+        $('#winner-name').text('SUDUT BIRU');
+        $('#winner-score').text(scoreBiru.toFixed(2));
+      } else {
+        $('.merah-section').addClass('winner');
+        $('#winner-name').text('SUDUT MERAH');
+        $('#winner-score').text(scoreMerah.toFixed(2));
+      }
+
+      new bootstrap.Modal(document.getElementById('resultModal')).show();
+    }
+
+    function handleSelesaiSeni() {
+      if (!currentPartaiData) return;
+      ws.send(JSON.stringify({
+        type: 'selesai_seni',
+        partai: currentPartaiData.partai,
+        sudut: currentPartaiData.peserta?.sudut || ''
+      }));
+      showNotification('✅ Status SELESAI dikirim', 'success');
+
+      if (localStorage.getItem('partai')) {
+        ws.send(JSON.stringify({
+          type: 'getNilaiSeniAll',
+          partai: localStorage.getItem('partai')
+        }));
+      }
+    }
+
+    function processPartaiResult(data) {
+      if (!data) return;
+      lastResultData = data;
+      $('#modal-partai-title').text(`${currentPartaiData?.partai || '-'} - ${currentPartaiData?.kategori || ''} ${currentPartaiData?.kelas || ''}`);
+
+      const biru = data.sudutBiru || {};
+      $('#nama-biru').text(biru.nama || '-');
+      $('#kontingen-biru').text(biru.kontingen || '-');
+      $('#penalty-biru').text((biru.totalPenalty || 0).toFixed(2));
+      $('#total-biru').text((biru.totalScore || 0).toFixed(2));
+
+      const merah = data.sudutMerah || {};
+      $('#nama-merah').text(merah.nama || '-');
+      $('#kontingen-merah').text(merah.kontingen || '-');
+      $('#penalty-merah').text((merah.totalPenalty || 0).toFixed(2));
+      $('#total-merah').text((merah.totalScore || 0).toFixed(2));
+
+      const scoreBiru = parseFloat(biru.totalScore) || 0;
+      const scoreMerah = parseFloat(merah.totalScore) || 0;
+
+      $('.biru-section, .merah-section').removeClass('winner');
+      if (scoreBiru > scoreMerah) $('.biru-section').addClass('winner');
+      else if (scoreMerah > scoreBiru) $('.merah-section').addClass('winner');
+      else $('.biru-section, .merah-section').addClass('winner');
+
+      new bootstrap.Modal(document.getElementById('resultModal')).show();
     }
 
     function updateDisplay(data) {
@@ -1101,563 +1660,8 @@
       $('.kategori').text(data.kategori || '-');
       $('.kelas').text(data.kelas || '-');
       $('#current-partai').text(data.partai || '-');
-      $('#current-sudut').text(data.peserta?.sudut || '-');
-      updateStatus(data.partai);
-    }
-
-    function updateStatus(partai) {
-      const statusElement = $('#status-penilaian');
-      if (partai === '?') {
-        statusElement.text('TIDAK AKTIF').removeClass('status-active');
-      } else {
-        statusElement.text('MENUNGGU').removeClass('status-active');
-      }
-    }
-
-    // FUNGSI UNTUK MENAMPILKAN DATA PENILAIAN
-    function updateScoresTable(sudut, data) {
-      if (!data || data.length === 0) return;
-
-      // Simpan data berdasarkan sudut
-      if (sudut === 'biru') {
-        scoresData.biru = data;
-      } else if (sudut === 'merah') {
-        scoresData.merah = data;
-      }
-
-      // Gabungkan semua data untuk ditampilkan
-      const allScores = [
-        ...scoresData.biru.map(item => ({ ...item, sudut: 'biru' })),
-        ...scoresData.merah.map(item => ({ ...item, sudut: 'merah' }))
-      ];
-
-      if (allScores.length === 0) {
-        $('#scores-table-body').html('<tr><td colspan="5" class="text-center text-muted">Belum ada data penilaian</td></tr>');
-        return;
-      }
-
-      // Urutkan berdasarkan juri
-      allScores.sort((a, b) => {
-        if (a.sudut === b.sudut) {
-          return a.id_juri - b.id_juri;
-        }
-        return a.sudut.localeCompare(b.sudut);
-      });
-
-      let html = '';
-      allScores.forEach(score => {
-        const total = (9.90 - (parseFloat(score.wrong || 0) * 0.01) + parseFloat(score.stamina || 0)).toFixed(2);
-
-        html += `
-          <tr>
-            <td>
-              <span class="sudut-badge ${score.sudut === 'biru' ? 'sudut-biru' : 'sudut-merah'}">
-                ${score.sudut.toUpperCase()}
-              </span>
-            </td>
-            <td>Juri ${score.id_juri}</td>
-            <td class="wrong-value">${parseFloat(score.wrong || 0).toFixed(2)}</td>
-            <td class="stamina-value">${parseFloat(score.stamina || 0).toFixed(2)}</td>
-            <td class="score-value">${total}</td>
-          </tr>
-        `;
-      });
-
-      $('#scores-table-body').html(html);
-    }
-
-    // FUNGSI BARU: Load penalty berdasarkan partai + sudut
-    function getPenaltyKey(partai, sudut) {
-      return `penalty_${partai}_${sudut}`;
-    }
-
-    function loadPenaltyScoresForSudut(data) {
-      if (!data || !data.partai || !data.peserta?.sudut) {
-        resetPenaltyDisplay();
-        return;
-      }
-
-      const key = getPenaltyKey(data.partai, data.peserta.sudut);
-      let penaltyData = JSON.parse(localStorage.getItem(key) || '{}');
-
-      console.log(`📥 Loading penalty for ${data.partai} - ${data.peserta.sudut}:`, penaltyData);
-
-      for (let i = 1; i <= 5; i++) {
-        const score = penaltyData[i] !== undefined ? parseFloat(penaltyData[i]).toFixed(2) : '0.00';
-        $(`.target${i}`).text(score);
-
-        if (score !== '0.00') {
-          $(`#penalty-${i}`).addClass('active');
-        } else {
-          $(`#penalty-${i}`).removeClass('active');
-        }
-      }
-
-      calculateTotalPenaltyForSudut(data);
-    }
-
-    function resetPenaltyDisplay() {
-      for (let i = 1; i <= 5; i++) {
-        $(`.target${i}`).text('0.00');
-        $(`#penalty-${i}`).removeClass('active');
-      }
-      $('#total-penalty').text('0.00');
-    }
-
-    function calculateTotalPenaltyForSudut(data) {
-      if (!data || !data.partai || !data.peserta?.sudut) return 0;
-
-      const key = getPenaltyKey(data.partai, data.peserta.sudut);
-      let penaltyData = JSON.parse(localStorage.getItem(key) || '{}');
-      let total = 0;
-
-      for (let i = 1; i <= 5; i++) {
-        if (penaltyData[i] !== undefined) {
-          total += parseFloat(penaltyData[i]);
-        }
-      }
-
-      $('#total-penalty').text(total.toFixed(2)).addClass('pulse');
-      setTimeout(() => $('#total-penalty').removeClass('pulse'), 300);
-      return total;
-    }
-
-    function savePenaltyForSudut(data, penaltyData) {
-      if (!data || !data.partai || !data.peserta?.sudut) return;
-
-      const key = getPenaltyKey(data.partai, data.peserta.sudut);
-      localStorage.setItem(key, JSON.stringify(penaltyData));
-
-      console.log(`💾 Saved penalty for ${data.partai} - ${data.peserta.sudut}:`, penaltyData);
-    }
-
-    function getPenaltyDataForCurrentSudut() {
-      if (!currentPartaiData || !currentPartaiData.partai || !currentPartaiData.peserta?.sudut) {
-        return {};
-      }
-
-      const key = getPenaltyKey(currentPartaiData.partai, currentPartaiData.peserta.sudut);
-      return JSON.parse(localStorage.getItem(key) || '{}');
-    }
-
-    function handleClearPenalty(target) {
-      if (!currentPartaiData) return;
-
-      let penaltyData = getPenaltyDataForCurrentSudut();
-
-      if (target == 5) {
-        let currentScore = parseFloat(penaltyData[target] || 0);
-        if (currentScore < 0) {
-          let newScore = parseFloat((currentScore + 0.50).toFixed(2));
-          if (newScore < 0) {
-            penaltyData[target] = newScore;
-          } else {
-            delete penaltyData[target];
-            newScore = 0;
-          }
-        } else {
-          delete penaltyData[target];
-        }
-      } else {
-        delete penaltyData[target];
-      }
-
-      savePenaltyForSudut(currentPartaiData, penaltyData);
-      updatePenaltyDisplay(target);
-
-      ws.send(JSON.stringify({
-        type: 'penalty_remove_tunggal',
-        partai: currentPartaiData.partai,
-        id_juri: localStorage.getItem('juri'),
-        sudut: currentPartaiData.peserta?.sudut || '',
-        target: target
-      }));
-    }
-
-    function handleAddPenalty(target) {
-      if (!currentPartaiData) return;
-
-      const score = -0.50;
-      let penaltyData = getPenaltyDataForCurrentSudut();
-
-      if (target == 5) {
-        let existingScore = parseFloat(penaltyData[5] || 0);
-        penaltyData[5] = parseFloat((existingScore + score).toFixed(2));
-      } else {
-        penaltyData[target] = score;
-      }
-
-      savePenaltyForSudut(currentPartaiData, penaltyData);
-      updatePenaltyDisplay(target);
-
-      ws.send(JSON.stringify({
-        type: 'penalty_add_tunggal',
-        partai: currentPartaiData.partai,
-        id_juri: localStorage.getItem('juri'),
-        sudut: currentPartaiData.peserta?.sudut || '',
-        score: score,
-        target: target
-      }));
-    }
-
-    function updatePenaltyDisplay(target) {
-      const penaltyData = getPenaltyDataForCurrentSudut();
-      const score = penaltyData[target] !== undefined ? parseFloat(penaltyData[target]).toFixed(2) : '0.00';
-
-      $(`.target${target}`).text(score).addClass('pulse');
-      setTimeout(() => $(`.target${target}`).removeClass('pulse'), 300);
-
-      if (score !== '0.00') {
-        $(`#penalty-${target}`).addClass('active');
-      } else {
-        $(`#penalty-${target}`).removeClass('active');
-      }
-
-      calculateTotalPenaltyForSudut(currentPartaiData);
-    }
-
-    function handleSelesaiSeni() {
-      if (!currentPartaiData) {
-        showNotification('⚠️ Data partai tidak ditemukan!', 'error');
-        return;
-      }
-
-      const partai = currentPartaiData.partai;
-      const sudut = currentPartaiData.peserta?.sudut || '';
-
-      // Gunakan confirm dialog untuk konfirmasi
-      const confirmation = confirm('Apakah Anda yakin ingin mengirim status SELESAI untuk partai ini?\n\n' +
-        `Partai: ${partai}\n` +
-        `Sudut: ${sudut}\n\n` +
-        'Status SELESAI akan mengunci penilaian dan menampilkan rekap nilai.');
-
-      if (confirmation) {
-        // Kirim websocket type 'selesai_ok'
-        ws.send(JSON.stringify({
-          type: 'selesai_seni',
-          partai: partai,
-          sudut: sudut,
-          timestamp: new Date().toISOString()
-        }));
-
-        // Tampilkan notifikasi sukses
-        showNotification('✅ Status SELESAI berhasil dikirim!', 'success');
-      } else {
-        showNotification('❌ Status SELESAI dibatalkan', 'info');
-      }
-    }
-
-    function partai_finish() {
-      if (!currentPartaiData) {
-        showNotification('⚠️ Tidak ada data partai yang aktif!', 'error');
-        return;
-      }
-
-      const partai = currentPartaiData.partai;
-      const kategori = currentPartaiData.kategori;
-      const kelas = currentPartaiData.kelas;
-
-      // Tampilkan loading
-      showNotification('⏳ Mengambil data hasil partai...', 'info');
-
-      // Kirim request ke server untuk mendapatkan data kedua sudut
-      ws.send(JSON.stringify({
-        type: 'request_partai_result',
-        partai: partai,
-        kategori: kategori,
-        kelas: kelas,
-        id_juri: localStorage.getItem('juri')
-      }));
-
-      // Juga kirim notifikasi finish ke server lama (untuk kompatibilitas)
-      ws.send(JSON.stringify({
-        type: 'partai_finish',
-        partai: partai
-      }));
-    }
-
-    // Fungsi untuk memproses hasil dari server
-    function processPartaiResult(data) {
-      if (!data) {
-        showNotification('❌ Tidak ada data hasil dari server!', 'error');
-        return;
-      }
-
-      lastResultData = data;
-
-      // Update modal title
-      $('#modal-partai-title').text(`${currentPartaiData.partai} - ${currentPartaiData.kategori} ${currentPartaiData.kelas}`);
-
-      // Update data Sudut Biru
-      const biru = data.sudutBiru || {};
-      $('#nama-biru').text(biru.nama || '-');
-      $('#kontingen-biru').text(biru.kontingen || '-');
-      $('#penalty-biru').text((biru.totalPenalty || 0).toFixed(2));
-      $('#total-biru').text((biru.totalScore || 0).toFixed(2));
-
-      // Update data Sudut Merah
-      const merah = data.sudutMerah || {};
-      $('#nama-merah').text(merah.nama || '-');
-      $('#kontingen-merah').text(merah.kontingen || '-');
-      $('#penalty-merah').text((merah.totalPenalty || 0).toFixed(2));
-      $('#total-merah').text((merah.totalScore || 0).toFixed(2));
-
-      // Tentukan pemenang
-      const scoreBiru = parseFloat(biru.totalScore) || 0;
-      const scoreMerah = parseFloat(merah.totalScore) || 0;
-
-      let winnerSection = $('#winner-section');
-      let winnerName = $('#winner-name');
-      let winnerScore = $('#winner-score');
-      let winnerKontingen = $('#winner-kontingen');
-
-      // Reset kelas winner
-      $('.biru-section').removeClass('winner');
-      $('.merah-section').removeClass('winner');
-
-      if (scoreBiru > scoreMerah) {
-        // Biru menang
-        $('.biru-section').addClass('winner');
-
-        winnerName.text(biru.nama || 'SUDUT BIRU');
-        winnerScore.text(scoreBiru.toFixed(2));
-        winnerKontingen.text(biru.kontingen || '-');
-        winnerSection.css('background', 'linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(66, 153, 225, 0.1))');
-        winnerSection.css('border-color', 'rgba(0, 229, 255, 0.5)');
-
-      } else if (scoreMerah > scoreBiru) {
-        // Merah menang
-        $('.merah-section').addClass('winner');
-
-        winnerName.text(merah.nama || 'SUDUT MERAH');
-        winnerScore.text(scoreMerah.toFixed(2));
-        winnerKontingen.text(merah.kontingen || '-');
-        winnerSection.css('background', 'linear-gradient(135deg, rgba(255, 71, 87, 0.1), rgba(255, 107, 129, 0.1))');
-        winnerSection.css('border-color', 'rgba(255, 71, 87, 0.5)');
-
-      } else {
-        // Seri
-        $('.biru-section, .merah-section').addClass('winner');
-        winnerName.text('SERI');
-        winnerScore.text(`${scoreBiru.toFixed(2)}`);
-        winnerKontingen.text('Hasil Sama');
-        winnerSection.css('background', 'linear-gradient(135deg, rgba(108, 117, 125, 0.1), rgba(173, 181, 189, 0.1))');
-        winnerSection.css('border-color', 'rgba(108, 117, 125, 0.5)');
-      }
-
-      // Tampilkan modal
-      const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-      resultModal.show();
-    }
-
-    // Fungsi untuk mencetak hasil
-    function printResult() {
-      if (!lastResultData) {
-        showNotification('⚠️ Tidak ada data hasil untuk dicetak!', 'error');
-        return;
-      }
-
-      const modalContent = document.querySelector('.modal-content');
-      const printWindow = window.open('', '_blank');
-
-      const biru = lastResultData.sudutBiru || {};
-      const merah = lastResultData.sudutMerah || {};
-      const scoreBiru = parseFloat(biru.totalScore) || 0;
-      const scoreMerah = parseFloat(merah.totalScore) || 0;
-      let pemenang = 'SERI';
-      let pemenangKontingen = 'Hasil Sama';
-
-      if (scoreBiru > scoreMerah) {
-        pemenang = biru.nama || 'SUDUT BIRU';
-        pemenangKontingen = biru.kontingen || '-';
-      } else if (scoreMerah > scoreBiru) {
-        pemenang = merah.nama || 'SUDUT MERAH';
-        pemenangKontingen = merah.kontingen || '-';
-      }
-
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Hasil Partai ${currentPartaiData.partai}</title>
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              padding: 20px;
-              background: #f5f5f5;
-            }
-            .print-header {
-              text-align: center;
-              margin-bottom: 30px;
-              border-bottom: 3px solid #333;
-              padding-bottom: 20px;
-            }
-            .print-title {
-              font-size: 28px;
-              font-weight: bold;
-              color: #333;
-              margin-bottom: 10px;
-            }
-            .print-subtitle {
-              font-size: 18px;
-              color: #666;
-            }
-            .result-box {
-              background: white;
-              border-radius: 10px;
-              padding: 20px;
-              margin-bottom: 20px;
-              box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-            .winner-box {
-              background: #fff8e1;
-              border: 3px solid #ffd700;
-            }
-            .sudut-title {
-              font-size: 20px;
-              font-weight: bold;
-              margin-bottom: 15px;
-              padding: 10px;
-              border-radius: 5px;
-              color: white;
-            }
-            .biru { background: #00e5ff; }
-            .merah { background: #ff4757; }
-            .result-item {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 10px;
-              padding: 5px 0;
-              border-bottom: 1px solid #eee;
-            }
-            .total-score {
-              font-size: 32px;
-              font-weight: bold;
-              text-align: center;
-              margin-top: 15px;
-              color: #333;
-            }
-            .winner-announcement {
-              text-align: center;
-              margin: 30px 0;
-              padding: 20px;
-              background: linear-gradient(135deg, #ffd700, #ffed4e);
-              border-radius: 10px;
-              color: #333;
-            }
-            @media print {
-              body { background: white; }
-              .result-box { box-shadow: none; border: 1px solid #ddd; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="print-header">
-            <div class="print-title">HASIL PARTAI ${currentPartaiData.partai}</div>
-            <div class="print-subtitle">${currentPartaiData.kategori} - ${currentPartaiData.kelas}</div>
-            <div class="print-subtitle">${new Date().toLocaleDateString('id-ID', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })}</div>
-          </div>
-          
-          <div class="result-box ${scoreBiru > scoreMerah ? 'winner-box' : ''}">
-            <div class="sudut-title biru">SUDUT BIRU</div>
-            <div class="result-item">
-              <span>Nama:</span>
-              <span>${biru.nama || '-'}</span>
-            </div>
-            <div class="result-item">
-              <span>Kontingen:</span>
-              <span>${biru.kontingen || '-'}</span>
-            </div>
-            <div class="result-item">
-              <span>Penalty:</span>
-              <span>${(biru.totalPenalty || 0).toFixed(2)}</span>
-            </div>
-            <div class="total-score">${(biru.totalScore || 0).toFixed(2)}</div>
-          </div>
-          
-          <div class="result-box ${scoreMerah > scoreBiru ? 'winner-box' : ''}">
-            <div class="sudut-title merah">SUDUT MERAH</div>
-            <div class="result-item">
-              <span>Nama:</span>
-              <span>${merah.nama || '-'}</span>
-            </div>
-            <div class="result-item">
-              <span>Kontingen:</span>
-              <span>${merah.kontingen || '-'}</span>
-            </div>
-            <div class="result-item">
-              <span>Penalty:</span>
-              <span>${(merah.totalPenalty || 0).toFixed(2)}</span>
-            </div>
-            <div class="total-score">${(merah.totalScore || 0).toFixed(2)}</div>
-          </div>
-          
-          <div class="winner-announcement">
-            <h2>🏆 PEMENANG</h2>
-            <h1>${pemenang}</h1>
-            <h3>${pemenangKontingen}</h3>
-            <h2>Skor: ${Math.max(scoreBiru, scoreMerah).toFixed(2)}</h2>
-          </div>
-          
-          <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px;">
-            Dicetak pada: ${new Date().toLocaleString('id-ID')}
-          </div>
-        </body>
-        </html>
-      `);
-
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 500);
-    }
-
-    // Fungsi untuk menampilkan notifikasi
-    function showNotification(message, type = 'info') {
-      // Hapus notifikasi lama jika ada
-      const oldNotification = document.getElementById('custom-notification');
-      if (oldNotification) {
-        oldNotification.remove();
-      }
-
-      // Buat element notifikasi baru
-      const notification = document.createElement('div');
-      notification.id = 'custom-notification';
-
-      // Set warna berdasarkan tipe
-      if (type === 'success') {
-        notification.style.background = 'linear-gradient(135deg, #198754 0%, #20c997 100%)';
-      } else if (type === 'error') {
-        notification.style.background = 'linear-gradient(135deg, #dc3545 0%, #fd7e14 100%)';
-      } else {
-        notification.style.background = 'linear-gradient(135deg, #0d6efd 0%, #6f42c1 100%)';
-      }
-
-      // Tambahkan icon berdasarkan tipe
-      let icon = 'ℹ️';
-      if (type === 'success') icon = '✅';
-      if (type === 'error') icon = '❌';
-
-      notification.innerHTML = `
-        <span style="font-size: 1.5rem;">${icon}</span>
-        <span>${message}</span>
-      `;
-
-      document.body.appendChild(notification);
-
-      // Hapus notifikasi setelah 3 detik
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.remove();
-        }
-      }, 3000);
+      $('#current-sudut').text("SUDUT " + data.peserta?.sudut || '-');
+      $('#broadcast-partai').text(`Partai ${data.partai || '-'}`);
     }
 
     function handleWebSocketMessage(event) {
@@ -1670,6 +1674,16 @@
             handlePartaiData(message.data);
             break;
 
+          case 'broadcast_nilai_seni':
+            console.log('📊 Broadcast nilai seni:', message.data);
+            updateBroadcastDisplay(message.data);
+            break;
+
+          case 'broadcast_selesai_seni':
+            console.log('📊 Broadcast selesai seni:', message.data);
+            updateBroadcastDisplay(message.data);
+            break;
+
           case 'tick':
             updateTimer(message.remaining);
             break;
@@ -1678,21 +1692,18 @@
             resetTimer();
             break;
 
-          case 'scores_seni_response':
-            // Update tabel penilaian real-time
-            if (message.data && message.sudut) {
-              updateScoresTable(message.sudut, message.data);
-            }
-            break;
-
           case 'partai_result_response':
-            // Tanggapi hasil dari server
             showNotification('✅ Data hasil partai diterima!', 'success');
             processPartaiResult(message.data);
             break;
 
           case 'partai_finish_ack':
             showNotification('✅ Permintaan hasil partai dikirim!', 'success');
+            break;
+
+          case 'winner':
+            console.log('🏆 Pemenang diterima:', message.data);
+            showNotification(`✅ Pemenang: ${message.data.sudut}`, 'success');
             break;
 
           case 'error':
@@ -1708,90 +1719,75 @@
     }
 
     function handlePartaiData(data) {
-      // Simpan data partai baru
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('penalty_')) {
+          localStorage.removeItem(key);
+        }
+      });
+
       localStorage.setItem('partai', data.partai);
       localStorage.setItem('currentPartai', JSON.stringify(data));
       currentPartaiData = data;
 
-      // Update tampilan
+      // RESET TAMPILAN PENALTY KE 0.00 DULU sebelum dapat data broadcast
+      for (let i = 1; i <= 5; i++) {
+        $(`.target${i}`).text('0.00');
+        $(`#penalty-${i}`).removeClass('active');
+        $(`#penalty-badge-${i}`).hide();
+        $(`#penalty-indicator-${i}`).hide();
+      }
+
+      // Update display header
       updateDisplay(data);
 
-      // Load penalty untuk sudut ini
-      loadPenaltyScoresForSudut(data);
-
-      // Reset data scores
-      scoresData = {
-        biru: [],
-        merah: []
-      };
-      $('#scores-table-body').html('<tr><td colspan="5" class="text-center text-muted">Belum ada data penilaian</td></tr>');
-
-      // Minta data penilaian terkini untuk partai yang aktif
-      requestScoresData();
-
-      // Update status
-      updateStatus(data.partai);
-
-      console.log(`🔄 Data partai diterima: ${data.partai} - ${data.peserta?.sudut}`);
+      ws.send(JSON.stringify({
+        type: 'getNilaiSeniAll',
+        partai: data.partai
+      }));
     }
 
     function updateTimer(seconds) {
       const m = Math.floor(seconds / 60);
       const s = seconds % 60;
       $('#timer').text(`⏱️ ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
-      $('#status-penilaian').addClass('status-active').text('BERJALAN');
     }
 
     function resetTimer() {
       $('#timer').text('⏱️ 02:00');
-      $('#status-penilaian').removeClass('status-active').text('SELESAI');
+    }
+
+    function showNotification(message, type = 'info') {
+      const notif = document.getElementById('custom-notification');
+      if (notif) notif.remove();
+
+      const div = document.createElement('div');
+      div.id = 'custom-notification';
+      div.style.background = type === 'success' ? '#198754' : type === 'error' ? '#dc3545' : '#0d6efd';
+      div.innerHTML = `<span style="font-size:1.5rem">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span><span>${message}</span>`;
+      document.body.appendChild(div);
+      setTimeout(() => div?.remove(), 3000);
     }
 
     function konfirmasiKeluar() {
-      const total = calculateTotalPenaltyForSudut(currentPartaiData);
-      if (confirm(`Keluar aplikasi?\nTotal Penalty: ${total.toFixed(2)}\nData akan disimpan.`)) {
-        syncData();
+      if (confirm('Keluar aplikasi?')) {
         localStorage.clear();
         window.location.href = 'index.html';
       }
     }
 
-    function konfirmasiRefresh(event) {
-      event.preventDefault();
-      if (confirm('Refresh halaman?\nData penalty akan disimpan.')) {
-        syncData();
-        window.location.href = 'penilaian.html';
-      }
+    function konfirmasiRefresh(e) {
+      e.preventDefault();
+      if (confirm('Refresh halaman?')) location.reload();
     }
 
-    function syncData() {
-      if (!currentPartaiData) return;
-
-      const penaltyData = getPenaltyDataForCurrentSudut();
-
-      if (Object.keys(penaltyData).length > 0) {
-        ws.send(JSON.stringify({
-          type: 'sync_penalty_data',
-          partai: currentPartaiData.partai,
-          id_juri: localStorage.getItem('juri'),
-          sudut: currentPartaiData.peserta?.sudut || '',
-          penaltyData: penaltyData
-        }));
-      }
-    }
-
-    // FULLSCREEN
     window.openFullscreen = () => {
-      const elem = document.documentElement;
-      if (elem.requestFullscreen) elem.requestFullscreen();
-      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      document.documentElement.requestFullscreen?.();
       $("#openfull").hide();
       $("#exitfull").show();
     };
 
     window.closeFullscreen = () => {
-      if (document.exitFullscreen) document.exitFullscreen();
-      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      document.exitFullscreen?.();
       $("#openfull").show();
       $("#exitfull").hide();
     };

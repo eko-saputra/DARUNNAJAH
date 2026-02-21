@@ -229,7 +229,7 @@ ORDER BY peserta.nm_lengkap ASC;
               break;
 
             case "simpan_data_seni_tunggal":
-              simpan_nilai_seni_tunggal(db, payload);
+              simpan_nilai_seni_tunggal(ws, db, payload);
               break;
 
             case "simpan_data_seni_regu":
@@ -238,7 +238,7 @@ ORDER BY peserta.nm_lengkap ASC;
 
             case "penalty_add_tunggal":
               console.log(payload);
-              simpan_nilai_seni_tunggal_dewan(db, payload);
+              simpan_nilai_seni_tunggal_dewan(ws, db, payload);
               break;
 
             case "penalty_add_regu":
@@ -284,6 +284,10 @@ ORDER BY peserta.nm_lengkap ASC;
                   })
                 );
               });
+              break;
+
+            case "getNilaiSeniAll":
+              getNilaiSeni(ws, db, payload);
               break;
 
             case "ambil_nilai_dewan_monitor":
@@ -366,7 +370,7 @@ ORDER BY peserta.nm_lengkap ASC;
 
             case "penalty_remove_tunggal":
               console.log(payload);
-              clear_nilai_seni_tunggal_dewan(db, payload);
+              clear_nilai_seni_tunggal_dewan(ws, db, payload);
               break;
 
             case "penalty_remove_regu":
@@ -1587,6 +1591,107 @@ function handleNilaiDewan(ws, payload) {
   );
 }
 
+function getNilaiSeni(ws, db, payload) {
+  const { partai } = payload;
+
+  // Query ambil semua nilai seni tunggal (wrong dan stamina)
+  const sqlNilai = "SELECT * FROM nilai_seni_tunggal WHERE id_jadwal = ?";
+
+  // Query ambil penalty dari nilai_dewan_seni_tunggal
+  const sqlPenalty = "SELECT * FROM nilai_dewan_seni_tunggal WHERE id_jadwal = ?";
+
+  // Ambil nilai seni tunggal
+  db.query(sqlNilai, [partai], (err, rows) => {
+    if (err) {
+      console.error("Gagal ambil data nilai:", err.message);
+      return;
+    }
+
+    // Ambil penalty
+    db.query(sqlPenalty, [partai], (err2, penaltyRows) => {
+      if (err2) {
+        console.error("Gagal ambil data penalty:", err2.message);
+        return;
+      }
+
+      // Hitung rekap nilai berdasarkan wrong dan stamina
+      const rekap = rows.map((row) => {
+        const wrong = parseFloat(row.wrong || 0);
+        const stamina = parseFloat(row.stamina || 0);
+        const sudut = row.sudut;
+
+        // Rumus: total = 9.90 - (wrong * 0.01) + stamina
+        const total = parseFloat((9.90 - (wrong * 0.01) + stamina).toFixed(2));
+
+        return {
+          id_juri: row.id_juri,
+          wrong: wrong,
+          stamina: stamina,
+          sudut: sudut,
+          total: total
+        };
+      });
+
+      // Hitung penalty per sudut
+      const penalties = {};
+      penaltyRows.forEach((row) => {
+        const sudut = row.sudut;
+        const penaltyTotal = Math.abs(
+          (parseFloat(row.hukum_1) || 0) +
+          (parseFloat(row.hukum_2) || 0) +
+          (parseFloat(row.hukum_3) || 0) +
+          (parseFloat(row.hukum_4) || 0) +
+          (parseFloat(row.hukum_5) || 0)
+        );
+
+        // Simpan penalty berdasarkan sudut
+        penalties[sudut] = {
+          sudut: sudut,
+          total: penaltyTotal,
+          detail: {
+            hukum_1: parseFloat(row.hukum_1) || 0,
+            hukum_2: parseFloat(row.hukum_2) || 0,
+            hukum_3: parseFloat(row.hukum_3) || 0,
+            hukum_4: parseFloat(row.hukum_4) || 0,
+            hukum_5: parseFloat(row.hukum_5) || 0
+          }
+        };
+      });
+
+      console.log("Penalties per sudut:", penalties);
+      console.log("Rekap nilai:", rekap);
+
+      // Kelompokkan rekap berdasarkan sudut untuk memudahkan
+      const rekapPerSudut = {};
+      rekap.forEach((item) => {
+        if (!rekapPerSudut[item.sudut]) {
+          rekapPerSudut[item.sudut] = [];
+        }
+        rekapPerSudut[item.sudut].push(item);
+      });
+
+      console.log("Rekap per sudut:", rekapPerSudut);
+
+      // Siapkan data untuk dikirim ke client
+      const dataBroadcast = {
+        type: "broadcast_nilai_seni",
+        data: {
+          partai,
+          rekap_per_sudut: rekapPerSudut, // Data nilai yang sudah dikelompokkan per sudut
+          penalties: Object.values(penalties), // Array semua penalty per sudut
+        },
+      };
+
+      // Kirim ke semua client WebSocket
+      wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify(dataBroadcast));
+        }
+      });
+    });
+  });
+}
+
 // Fungsi bantu untuk query dan broadcast history_dewan
 function sendHistoryDewan(ws, id_jadwal, babak, bbk) {
   console.log("Send History Dewan", bbk);
@@ -1946,7 +2051,7 @@ function handleSetStatus(ws, partai) {
   );
 }
 
-function simpan_nilai_seni_tunggal(db, payload) {
+function simpan_nilai_seni_tunggal(ws, db, payload) {
   const { id_jadwal, id_juri, sudut, wrong, stamina, skor_akhir } = payload;
 
   // Validasi data yang diterima
@@ -2026,8 +2131,10 @@ function simpan_nilai_seni_tunggal(db, payload) {
         }
       });
 
+      handleSetPartai(payload);
       console.log("📡 Nilai total dikirim ke monitor:", nilaiTerkini);
     });
+
   }
 
   // Cek apakah data sudah ada
@@ -2213,7 +2320,7 @@ function simpan_nilai_seni_regu(db, payload) {
   });
 }
 
-function simpan_nilai_seni_tunggal_dewan(db, payload) {
+function simpan_nilai_seni_tunggal_dewan(ws, db, payload) {
   const {
     partai, // id_jadwal
     sudut,
@@ -2298,6 +2405,8 @@ function simpan_nilai_seni_tunggal_dewan(db, payload) {
       });
     }
   });
+
+  getNilaiSeni(ws, db, payload);
 }
 
 function simpan_nilai_seni_regu_dewan(db, payload) {
@@ -2387,7 +2496,7 @@ function simpan_nilai_seni_regu_dewan(db, payload) {
   });
 }
 
-function clear_nilai_seni_tunggal_dewan(db, payload) {
+function clear_nilai_seni_tunggal_dewan(ws, db, payload) {
   const {
     partai, // id_jadwal
     sudut,
@@ -2460,6 +2569,7 @@ function clear_nilai_seni_tunggal_dewan(db, payload) {
   } else {
     console.warn(`⚠️ Target tidak valid: ${target}`);
   }
+  getNilaiSeni(ws, db, payload);
 }
 
 function clear_nilai_seni_regu_dewan(db, payload) {
