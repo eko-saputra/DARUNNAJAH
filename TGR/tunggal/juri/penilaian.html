@@ -1065,6 +1065,13 @@
 
               const readyIconText = $('#ready-icon-text');
               readyIconText.text('READY');
+
+              // Cek apakah stamina belum dipilih (masih 0)
+              if (selectedStamina === 0) {
+                alert('⚠️ PERHATIAN: Anda belum memilih stamina! Silakan pilih nilai stamina sebelum pertandingan berakhir.');
+                // Atau gunakan notifikasi yang lebih halus:
+                // showNotification('⚠️ Stamina belum dipilih!', true);
+              }
               break;
 
             case 'data_saved':
