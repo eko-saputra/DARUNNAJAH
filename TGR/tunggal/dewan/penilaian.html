@@ -467,6 +467,11 @@
       background: rgba(255, 255, 255, 0.05);
     }
 
+    .broadcast-card.winner {
+      border: 3px solid gold;
+      box-shadow: 0 0 20px gold;
+    }
+
     .badge-wrong {
       background: rgba(220, 53, 69, 0.2);
       color: #fff;
@@ -1286,11 +1291,40 @@
     let currentPartaiData = null;
     let lastResultData = null;
     let broadcastData = null;
+    let isTimerRunning = false;
 
     // INISIALISASI
     $(document).ready(function () {
       initializeApp();
+      $('.btn-penalty').prop('disabled', !isTimerRunning);
+      updateWinnerHighlight(); // <-- tambahkan ini
     });
+
+    function updateButtonStates() {
+      // Penalty buttons
+      $('.btn-penalty').prop('disabled', !isTimerRunning);
+
+      // Winner buttons: enabled if timer not running AND both sudut data exist
+      const bothSudutExist = broadcastData && broadcastData.rekap_per_sudut?.BIRU && broadcastData.rekap_per_sudut?.MERAH;
+      $('#winner-biru-btn, #winner-merah-btn').prop('disabled', isTimerRunning || !bothSudutExist);
+
+      // Selesai button: enabled if timer not running
+      $('.selesai_seni').prop('disabled', isTimerRunning);
+    }
+
+    function updateWinnerHighlight() {
+      // Hapus class winner dari kedua card
+      $('#broadcast-biru, #broadcast-merah').removeClass('winner');
+
+      if (!currentPartaiData || !currentPartaiData.pemenang) return;
+
+      const pemenang = currentPartaiData.pemenang.toLowerCase(); // "biru" atau "merah"
+      if (pemenang === 'biru') {
+        $('#broadcast-biru').addClass('winner');
+      } else if (pemenang === 'merah') {
+        $('#broadcast-merah').addClass('winner');
+      }
+    }
 
     function initializeApp() {
       if (localStorage.getItem('is_login') < 1) {
@@ -1468,6 +1502,8 @@
         $('#broadcast-biru, #broadcast-merah').hide();
         $('#broadcast-empty').show();
         return;
+
+        updateButtonStates();
       }
 
       broadcastData = data;
@@ -1490,6 +1526,7 @@
 
       // Update penalty untuk sudut yang aktif
       updatePenaltyFromBroadcast();
+      updateWinnerHighlight(); // <-- tambahkan ini
 
       // Aktifkan tombol winner jika kedua sudut sudah memiliki data
       if (data.rekap_per_sudut?.BIRU && data.rekap_per_sudut?.MERAH) {
@@ -1529,9 +1566,10 @@
       stddevEl.text(stdDev.toFixed(6));
 
       const penalty = penalties?.find(p => p.sudut === sudut);
-      totalEl.text((median - penalty.total).toFixed(2));
-      penaltyValueEl.text(penalty.total.toFixed(2));
-      if (penalty && penalty.total > 0) {
+      const penaltyTotal = penalty?.total || 0;
+      totalEl.text((median - penaltyTotal).toFixed(2));
+      penaltyValueEl.text(penaltyTotal.toFixed(2));
+      if (penaltyTotal > 0) {
         penaltyEl.show();
       } else {
         penaltyEl.hide();
@@ -1738,6 +1776,7 @@
 
       // Update display header
       updateDisplay(data);
+      updateWinnerHighlight(); // <-- tambahkan ini
 
       ws.send(JSON.stringify({
         type: 'getNilaiSeniAll',
@@ -1746,12 +1785,16 @@
     }
 
     function updateTimer(seconds) {
+      isTimerRunning = true;
+      updateButtonStates();
       const m = Math.floor(seconds / 60);
       const s = seconds % 60;
       $('#timer').text(`⏱️ ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
     }
 
     function resetTimer() {
+      isTimerRunning = false;
+      updateButtonStates();
       $('#timer').text('⏱️ 02:00');
     }
 

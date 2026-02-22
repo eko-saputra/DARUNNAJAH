@@ -666,7 +666,9 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
             nm_biru: "<?= htmlspecialchars($jadwal['nm_biru'] ?? '') ?>",
             kontingen_biru: "<?= htmlspecialchars($jadwal['kontingen_biru'] ?? '') ?>",
             nm_merah: "<?= htmlspecialchars($jadwal['nm_merah'] ?? '') ?>",
-            kontingen_merah: "<?= htmlspecialchars($jadwal['kontingen_merah'] ?? '') ?>"
+            kontingen_merah: "<?= htmlspecialchars($jadwal['kontingen_merah'] ?? '') ?>",
+            status: "<?= htmlspecialchars($jadwal['status'] ?? '') ?>",
+            pemenang: "<?= htmlspecialchars($jadwal['pemenang'] ?? '') ?>"
         };
 
         const pilihButtons = $('.pilih-button');
@@ -1028,6 +1030,8 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                 kategori: staticPartaiData.kategori,
                 kelas: staticPartaiData.golongan,
                 babak: staticPartaiData.babak,
+                status: staticPartaiData.status,
+                pemenang: staticPartaiData.pemenang,
                 sudut: sudut,
                 nama: namaPesilat,
                 kontingen: kontingenSudut
@@ -1057,6 +1061,7 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
         }
 
         function sendPartaiToServer(partaiData) {
+            console.log('Mengirim data partai ke server:', partaiData);
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: 'set_partai_tunggal',
@@ -1064,6 +1069,8 @@ $all_partai = mysqli_fetch_all($result_all, MYSQLI_ASSOC);
                     kategori: partaiData.kategori,
                     babak: partaiData.babak,
                     kelas: partaiData.kelas,
+                    status: partaiData.status,
+                    pemenang: partaiData.pemenang,
                     peserta: {
                         nama: partaiData.nama,
                         kontingen: partaiData.kontingen,
