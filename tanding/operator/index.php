@@ -8,34 +8,22 @@
   <meta name="msapplication-tap-highlight" content="no" />
   <meta name="robots" content="noindex" />
   <meta http-equiv="refresh" content="30" />
-  <title>Aplikasi Wasit Juri - Kota Dumai</title>
+  <title>OPERATOR - IPSI KOTA DUMAI</title>
+
+  <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png" />
+  <link rel="stylesheet" href="../../assets/login/style.css" />
+  <!-- Tambahan CSS untuk background hitam dan penyesuaian -->
   <style>
-    :root {
-      --primary: #1e40af;
-      --secondary: #c2410c;
-      --accent: #f97316;
-      --dark: #1e293b;
-      --light: #f8fafc;
-      --success: #10b981;
-      --error: #ef4444;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* Background hitam dengan overlay gelap */
     body {
-      font-family: "Poppins", sans-serif;
-      background-color: var(--light);
+      background-color: #2d2d2d;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-size: cover;
-      background-position: center;
       position: relative;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
     }
 
     body::before {
@@ -50,19 +38,21 @@
     }
 
     .container {
-      width: 100%;
-      max-width: 480px;
-      padding: 0 20px;
       position: relative;
       z-index: 2;
     }
 
+    /* Pastikan card login tetap menarik */
     .login-card {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 16px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       overflow: hidden;
-      position: relative;
+    }
+
+    .decorative-line {
+      height: 6px;
+      background: linear-gradient(90deg, #1e40af, #c2410c, #f97316);
     }
 
     .login-header {
@@ -73,7 +63,6 @@
     .login-logo {
       width: 80px;
       height: 80px;
-      margin-bottom: 1rem;
       animation: pulse 2s infinite;
     }
 
@@ -94,14 +83,12 @@
     .login-title {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--dark);
-      margin-bottom: 0.5rem;
+      color: #1e293b;
     }
 
     .login-subtitle {
       font-size: 0.875rem;
       color: #64748b;
-      margin-bottom: 0.5rem;
     }
 
     .login-body {
@@ -117,10 +104,10 @@
       font-size: 0.9rem;
       font-weight: 600;
       color: white;
-      background: linear-gradient(135deg, var(--error), #b91c1c);
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
       border-radius: 8px;
       margin-bottom: 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(185, 28, 28, 0.3);
+      border: none;
       transition: all 0.3s ease;
     }
 
@@ -130,27 +117,14 @@
       box-shadow: 0 8px 15px -3px rgba(185, 28, 28, 0.4);
     }
 
-    .reload-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 4px 6px -1px rgba(185, 28, 28, 0.3);
-    }
-
     .form-group {
       margin-bottom: 1.25rem;
       position: relative;
     }
 
-    .form-group i {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #94a3b8;
-    }
-
     .form-control {
       width: 100%;
-      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      padding: 0.75rem 1rem;
       font-size: 0.9rem;
       border: 2px solid #e2e8f0;
       border-radius: 8px;
@@ -160,19 +134,8 @@
 
     .form-control:focus {
       outline: none;
-      border-color: var(--primary);
+      border-color: #1e40af;
       box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
-    }
-
-    .form-control::placeholder {
-      color: #94a3b8;
-    }
-
-    select.form-control {
-      appearance: none;
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-      background-size: 16px 12px;
     }
 
     .btn {
@@ -189,20 +152,14 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), #2563eb);
+      background: linear-gradient(135deg, #1e40af, #2563eb);
       color: white;
-      box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.3);
     }
 
     .btn-primary:hover {
       background: linear-gradient(135deg, #1e3a8a, #1e40af);
       transform: translateY(-2px);
       box-shadow: 0 8px 15px -3px rgba(30, 64, 175, 0.4);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
-      box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.3);
     }
 
     .login-footer {
@@ -214,37 +171,8 @@
       border-top: 1px solid #e2e8f0;
     }
 
-    .silat-decoration {
-      position: absolute;
-      bottom: -40px;
-      right: -40px;
-      width: 200px;
-      height: 200px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      opacity: 0.8;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .decorative-line {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 6px;
-      width: 100%;
-      background: linear-gradient(90deg,
-          var(--primary),
-          var(--secondary),
-          var(--accent));
-    }
-
-    /* Responsive adjustments */
+    /* Responsive */
     @media (max-width: 480px) {
-      .login-card {
-        border-radius: 12px;
-      }
-
       .login-header {
         padding: 1.5rem 1.5rem 1rem;
       }
@@ -271,54 +199,46 @@
       <div class="decorative-line"></div>
       <div class="login-header">
         <img src="../../assets/img/LogoIPSI.png" alt="Pencak Silat Logo" class="login-logo" />
-        <h1 class="login-title">JURI</h1>
+        <h1 class="login-title">OPERATOR</h1>
         <p class="login-subtitle">Aplikasi Skor Digital Pencak Silat</p>
       </div>
       <div class="login-body">
-        <form onsubmit="return false;">
+        <form id="loginForm">
           <a href="index.html" class="reload-btn">
             <i class="fas fa-sync-alt mr-2"></i> RELOAD DATA PARTAI
           </a>
+
           <div class="form-group">
             <select class="form-control" id="juri" name="juri">
-              <option value="">-- Pilih Juri --</option>
+              <option value="">Loading...</option>
             </select>
           </div>
 
           <div class="form-group">
             <input type="password" class="form-control" id="password" name="password" placeholder="Password"
-              value="juri" required />
+              value="operator" required />
           </div>
 
-          <a class="btn btn-primary" id="btn-login">
+          <button type="submit" class="btn btn-primary" id="btn-login">
             <i class="fas fa-sign-in-alt mr-2"></i> Login
-          </a>
+          </button>
         </form>
       </div>
       <div class="login-footer">
-        &copy;
-        <?php echo date('Y'); ?>
-        IPSI - JagoSILAT
+        &copy; <?php echo date('Y'); ?> IPSI KOTA DUMAI
       </div>
       <div class="silat-decoration"></div>
     </div>
   </div>
 
-  <script type="text/javascript" src="../../assets/jquery/index.js"></script>
+  <!-- Gunakan satu jQuery saja -->
   <script type="text/javascript" src="../../assets/jquery/jquery.min.js"></script>
   <script type="text/javascript">
-    // app.initialize();
-
-    // var ip_server = window.localStorage.getItem("ip_server");
-    // var user_db = window.localStorage.getItem("user_db");
-    // var password_db = window.localStorage.getItem("password_db");
-    // var db = window.localStorage.getItem("db");
     const hostname = window.location.hostname;
-
     var url_api = "http://" + hostname + "/DARUNNAJAH/api/api.php";
 
-    $(function () {
-      // Simple animation for login form
+    $(function() {
+      // Animasi elemen form
       const formElements = document.querySelectorAll(
         ".form-control, .btn, .reload-btn"
       );
@@ -334,19 +254,21 @@
         }, 300 + index * 100);
       });
 
-      setTimeout(function () {
-        // get juri
+      // Muat daftar operator
+      setTimeout(function() {
         $.ajax({
           url: url_api,
-          data: { a: "juri" },
+          data: {
+            a: "juri"
+          },
           type: "GET",
           dataType: "json",
           crossDomain: true,
-          success: function (obj) {
-            var html = '<option value=""> -- Pilih Juri -- </option>';
+          success: function(obj) {
+            var html = '<option value=""> -- Pilih Operator -- </option>';
 
-            $.each(obj, function (key, value) {
-              if (value.name != "Operator" && value.name != "Dewan") {
+            $.each(obj, function(key, value) {
+              if (value.name == "OPERATOR") {
                 html +=
                   '<option value="' +
                   value.id +
@@ -360,83 +282,72 @@
           },
         });
 
-        // console.log(url_api);
+        console.log(url_api);
       }, 1000);
 
-      $("#btn-login").on("click", function () {
-        // var ip_server = window.localStorage.getItem("ip_server");
-        // var user_db = window.localStorage.getItem("user_db");
-        // var password_db = window.localStorage.getItem("password_db");
-        // var db = window.localStorage.getItem("db");
-
-        // if (
-        //   ip_server == "" ||
-        //   user_db == "" ||
-        //   password_db == "" ||
-        //   db == ""
-        // ) {
-        //   alert("Anda Harus melakukan konfigurasi server terlebih dahulu");
-        //   return false;
-        // }
+      // Tangani submit form (klik tombol atau tekan Enter)
+      $("#loginForm").on("submit", function(e) {
+        e.preventDefault(); // Mencegah reload halaman
 
         var id_wasit = $("#juri").val();
         var nama_wasit = $("select#juri :selected").text();
-
         var pass = $("#password").val();
 
         if (id_wasit == "") {
-          alert("Juri Harus dipilih");
+          alert("Operator Harus dipilih");
           return false;
         }
 
         if (pass == "") {
-          alert("Password Harus dipilih");
+          alert("Password Harus diisi");
           return false;
         }
 
-        // get juri
+        // Kirim request login
         $.ajax({
           url: url_api,
-          data: { a: "login", id: id_wasit, password: pass },
+          data: {
+            a: "login",
+            id: id_wasit,
+            password: pass
+          },
           type: "GET",
           dataType: "json",
           crossDomain: true,
-          success: function (obj) {
+          success: function(obj) {
             if (obj.status == "error") {
               alert("Password anda salah");
             } else {
               window.localStorage.setItem("is_login", 1);
-              window.localStorage.setItem("juri", id_wasit);
-              window.localStorage.setItem("nama_juri", nama_wasit);
+              window.localStorage.setItem("operator", id_wasit);
+              window.localStorage.setItem("nama_operator", nama_wasit);
 
-              window.location.replace("penilaian.html");
+              window.location.replace("daftar.php?status=");
             }
           },
         });
       });
     });
 
-    // Tambahkan efek animasi untuk tombol
-    document.addEventListener("DOMContentLoaded", function () {
+    // Efek hover tambahan untuk tombol
+    document.addEventListener("DOMContentLoaded", function() {
       const btnLogin = document.getElementById("btn-login");
       const reloadBtn = document.querySelector(".reload-btn");
 
       if (btnLogin) {
-        btnLogin.addEventListener("mouseover", function () {
+        btnLogin.addEventListener("mouseover", function() {
           this.style.transform = "translateY(-2px)";
         });
-
-        btnLogin.addEventListener("mouseout", function () {
+        btnLogin.addEventListener("mouseout", function() {
           this.style.transform = "translateY(0)";
         });
       }
 
       if (reloadBtn) {
-        reloadBtn.addEventListener("mouseover", function () {
+        reloadBtn.addEventListener("mouseover", function() {
           this.style.transform = "translateY(-2px)";
         });
-
-        reloadBtn.addEventListener("mouseout", function () {
+        reloadBtn.addEventListener("mouseout", function() {
           this.style.transform = "translateY(0)";
         });
       }

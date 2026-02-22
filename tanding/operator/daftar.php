@@ -2,15 +2,15 @@
 include "../../backend/includes/connection.php";
 $status_filter = isset($_GET['status']) ? ($_GET['status'] == '' ? '-' : $_GET['status']) : '';
 
-//mencari TOTAL partai
+// mencari TOTAL partai
 $sqltotalpartai = mysqli_query($koneksi, "SELECT COUNT(*) FROM jadwal_tanding");
 $totalpartai = mysqli_fetch_array($sqltotalpartai);
 
-//mencari TOTAL partai SELESAI
+// mencari TOTAL partai SELESAI
 $sqlpartaiselesai = mysqli_query($koneksi, "SELECT COUNT(*) FROM jadwal_tanding WHERE status='selesai'");
 $partaiselesai = mysqli_fetch_array($sqlpartaiselesai);
 
-//Mencari data jadwal pertandingan berdasarkan status
+// Mencari data jadwal pertandingan berdasarkan status
 if ($status_filter === 'proses') {
     $sqljadwal = "SELECT * FROM jadwal_tanding WHERE status='proses' ORDER BY id_partai ASC";
 } elseif ($status_filter === 'selesai') {
@@ -21,358 +21,318 @@ if ($status_filter === 'proses') {
 $jadwal_tanding = mysqli_query($koneksi, $sqljadwal);
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-bs-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <link rel="shortcut icon" href="../../assets/img/LogoIPSI.png">
-    <title>Daftar Pertandingan</title>
+    <title>Daftar Pertandingan Laga</title>
     <link rel="stylesheet" href="../../assets/bootstrap/dist/css/bootstrap.min.css">
     <script src="../../assets/jquery/jquery.min.js"></script>
     <script src="../../assets/bootstrap/dist/js/bootstrap.min.js"></script>
     <style>
-        #openfull,
-        #exitfull {
-            background: 0 0;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            margin: 0;
-            text-align: center;
-            width: 30px;
-            height: 55px;
-            line-height: 55px;
-            float: left;
+        body {
+            background-color: #121212;
         }
 
-        #openfull:active,
-        #exitfull:active,
-        #openfull:focus,
-        #exitfull:focus {
-            outline: 0;
+        .container-main {
+            background: linear-gradient(145deg, #1e2532 0%, #141b26 100%);
+            box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 255, 0.15);
         }
 
-        #openfull svg,
-        #exitfull svg {
-            vertical-align: middle;
+        .nav-link {
+            color: #ccc;
         }
 
-        #exitfull {
-            display: none;
-        }
-
-        .button-active {
-            background-color: #198754 !important;
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd !important;
             color: white !important;
-            border-color: #198754 !important;
+            border: none;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(56, 189, 248, 0.2);
+        }
+
+        /* Styling Scrollbar untuk Dark Mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 </head>
 
-<body class="bg-dark">
-    <div class="container mt-5 bg-light p-5 rounded-5">
-        <b class="text-uppercase"><b class="nama"></b> Jadwal Pertandingan</b>
-        <hr>
-        <div class="ms-auto col-4 text-end">
-            <a href="daftar.php?status=" class="btn btn-light border border-1 btn-sm reload-btn">
-                Refresh
-            </a>
-            <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="keluar()">
-                Keluar
-            </button>
+<body>
+    <div class="container mt-5 mb-5 container-main p-4 p-md-5 rounded-4 shadow-lg">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-uppercase mb-0 fw-bold text-primary">
+                <span class="nama"></span> Jadwal Pertandingan Laga
+            </h4>
+            <div class="d-flex gap-2">
+                <button onclick="refreshPage()" class="btn btn-outline-info btn-sm px-3">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <button class="btn btn-danger btn-sm px-3" onclick="keluar()">
+                    Keluar
+                </button>
+            </div>
+        </div>
+        <hr class="opacity-10">
+
+        <div class="row g-2 mb-4">
+            <div class="col-md-3">
+                <label class="small text-secondary">Golongan</label>
+                <select id="golongan" class="form-select border-secondary">
+                    <option value="">Pilih Golongan</option>
+                    <option value="Usia Dini 2A">Usia Dini 2A</option>
+                    <option value="Usia Dini 2B">Usia Dini 2B</option>
+                    <option value="Pra Remaja">Pra Remaja</option>
+                    <option value="Remaja">Remaja</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="small text-secondary">Kategori</label>
+                <select id="kategori" class="form-select border-secondary">
+                    <option value="">Pilih Kategori</option>
+                    <option value="Putra">Putra</option>
+                    <option value="Putri">Putri</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="small text-secondary">Kelas</label>
+                <select id="kelas" class="form-select border-secondary">
+                    <option value="">Pilih Kelas</option>
+                    <option value="1">UNDER</option>
+                    <option value="2">KELAS A</option>
+                    <option value="3">KELAS B</option>
+                    <option value="4">KELAS C</option>
+                    <option value="5">KELAS D</option>
+                    <option value="6">KELAS E</option>
+                    <option value="7">KELAS F</option>
+                    <option value="8">KELAS G</option>
+                    <option value="9">KELAS H</option>
+                    <option value="10">KELAS I</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button id="bagan" class="btn btn-primary w-100 shadow-sm">Tampil</button>
+            </div>
         </div>
 
-        <label class="form-label mb-0">Tampilkan Bagan :</label>
-        <!-- <div class="d-flex justify-content-between align-items-center mb-3"> -->
-        <div class="d-flex">
-            <select id="golongan" class="form-control my-3 me-2">
-                <option value="">Golongan</option>
-                <option value="Usia Dini 2A">Usia Dini 2A</option>
-                <option value="Usia Dini 2B">Usia Dini 2B</option>
-                <option value="Pra Remaja">Pra Remaja</option>
-                <option value="Remaja">Remaja</option>
-            </select>
-            <select id="kategori" class="form-control my-3 me-2">
-                <option value="">Kategori</option>
-                <option value="Putra">Putra</option>
-                <option value="Putri">Putri</option>
-            </select>
-            <select id="kelas" class="form-control my-3 me-2">
-                <option value="">Kelas</option>
-                <option value="1">UNDER</option>
-                <option value="2">KELAS A</option>
-                <option value="3">KELAS B</option>
-                <option value="4">KELAS C</option>
-                <option value="5">KELAS D</option>
-                <option value="6">KELAS E</option>
-                <option value="7">KELAS F</option>
-                <option value="8">KELAS G</option>
-                <option value="9">KELAS H</option>
-                <option value="10">KELAS I</option>
-                <option value="11">KELAS J</option>
-                <option value="12">KELAS K</option>
-                <option value="13">KELAS L</option>
-                <option value="14">KELAS M</option>
-                <option value="15">KELAS N</option>
-                <option value="16">KELAS O</option>
-                <option value="17">KELAS P</option>
-                <option value="18">KELAS Q</option>
-                <option value="19">KELAS R</option>
-            </select>
-            <button id="bagan" class="btn btn-secondary my-3">Tampil</button>
-        </div>
-
-        <!-- <div>
-                <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                        <path fill="#2d2d2d"
-                            d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
-                    </svg>
-                </button>
-                <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="btn p-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                        <path fill="#2d2d2d"
-                            d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
-                    </svg>
-                </button>
-            </div> -->
-        <!-- </div> -->
-        <ul class="nav nav-tabs mb-3 bg-light" id="tabMenu">
-            <li class="nav-item <?php echo $status_filter === '-' ? 'bg-info' : ''; ?>">
-                <a class="nav-link text-dark" href="?status=">BELUM MAIN</a>
+        <ul class="nav nav-pills mb-4 bg-dark p-1 rounded-3" id="tabMenu">
+            <li class="nav-item flex-fill text-center">
+                <a class="nav-link <?php echo ($status_filter === '-' || $status_filter === '') ? 'active' : ''; ?>" href="?status=">BELUM MAIN</a>
             </li>
-            <li class="nav-item <?php echo $status_filter === 'proses' ? 'bg-info' : ''; ?>">
-                <a class="nav-link text-dark" href="?status=proses">PROSES</a>
+            <li class="nav-item flex-fill text-center">
+                <a class="nav-link <?php echo $status_filter === 'proses' ? 'active' : ''; ?>" href="?status=proses">PROSES</a>
             </li>
-            <li class="nav-item <?php echo $status_filter === 'selesai' ? 'bg-info' : ''; ?>">
-                <a class="nav-link text-dark" href="?status=selesai">SELESAI</a>
+            <li class="nav-item flex-fill text-center">
+                <a class="nav-link <?php echo $status_filter === 'selesai' ? 'active' : ''; ?>" href="?status=selesai">SELESAI</a>
             </li>
         </ul>
 
-        <div class="row text-center mb-3">
+        <div class="row text-center mb-4">
             <div class="col-md-4 mb-2">
-                <div class="card">
+                <div class="card h-100 shadow-sm border-0">
                     <div class="card-body">
-                        <h5 class="card-title">TOTAL</h5>
-                        <p class="card-text fw-bold"><?php echo $totalpartai[0]; ?> Partai</p>
+                        <small class="text-secondary text-uppercase">Total</small>
+                        <h3 class="fw-bold mb-0"><?php echo $totalpartai[0]; ?></h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 mb-2">
-                <div class="card">
+                <div class="card h-100 shadow-sm border-0 border-start border-success border-4">
                     <div class="card-body">
-                        <h5 class="card-title">SELESAI</h5>
-                        <p class="card-text fw-bold"><?php echo $partaiselesai[0]; ?> Partai</p>
+                        <small class="text-secondary text-uppercase text-success">Selesai</small>
+                        <h3 class="fw-bold mb-0 text-success"><?php echo $partaiselesai[0]; ?></h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 mb-2">
-                <div class="card">
+                <div class="card h-100 shadow-sm border-0 border-start border-warning border-4">
                     <div class="card-body">
-                        <h5 class="card-title">SISA</h5>
-                        <p class="card-text fw-bold"><?php echo $totalpartai[0] - $partaiselesai[0]; ?> Partai</p>
+                        <small class="text-secondary text-uppercase text-warning">Sisa</small>
+                        <h3 class="fw-bold mb-0 text-warning"><?php echo $totalpartai[0] - $partaiselesai[0]; ?></h3>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="jadwaltanding" class="table-responsive">
-            <h6 class="fw-bold">BABAK SEMIFINAL</h6>
-            <table class="table table-bordered" id="jadwalTable">
-                <thead class="table-light">
-                    <tr class="text-center">
-                        <th>PARTAI</th>
-                        <th>BABAK</th>
-                        <th>KELOMPOK</th>
-                        <th class="bg-primary bg-gradient text-white">SUDUT BIRU</th>
-                        <th class="bg-danger bg-gradient text-white">SUDUT MERAH</th>
-                        <th>STATUS</th>
-                        <th>PEMENANG</th>
-                        <th>ACTION</th>
-                    </tr>
-                </thead>
-                <tbody id="jadwal-body">
+        <div id="jadwaltanding">
+            <div class="d-flex align-items-center mb-2">
+                <div class="bg-primary rounded-circle me-2" style="width:10px; height:10px;"></div>
+                <h6 class="fw-bold mb-0">BABAK SEMIFINAL</h6>
+            </div>
+            <div class="table-responsive mb-5">
+                <table class="table table-dark table-hover table-bordered border-secondary shadow-sm" id="jadwalTable">
+                    <thead class="table-secondary text-dark">
+                        <tr class="text-center small">
+                            <th>PARTAI</th>
+                            <th>BABAK</th>
+                            <th>KELOMPOK</th>
+                            <th>SUDUT BIRU</th>
+                            <th>SUDUT MERAH</th>
+                            <th>STATUS</th>
+                            <th>PEMENANG</th>
+                            <th>AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jadwal-body" class="align-middle"></tbody>
+                </table>
+            </div>
 
-                </tbody>
-            </table>
-
-            <h6 class="fw-bold">BABAK FINAL</h6>
-            <table class="table table-bordered" id="jadwalTableFinal">
-                <thead class="table-light">
-                    <tr class="text-center">
-                        <th>PARTAI</th>
-                        <th>BABAK</th>
-                        <th>KELOMPOK</th>
-                        <th class="bg-primary bg-gradient text-white">SUDUT BIRU</th>
-                        <th class="bg-danger bg-gradient text-white">SUDUT MERAH</th>
-                        <th>STATUS</th>
-                        <th>PEMENANG</th>
-                        <th>ACTION</th>
-                    </tr>
-                </thead>
-                <tbody id="jadwal-bodyFinal">
-
-                </tbody>
-            </table>
+            <div class="d-flex align-items-center mb-2">
+                <div class="bg-warning rounded-circle me-2" style="width:10px; height:10px;"></div>
+                <h6 class="fw-bold mb-0">BABAK FINAL</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-bordered border-secondary shadow-sm" id="jadwalTableFinal">
+                    <thead class="table-secondary text-dark">
+                        <tr class="text-center small">
+                            <th>PARTAI</th>
+                            <th>BABAK</th>
+                            <th>KELOMPOK</th>
+                            <th>SUDUT BIRU</th>
+                            <th>SUDUT MERAH</th>
+                            <th>STATUS</th>
+                            <th>PEMENANG</th>
+                            <th>AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jadwal-bodyFinal" class="align-middle"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        $(document).ready(function() {
+        // Fungsi Keluar
+        function keluar() {
+            if (confirm("Apakah Anda yakin ingin keluar dari sistem?")) {
+                window.location.href = "index.php"; // Sesuaikan path logout Anda
+            }
+        }
 
-            // Baca dari localStorage
+        // Fungsi Refresh Manual
+        function refreshPage() {
+            // Menambahkan parameter random agar browser tidak mengambil dari cache
+            const url = new URL(window.location.href);
+            url.searchParams.set('refresh', Date.now());
+            window.location.href = url.href;
+        }
+
+        $(document).ready(function() {
+            // Restore filters from localStorage
             const savedGolongan = localStorage.getItem('golongan');
             const savedKategori = localStorage.getItem('kategori');
-            const savedKelas = localStorage.getItem('kelas');
+            const savedKelas = localStorage.getItem('kls');
 
             if (savedGolongan) $('#golongan').val(savedGolongan);
             if (savedKategori) $('#kategori').val(savedKategori);
-            const kls = localStorage.getItem('kls');
-            if (kls) $('#kelas').val(kls); // ✅ pakai value, bukan text
+            if (savedKelas) $('#kelas').val(savedKelas);
 
-            // Load data awal
             loadJadwal();
             loadJadwalFinal();
 
             const hostname = window.location.hostname;
-            // Koneksi WebSocket
             const ws = new WebSocket('ws://' + hostname + ':3000');
-            ws.onopen = () => console.log("Server WebSocket terhubung.");
-            ws.onerror = err => console.error("WebSocket error:", err);
-            ws.onclose = () => alert("Koneksi WebSocket terputus.");
 
-            // Fungsi render jadwal semifinal
-            function renderJadwal(data) {
+            function renderTableRows(data, targetSelector) {
                 let tbody = '';
-                data.forEach(jadwal => {
-                    tbody += `<tr>
-                <td rowspan="2" class="text-center align-middle">${jadwal.partai}</td>
-                <td rowspan="2" class="text-center align-middle">${jadwal.babak}</td>
-                <td rowspan="2" class="align-middle">${jadwal.kelas}</td>
-                <td class="bg-primary bg-gradient text-white text-uppercase">${jadwal.nm_biru}</td>
-                <td class="bg-danger bg-gradient text-white text-uppercase">${jadwal.nm_merah}</td>
-                <td rowspan="2" class="text-center align-middle">${jadwal.status.charAt(0).toUpperCase() + jadwal.status.slice(1)}</td>
-                <td rowspan="2" class="text-center align-middle">
-                    ${jadwal.pemenang.toLowerCase() === 'biru' ? '<span class="badge bg-primary p-2">Biru</span>' :
-                      jadwal.pemenang.toLowerCase() === 'merah' ? '<span class="badge bg-danger p-2">Merah</span>' :
-                      '<span class="badge bg-secondary p-2">-</span>'}
-                </td>
-                <td rowspan="2" class="text-center align-middle">
-                    ${jadwal.status === 'selesai' ? 'Pertandingan Selesai' :
-                      `<a href="operator.php?id_partai=${jadwal.id_partai}" class="btn btn-success bg-gradient btn-sm">Masuk</a>`}
-                </td>
-            </tr>
-            <tr>
-                <td class="bg-light bg-gradient text-dark text-uppercase">${jadwal.kontingen_biru}</td>
-                <td class="bg-light bg-gradient text-dark text-uppercase">${jadwal.kontingen_merah}</td>
-            </tr>`;
-                });
-                $('#jadwalTable tbody').html(tbody);
+                if (data.length === 0) {
+                    tbody = '<tr><td colspan="8" class="text-center py-4 text-secondary">Tidak ada data pertandingan</td></tr>';
+                } else {
+                    data.forEach(jadwal => {
+                        tbody += `
+                        <tr>
+                            <td rowspan="2" class="text-center fw-bold text-info text-uppercase">${jadwal.partai}</td>
+                            <td rowspan="2" class="text-center small text-uppercase">${jadwal.babak}</td>
+                            <td rowspan="2" class="small text-uppercase">${jadwal.kelas}</td>
+                            <td class="bg-primary bg-opacity-75 text-white fw-bold px-3 text-uppercase">${jadwal.nm_biru}</td>
+                            <td class="bg-danger bg-opacity-75 text-white fw-bold px-3 text-uppercase">${jadwal.nm_merah}</td>
+                            <td rowspan="2" class="text-center"><span class="badge border border-light text-uppercase">${jadwal.status.toUpperCase()}</span></td>
+                            <td rowspan="2" class="text-center">
+                                ${jadwal.pemenang.toLowerCase() === 'biru' ? '<span class="badge bg-primary w-100 text-uppercase">Biru</span>' :
+                                  jadwal.pemenang.toLowerCase() === 'merah' ? '<span class="badge bg-danger w-100 text-uppercase">Merah</span>' :
+                                  '<span class="text-muted text-uppercase">-</span>'}
+                            </td>
+                            <td rowspan="2" class="text-center text-uppercase">
+                                ${jadwal.status === 'selesai' ? '<i class="text-success small">Done</i>' :
+                                `<a href="operator.php?id_partai=${jadwal.id_partai}" class="btn btn-success btn-sm px-3 shadow-sm">Mulai</a>`}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg-dark text-secondary small px-3 text-uppercase">${jadwal.kontingen_biru}</td>
+                            <td class="bg-dark text-secondary small px-3 text-uppercase">${jadwal.kontingen_merah}</td>
+                        </tr>`;
+                    });
+                }
+                $(targetSelector).html(tbody);
             }
 
-            // Fungsi render jadwal final
-            function renderJadwalFinal(data) {
-                let tbody = '';
-                data.forEach(jadwal => {
-                    tbody += `<tr>
-                <td rowspan="2" class="text-center align-middle">${jadwal.partai}</td>
-                <td rowspan="2" class="text-center align-middle">${jadwal.babak}</td>
-                <td rowspan="2" class="align-middle">${jadwal.kelas}</td>
-                <td class="bg-primary bg-gradient text-white text-uppercase">${jadwal.nm_biru}</td>
-                <td class="bg-danger bg-gradient text-white text-uppercase">${jadwal.nm_merah}</td>
-                <td rowspan="2" class="text-center align-middle">${jadwal.status.charAt(0).toUpperCase() + jadwal.status.slice(1)}</td>
-                <td rowspan="2" class="text-center align-middle">
-                    ${jadwal.pemenang.toLowerCase() === 'biru' ? '<span class="badge bg-primary p-2">Biru</span>' :
-                      jadwal.pemenang.toLowerCase() === 'merah' ? '<span class="badge bg-danger p-2">Merah</span>' :
-                      '<span class="badge bg-secondary p-2">-</span>'}
-                </td>
-                <td rowspan="2" class="text-center align-middle">
-                    ${jadwal.status === 'selesai' ? 'Pertandingan Selesai' :
-                      `<a href="operator.php?id_partai=${jadwal.id_partai}" class="btn btn-success bg-gradient btn-sm">Masuk</a>`}
-                </td>
-            </tr>
-            <tr>
-                <td class="bg-light bg-gradient text-dark text-uppercase">${jadwal.kontingen_biru}</td>
-                <td class="bg-light bg-gradient text-dark text-uppercase">${jadwal.kontingen_merah}</td>
-            </tr>`;
-                });
-                $('#jadwal-bodyFinal').html(tbody);
-            }
-
-            // Load jadwal via AJAX
             function loadJadwal() {
-                const golongan = $('#golongan').val();
-                const kategori = $('#kategori').val();
-                const kelasText = $('#kelas option:selected').text(); // ✅ kirim text untuk tampil
-                console.log(golongan + " " + kategori + " " + kelasText);
-                // console.log(kelasText);
+                const filterKelas = $('#golongan').val() + " " + $('#kategori').val() + " " + $('#kelas option:selected').text();
                 $.ajax({
                     url: 'get_jadwal.php',
                     method: 'GET',
                     data: {
-                        status: (<?php echo json_encode($status_filter); ?> === '' ? '-' : <?php echo json_encode($status_filter); ?>),
-                        kelas: golongan + " " + kategori + " " + kelasText,
+                        status: '<?php echo $status_filter; ?>' || '-',
+                        kelas: filterKelas
                     },
                     dataType: 'json',
-                    success: function(data) {
-                        renderJadwal(data);
-                    },
-                    error: function(xhr, status, err) {
-                        console.error('Gagal load jadwal:', err);
-                    }
+                    success: (data) => renderTableRows(data, '#jadwal-body'),
+                    error: (err) => console.error('Error load semifinal:', err)
                 });
             }
 
             function loadJadwalFinal() {
-                const golongan = $('#golongan').val();
-                const kategori = $('#kategori').val();
-                const kelasText = $('#kelas option:selected').text();
-                console.log(golongan + " " + kategori + " " + kelasText);
+                const filterKelas = $('#golongan').val() + " " + $('#kategori').val() + " " + $('#kelas option:selected').text();
                 $.ajax({
                     url: 'get_jadwalFinal.php',
                     method: 'GET',
                     data: {
-                        status: (<?php echo json_encode($status_filter); ?> === '' ? '-' : <?php echo json_encode($status_filter); ?>),
-                        kelas: golongan + " " + kategori + " " + kelasText,
+                        status: '<?php echo $status_filter; ?>' || '-',
+                        kelas: filterKelas
                     },
                     dataType: 'json',
-                    success: function(data) {
-                        renderJadwalFinal(data);
-                    },
-                    error: function(xhr, status, err) {
-                        console.error('Gagal load jadwal:', err);
-                    }
+                    success: (data) => renderTableRows(data, '#jadwal-bodyFinal'),
+                    error: (err) => console.error('Error load final:', err)
                 });
             }
 
-            // Event pilih kelas
-            $('#bagan').on('click', function(event) {
-                event.preventDefault();
+            $('#bagan').on('click', function() {
+                const g = $('#golongan').val();
+                const k = $('#kategori').val();
+                const kl = $('#kelas').val();
 
-                const golongan = $('#golongan').val();
-                const kategori = $('#kategori').val();
-                const kelas = $('#kelas').val(); // ✅ simpan value, bukan text
+                localStorage.setItem('golongan', g);
+                localStorage.setItem('kategori', k);
+                localStorage.setItem('kls', kl);
 
-                // if (!golongan || !kategori || !kelas) {
-                //     alert('Silakan pilih semua terlebih dahulu');
-                //     return;
-                // }
-
-                // Simpan ke localStorage
-                localStorage.setItem('golongan', golongan);
-                localStorage.setItem('kategori', kategori);
-                localStorage.setItem('kelas', kelas);
-                localStorage.setItem('kls', kelas);
-
-                // Kirim WebSocket dan load data
-                ws.send(JSON.stringify({
-                    type: 'selectKelas',
-                    golongan,
-                    kategori,
-                    kelas,
-                }));
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'selectKelas',
+                        golongan: g,
+                        kategori: k,
+                        kelas: kl
+                    }));
+                }
                 loadJadwal();
                 loadJadwalFinal();
             });

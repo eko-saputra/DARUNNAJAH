@@ -30,19 +30,19 @@
                 let tbody = '';
                 data.forEach(jadwal => {
                     tbody += `<tr>
-                    <td rowspan="2" class="text-center align-middle">${jadwal.gelanggang}</td>
-                    <td rowspan="2" class="text-center align-middle">${jadwal.partai}</td>
-                    <td rowspan="2" class="text-center align-middle">${jadwal.status_babak != '' ? jadwal.status_babak : jadwal.babak}</td>
-                    <td rowspan="2" class="align-middle">${jadwal.kelas}</td>
+                    <td rowspan="2" class="text-center align-middle text-uppercase">${jadwal.gelanggang}</td>
+                    <td rowspan="2" class="text-center align-middle text-uppercase">${jadwal.partai}</td>
+                    <td rowspan="2" class="text-center align-middle text-uppercase">${jadwal.status_babak != '' ? jadwal.status_babak : jadwal.babak}</td>
+                    <td rowspan="2" class="align-middle text-uppercase">${jadwal.kelas}</td>
                     <td class="bg-primary bg-gradient text-white text-uppercase">${jadwal.nm_biru}</td>
                     <td class="bg-danger bg-gradient text-white text-uppercase">${jadwal.nm_merah}</td>
-                    <td rowspan="2" class="text-center align-middle">${jadwal.status.charAt(0).toUpperCase() + jadwal.status.slice(1)}</td>
-                    <td rowspan="2" class="text-center align-middle">
-                        ${jadwal.pemenang.toLowerCase() === 'biru' ? '<span class="badge bg-primary p-2">Biru</span>' :
-                          jadwal.pemenang.toLowerCase() === 'merah' ? '<span class="badge bg-danger p-2">Merah</span>' :
-                          '<span class="badge bg-secondary -2">-</span>'}
+                    <td rowspan="2" class="text-center align-middle text-uppercase">${jadwal.status.charAt(0).toUpperCase() + jadwal.status.slice(1)}</td>
+                    <td rowspan="2" class="text-center align-middle text-uppercase">
+                        ${jadwal.pemenang.toLowerCase() === 'biru' ? '<span class="badge bg-primary p-2 text-uppercase">Biru</span>' :
+                          jadwal.pemenang.toLowerCase() === 'merah' ? '<span class="badge bg-danger p-2 text-uppercase">Merah</span>' :
+                          '<span class="badge bg-secondary p-2 text-uppercase">-</span>'}
                     </td>
-                    <td rowspan="2" class="text-center align-middle">
+                    <td rowspan="2" class="text-center align-middle text-uppercase">
                         ${jadwal.status === 'selesai' ? 'Pertandingan Selesai' :
                           `<a href="operator.php?id_partai=${jadwal.id_partai}" class="btn btn-success bg-gradient btn-sm">Masuk</a>`}
                     </td>

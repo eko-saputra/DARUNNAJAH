@@ -44,27 +44,39 @@
       color: white !important;
       border-color: #198754 !important;
     }
+
+    .timer-display {
+      background-color: #000;
+      color: #0f0;
+      /* hijau terang */
+      font-size: 2rem;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      display: inline-block;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      font-family: 'Courier New', monospace;
+    }
   </style>
 
   <title>JURI - IPSI Kota Dumai</title>
 </head>
 
-<body class="">
+<body>
   <div class="container-fluid">
     <div class="row">
       <div class="col">
-        <table width="100%" class="">
+        <table width="100%">
           <tr>
-            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-bottom-5 text-white" colspan="3">
-              <small id="juri"></small>/Gelanggang <small id="gelanggang"></small>/
-              <small id="timer" style="
-                    color: white;
-                  ">⏱️ 00:00</small>
+            <td class="text-uppercase fw-bold text-center bg-dark bg-gradient rounded-bottom-5 text-white py-2"
+              colspan="3">
+              <small id="juri"></small> <small>/ Gelanggang</small> <small id="gelanggang"></small>
             </td>
           </tr>
           <tr>
             <td class="text-uppercase text-primary" width="40%">
-              <small class="nm_biru"></small>/<small class="kontingen_biru fw-bold"></small>
+              <b class="nm_biru" style="font-size: 20px;"></b> (<small class="kontingen_biru fw-bold"></small>)
             </td>
             <td class="text-uppercase text-center" width="20%">
               <!-- Wrapper untuk center -->
@@ -72,6 +84,9 @@
                 <!-- Konten yang sebelumnya -->
                 <div class="d-flex flex-column align-items-center">
                   <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="konfirmasiKeluar()">
+                      KELUAR
+                    </button>
                     <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="btn p-0">
                       <svg width="24" height="24" viewBox="0 0 24 24">
                         <path fill="#2d2d2d"
@@ -84,15 +99,10 @@
                           d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
                       </svg>
                     </button>
-                  </div>
-                  <div class="d-flex gap-2 mt-2">
-                    <button class="btn btn-danger bg-gradient btn-sm keluar small" onclick="konfirmasiKeluar()">
-                      KELUAR
-                    </button>
-                    <!-- <a href="#" class="btn btn-light border border-1 btn-sm reload-btn small"
-                    onclick="konfirmasiRefresh(event)">
-                    Refresh
-                  </a> -->
+                    <a href="#" class="btn btn-light border border-1 btn-sm reload-btn small"
+                      onclick="konfirmasiRefresh(event)">
+                      Refresh
+                    </a>
                   </div>
                   <script>
                     function konfirmasiKeluar() {
@@ -101,24 +111,19 @@
                       );
                       if (yakin) {
                         // Pindah halaman logout
-                        window.location.href = "index.html"; // ganti sesuai kebutuhan
+                        window.location.href = "index.php"; // ganti sesuai kebutuhan
                       }
                     }
                     function konfirmasiRefresh(event) {
                       event.preventDefault();
-                      const yakin = confirm(
-                        "Apakah Anda yakin ingin me-refresh halaman ini ?"
-                      );
-                      if (yakin) {
-                        window.location.href = "penilaian.html";
-                      }
+                      window.location.href = "penilaian.html";
                     }
                   </script>
                 </div>
               </div>
             </td>
             <td class="text-uppercase text-danger text-end" width="40%">
-              <small class="nm_merah"></small>/<small class="kontingen_merah fw-bold"></small>
+              <b class="nm_merah"></b> (<small class="kontingen_merah fw-bold"></small>)
             </td>
           </tr>
         </table>
@@ -128,7 +133,7 @@
               <td width="40%" class="bg-primary text-white text-center">
                 POIN
               </td>
-              <td width="20%" class="text-center fw-bold">Round</td>
+              <td width="20%" class="text-center fw-bold">ROUND</td>
               <td width="40%" class="bg-danger text-white text-center">
                 POIN
               </td>
@@ -153,13 +158,18 @@
                 </button>
               </div>
             </td>
-            <td class="text-center" valign="middle" width="25%">
+            <td class="text-center" valign="middle" width="15%">
               <button class="btn btn-primary bg-gradient border-5 border-dark rounded-4 fw-bold hapus-skor"
                 onclick="button_hapus('BIRU')" type="button">
                 <img src="../../assets/img/trash.png" width="25" />
               </button>
             </td>
-            <td class="text-center" valign="middle" width="25%">
+            <td valign="middle" width="20%" class="text-center">
+              <small id="timer" class="timer-display" style="
+                    color: white;
+                  ">⏱️ 00:00</small>
+            </td>
+            <td class="text-center" valign="middle" width="15%">
               <button class="btn btn-danger bg-gradient border-5 border-dark rounded-4 fw-bold hapus-skor"
                 onclick="button_hapus('MERAH')" type="button">
                 <img src="../../assets/img/trash.png" width="25" />
@@ -372,8 +382,7 @@
             $(".kontingen_merah").text(p.merah.kontingen);
 
             $("#juri").text(localStorage.getItem("nama_juri"));
-            $("#gelanggang").text(p.gelanggang + "/Partai " + p.partai);
-            $(".gelanggang").text(p.gelanggang);
+            $("#gelanggang").text(p.gelanggang + " / Partai " + p.partai);
 
             if (p.partai === "?") {
               $(".button_nilai, .hapus-skor").prop("disabled", true);
