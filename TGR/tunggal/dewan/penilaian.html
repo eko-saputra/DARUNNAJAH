@@ -1529,10 +1529,9 @@
       stddevEl.text(stdDev.toFixed(6));
 
       const penalty = penalties?.find(p => p.sudut === sudut);
+      totalEl.text((median - penalty.total).toFixed(2));
+      penaltyValueEl.text(penalty.total.toFixed(2));
       if (penalty && penalty.total > 0) {
-        totalEl.text((median - penalty.total).toFixed(2));
-        // console.log(penalty.total);
-        penaltyValueEl.text(penalty.total.toFixed(2));
         penaltyEl.show();
       } else {
         penaltyEl.hide();

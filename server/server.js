@@ -2131,6 +2131,8 @@ function simpan_nilai_seni_tunggal(ws, db, payload) {
         }
       });
 
+      getNilaiSeni(ws, db, { partai: id_jadwal }); // Refresh nilai seni tunggal
+
       handleSetPartai(payload);
       console.log("📡 Nilai total dikirim ke monitor:", nilaiTerkini);
     });
