@@ -468,8 +468,9 @@
     }
 
     .broadcast-card.winner {
-      border: 3px solid gold;
-      box-shadow: 0 0 20px gold;
+      border: 3px solid gold !important;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+      transition: all 0.3s ease;
     }
 
     .badge-wrong {
@@ -1143,6 +1144,7 @@
         <!-- Biru Broadcast Card -->
         <div class="broadcast-card biru" id="broadcast-biru" style="display: none;">
           <div class="broadcast-sudut">
+            <i class="fas fa-crown winner-icon-biru" style="display:none; margin-right:5px; color:gold;"></i>
             <span class="sudut-label-badge biru"><i class="fas fa-user me-1"></i>BIRU</span>
             <span class="broadcast-total" id="broadcast-total-biru">0.00</span>
           </div>
@@ -1178,6 +1180,7 @@
         <!-- Merah Broadcast Card -->
         <div class="broadcast-card merah" id="broadcast-merah" style="display: none;">
           <div class="broadcast-sudut">
+            <i class="fas fa-crown winner-icon-merah" style="display:none; margin-right:5px; color:gold;"></i>
             <span class="sudut-label-badge merah"><i class="fas fa-user me-1"></i>MERAH</span>
             <span class="broadcast-total" id="broadcast-total-merah">0.00</span>
           </div>
@@ -1314,6 +1317,7 @@
 
     function updateWinnerHighlight() {
       // Hapus class winner dari kedua card
+      $('.winner-icon-biru, .winner-icon-merah').hide();
       $('#broadcast-biru, #broadcast-merah').removeClass('winner');
 
       if (!currentPartaiData || !currentPartaiData.pemenang) return;
@@ -1321,8 +1325,10 @@
       const pemenang = currentPartaiData.pemenang.toLowerCase(); // "biru" atau "merah"
       if (pemenang === 'biru') {
         $('#broadcast-biru').addClass('winner');
+        $('.winner-icon-biru').show();
       } else if (pemenang === 'merah') {
         $('#broadcast-merah').addClass('winner');
+        $('.winner-icon-merah').show();
       }
     }
 
@@ -1610,12 +1616,37 @@
       }
 
       ws.send(JSON.stringify({
-        type: 'winner',
+        type: 'winner_tgr',
         sudut: sudut,
-        currentPartai: { partai: broadcastData.partai, bbk: 'SENI' },
+        currentPartai: { partai: broadcastData.partai },
         nilai_biru: biruFinal.toFixed(2),
         nilai_merah: merahFinal.toFixed(2)
       }));
+
+      if (currentPartaiData) {
+        const updatedPartaiData = {
+          ...currentPartaiData,
+          status: 'selesai',
+          pemenang: sudut.toLowerCase()
+        };
+        ws.send(JSON.stringify({
+          type: 'set_partai_tunggal',
+          partai: updatedPartaiData.partai,
+          kategori: updatedPartaiData.kategori,
+          babak: updatedPartaiData.babak,
+          kelas: updatedPartaiData.kelas,
+          status: updatedPartaiData.status,
+          pemenang: updatedPartaiData.pemenang,
+          peserta: {
+            nama: updatedPartaiData.peserta?.nama || '',
+            kontingen: updatedPartaiData.peserta?.kontingen || '',
+            sudut: updatedPartaiData.peserta?.sudut || ''
+          }
+        }));
+        // Simpan perubahan ke localStorage
+        localStorage.setItem('currentPartai', JSON.stringify(updatedPartaiData));
+        currentPartaiData = updatedPartaiData;
+      }
 
       showNotification(`✅ Pemenang ${sudut} dideklarasikan`, 'success');
       showResultModal(sudut, biruFinal, merahFinal, biruPenalty?.total || 0, merahPenalty?.total || 0);
@@ -1727,6 +1758,12 @@
 
           case 'stopped':
             resetTimer();
+            break;
+
+          case 'ended':
+            isTimerRunning = false;
+            updateButtonStates();  // <-- tambahkan ini
+            console.log('⏰ Timer ended');
             break;
 
           case 'partai_result_response':

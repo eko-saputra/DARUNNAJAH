@@ -657,6 +657,139 @@ ORDER BY peserta.nm_lengkap ASC;
               });
               break;
 
+            // Saat menerima pesan 'winner_tgr' dari client
+            case 'winner_tgr':
+              const { sudut: sudutwinner, currentPartai: jadwal, nilai_biru, nilai_merah } = payload;
+              const pemenangpartai = sudutwinner.toLowerCase(); // 'biru' atau 'merah'
+              const idpartai = jadwal.partai; // nomor partai, misal '1'
+
+              // Ambil data lengkap partai yang sedang berlangsung
+              const getCurrentQuery = 'SELECT * FROM jadwal_tgr WHERE partai = ?';
+              db.query(getCurrentQuery, [idpartai], (err, rows) => {
+                if (err) {
+                  console.error('❌ Error fetching current partai:', err);
+                  ws.send(JSON.stringify({ type: 'error', message: 'Gagal mengambil data partai' }));
+                  return;
+                }
+                if (rows.length === 0) {
+                  console.warn(`⚠️ Partai ${idpartai} tidak ditemukan`);
+                  return;
+                }
+                const currentData = rows[0];
+                const winnerName = pemenangpartai === 'biru' ? currentData.nm_biru : currentData.nm_merah;
+                const winnerKontingen = pemenangpartai === 'biru' ? currentData.kontingen_biru : currentData.kontingen_merah;
+                const loserName = pemenangpartai === 'biru' ? currentData.nm_merah : currentData.nm_biru;
+                const loserKontingen = pemenangpartai === 'biru' ? currentData.kontingen_merah : currentData.kontingen_biru;
+                const kategori = currentData.kategori;
+                const golongan = currentData.golongan;
+                const babak = currentData.babak;
+                const kelas = kategori + ' ' + golongan; // gabungan untuk medali
+
+                // Update status dan pemenang partai ini
+                const updateQuery = 'UPDATE jadwal_tgr SET status = ?, pemenang = ? WHERE partai = ?';
+                db.query(updateQuery, ['selesai', pemenangpartai, idpartai], (err, result) => {
+                  if (err) {
+                    console.error('❌ Error updating jadwal_tgr:', err);
+                    ws.send(JSON.stringify({ type: 'error', message: 'Gagal update database' }));
+                    return;
+                  }
+
+                  console.log(`✅ Partai ${idpartai} updated: status=selesai, pemenang=${pemenangpartai}`);
+
+                  // Broadcast ke semua client (termasuk monitor) agar menampilkan modal pemenang
+                  wss.clients.forEach(client => {
+                    if (client.readyState === WebSocket.OPEN) {
+                      client.send(JSON.stringify({
+                        type: 'partai_selesai',
+                        partai: idpartai,
+                        pemenang: pemenangpartai,
+                        nilai_biru,
+                        nilai_merah
+                      }));
+                    }
+                  });
+
+                  // Proses medali dan pengisian partai berikutnya
+                  if (babak && babak.toUpperCase() === 'SEMIFINAL') {
+                    // Beri medali perunggu untuk yang kalah (hanya jika nama bukan placeholder)
+                    if (loserName && loserName.trim() !== '' && !loserName.includes('Pemenang Partai')) {
+                      const insertMedali = 'INSERT INTO medali (nama, kontingen, kelas, medali, id_partai_FK) VALUES (?, ?, ?, ?, ?)';
+                      db.query(insertMedali, [loserName, loserKontingen, kelas, 'Perunggu', idpartai], (err) => {
+                        if (err) console.error('❌ Error insert perunggu:', err);
+                        else console.log(`🏅 Perunggu untuk ${loserName}`);
+                      });
+                    }
+
+                    // Cari partai FINAL yang menunggu pemenang dari partai ini
+                    // Pola: di nm_biru atau nm_merah berisi "Pemenang Partai X" dengan X = idpartai
+                    const pattern = `%Pemenang Partai ${idpartai}%`;
+                    const findFinalQuery = `
+                    SELECT partai, 
+                           CASE 
+                               WHEN nm_biru LIKE ? THEN 'biru'
+                               WHEN nm_merah LIKE ? THEN 'merah'
+                               ELSE NULL
+                           END as posisi
+                    FROM jadwal_tgr 
+                    WHERE babak = 'FINAL' 
+                      AND (nm_biru LIKE ? OR nm_merah LIKE ?)
+                `;
+                    db.query(findFinalQuery, [pattern, pattern, pattern, pattern], (err, finalRows) => {
+                      if (err) {
+                        console.error('❌ Error mencari partai final:', err);
+                        return;
+                      }
+                      if (finalRows.length > 0) {
+                        const finalPartai = finalRows[0];
+                        const posisi = finalPartai.posisi; // 'biru' atau 'merah'
+                        const finalPartaiNumber = finalPartai.partai;
+
+                        console.log(`Pemenang dari partai ${idpartai} akan masuk ke posisi ${posisi} di partai FINAL ${finalPartaiNumber}`);
+
+                        // Update nama dan kontingen di partai final
+                        let updateField = '';
+                        let updateKontingenField = '';
+                        if (posisi === 'biru') {
+                          updateField = 'nm_biru';
+                          updateKontingenField = 'kontingen_biru';
+                        } else {
+                          updateField = 'nm_merah';
+                          updateKontingenField = 'kontingen_merah';
+                        }
+
+                        const updateFinalQuery = `UPDATE jadwal_tgr SET ${updateField} = ?, ${updateKontingenField} = ? WHERE partai = ?`;
+                        db.query(updateFinalQuery, [winnerName, winnerKontingen, finalPartaiNumber], (err) => {
+                          if (err) console.error('❌ Error mengupdate partai final:', err);
+                          else console.log(`✅ Partai final ${finalPartaiNumber} diisi dengan pemenang dari partai ${idpartai} sebagai ${posisi}`);
+                        });
+                      } else {
+                        console.log(`ℹ️ Tidak ditemukan partai final yang menunggu pemenang dari partai ${idpartai}`);
+                      }
+                    });
+
+                  } else if (babak && babak.toUpperCase() === 'FINAL') {
+                    // Beri medali emas untuk pemenang, perak untuk yang kalah
+                    if (winnerName && winnerName.trim() !== '' && !winnerName.includes('Pemenang Partai')) {
+                      const insertEmas = 'INSERT INTO medali (nama, kontingen, kelas, medali, id_partai_FK) VALUES (?, ?, ?, ?, ?)';
+                      db.query(insertEmas, [winnerName, winnerKontingen, kelas, 'Emas', idpartai], (err) => {
+                        if (err) console.error('❌ Error insert emas:', err);
+                        else console.log(`🏅 Emas untuk ${winnerName}`);
+                      });
+                    }
+                    if (loserName && loserName.trim() !== '' && !loserName.includes('Pemenang Partai')) {
+                      const insertPerak = 'INSERT INTO medali (nama, kontingen, kelas, medali, id_partai_FK) VALUES (?, ?, ?, ?, ?)';
+                      db.query(insertPerak, [loserName, loserKontingen, kelas, 'Perak', idpartai], (err) => {
+                        if (err) console.error('❌ Error insert perak:', err);
+                        else console.log(`🏅 Perak untuk ${loserName}`);
+                      });
+                    }
+                  } else {
+                    console.log(`ℹ️ Babak ${babak} tidak diproses medali`);
+                  }
+                });
+              });
+              break;
+
             case "winner":
               console.log(payload);
               let currentPartai = payload.currentPartai;

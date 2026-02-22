@@ -566,6 +566,82 @@
                 font-size: 3.5rem;
             }
         }
+
+        /* Winner Modal */
+        .winner-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .winner-modal-content {
+            text-align: center;
+            padding: 50px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            border: 5px solid gold;
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .winner-modal-content.biru {
+            border-color: #00e5ff;
+            box-shadow: 0 0 50px rgba(0, 229, 255, 0.5);
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+        }
+
+        .winner-modal-content.merah {
+            border-color: #ff4757;
+            box-shadow: 0 0 50px rgba(255, 71, 87, 0.5);
+            background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%);
+        }
+
+        .winner-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: gold;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            letter-spacing: 5px;
+        }
+
+        .winner-sudut {
+            font-size: 6rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .winner-nilai {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 
@@ -582,6 +658,15 @@
                 <path fill="#fff" d="M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z" />
             </svg>
         </button>
+    </div>
+
+    <!-- Modal Winner Fullscreen -->
+    <div class="winner-modal" id="winnerModal" style="display: none;">
+        <div class="winner-modal-content" id="winnerModalContent">
+            <div class="winner-title">🏆 PEMENANG 🏆</div>
+            <div class="winner-sudut" id="winnerSudut">SUDUT BIRU</div>
+            <div class="winner-nilai" id="winnerNilai">0.00</div>
+        </div>
     </div>
 
     <!-- Container untuk rekap nilai fullscreen -->
@@ -725,6 +810,44 @@
 
         // Flag untuk menandai apakah rekap harus ditampilkan (hanya dari broadcast_selesai_seni)
         let shouldShowRekap = false;
+
+        // Fungsi untuk menampilkan modal winner
+        let winnerModalTimer = null;
+
+        function showWinnerModal(sudut, nilai) {
+            // Hapus timer sebelumnya jika ada
+            if (winnerModalTimer) {
+                clearTimeout(winnerModalTimer);
+                winnerModalTimer = null;
+            }
+
+            const modal = document.getElementById('winnerModal');
+            const content = document.getElementById('winnerModalContent');
+            const sudutEl = document.getElementById('winnerSudut');
+            const nilaiEl = document.getElementById('winnerNilai');
+
+            // Set warna sesuai sudut
+            content.className = 'winner-modal-content'; // reset class
+            if (sudut.toLowerCase() === 'biru') {
+                content.classList.add('biru');
+                sudutEl.textContent = 'SUDUT BIRU';
+            } else {
+                content.classList.add('merah');
+                sudutEl.textContent = 'SUDUT MERAH';
+            }
+
+            // Set nilai
+            nilaiEl.textContent = parseFloat(nilai).toFixed(2);
+
+            // Tampilkan modal
+            modal.style.display = 'flex';
+
+            // Auto close setelah 3 detik
+            winnerModalTimer = setTimeout(() => {
+                modal.style.display = 'none';
+                winnerModalTimer = null;
+            }, 3000);
+        }
 
         // Fungsi untuk menghitung total penalty dari dewan
         function calculateDewanPenalty(dewanData) {
@@ -1075,7 +1198,7 @@
                         localStorage.removeItem('current_stats');
                         localStorage.removeItem('dewan_values');
                         localStorage.removeItem('penalty');
-                        
+
                         // Reset flag rekap
                         shouldShowRekap = false;
 
@@ -1110,6 +1233,14 @@
                         ws.send(JSON.stringify(dataNilai));
                         ws.send(JSON.stringify(dataNilai1));
                         saveAllData();
+                    }
+
+                    if (message.type === 'partai_selesai') {
+                        console.log('🏆 Partai selesai, pemenang:', message);
+                        // message memiliki properti: partai, pemenang, nilai_biru, nilai_merah
+                        const sudut = message.pemenang; // 'biru' atau 'merah'
+                        const nilai = sudut === 'biru' ? message.nilai_biru : message.nilai_merah;
+                        showWinnerModal(sudut, nilai);
                     }
 
                     if (message.type === 'ambil_nilai_terkini_monitor_success') {
