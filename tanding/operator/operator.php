@@ -1476,7 +1476,7 @@ $selesai = mysqli_fetch_assoc($result_selesai)['selesai'];
             kontingen: partaiData.kontingen_merah
           }
         };
-
+        console.log('Mengirim data refresh partai ke server:', data);
         ws.send(JSON.stringify(data));
         sendBabakToServer(currentBabak);
       }

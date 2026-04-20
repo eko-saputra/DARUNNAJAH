@@ -37,13 +37,13 @@ $sql = "INSERT INTO jadwal_tanding(id_partai,tgl, kelas, gelanggang, partai,
 if (mysqli_query($koneksi, $sql)) {
 ?>
     <script type="text/javascript">
-        document.location = '../../?page=tambah_jadwal';
+        document.location = '../../?page=tambah_jadwal_tanding';
     </script>
 <?php
 } else {
 ?>
     <script type="text/javascript">
-        document.location = '../../?page=tambah_jadwal';
+        document.location = '../../?page=tambah_jadwal_tanding';
     </script>
 <?php
     die('Unable to delete record: ' . mysqli_error($koneksi));

@@ -19,7 +19,7 @@
                 <div class="row-fluid sortable">
                     <div class="box span12">
                         <div class="box-header" data-original-title>
-                            <h6 class="rounded p-2 bg-dark border border-1 border-muted text-primary mb-5"><i class="halflings-icon white download"></i><span class="break"></span>Upload Jadwal Tanding</h6>
+                            <h6 class="rounded p-2 bg-dark border border-1 border-muted text-primary mb-5"><i class="halflings-icon white download"></i><span class="break"></span>Upload Jadwal Tanding TGR</h6>
                         </div>
                         <div class="box-content">
                             <?php
@@ -105,7 +105,7 @@
                                             $import = "INSERT INTO jadwal_tgr (id_partai, tgl, kategori, golongan, partai, nm_merah, kontingen_merah,
                             nm_biru, kontingen_biru, babak) 
                           VALUES ('$escapedData[2]', '$mysqlDate', '$escapedData[0]', '$escapedData[1]', '$escapedData[2]', 
-                                  '$escapedData[3]', '$escapedData[4]', '$escapedData[5]', '$escapedData[6]', '$escapedData[7]')";
+                                  '$escapedData[5]', '$escapedData[6]', '$escapedData[3]', '$escapedData[4]', '$escapedData[7]')";
 
                                             if (mysqli_query($koneksi, $import)) {
                                                 $importCount++;

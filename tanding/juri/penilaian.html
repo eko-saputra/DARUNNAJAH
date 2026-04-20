@@ -167,7 +167,7 @@
             <td valign="middle" width="20%" class="text-center">
               <small id="timer" class="timer-display" style="
                     color: white;
-                  ">⏱️ 00:00</small>
+                  ">00:00</small>
             </td>
             <td class="text-center" valign="middle" width="15%">
               <button class="btn btn-danger bg-gradient border-5 border-dark rounded-4 fw-bold hapus-skor"
@@ -510,7 +510,7 @@
             const timerElement = document.getElementById("timer");
             if (timerElement) {
               timerElement.textContent =
-                "⏱️ " + formatTime(message.remaining);
+                formatTime(message.remaining);
             }
 
             $(".button_nilai").prop("disabled", false);
@@ -593,10 +593,10 @@
       console.log(localStorage.getItem("partai"));
       const data = {
         type: "nilai",
-        nilai: nilai,
+        nilai: Number(nilai),
         sudut: sudut,
-        id_juri: localStorage.getItem("juri"),
-        id_jadwal: localStorage.getItem("partai"),
+        id_juri: Number(localStorage.getItem("juri")),
+        id_jadwal: Number(localStorage.getItem("partai")),
         babak: localStorage.getItem("babak"),
         bbk: localStorage.getItem("bbk"),
         waktu: new Date().toISOString(),

@@ -617,7 +617,7 @@
       });
 
       jumlahBabak.on('change', function() {
-        maxBabak = parseInt(jumlahBabak.val());
+        maxBabak = jumlahBabak.val();
         localStorage.setItem('jumlahBabak', maxBabak);
         renderBabakButtons(maxBabak);
         currentRound = null;

@@ -222,6 +222,7 @@
 			min-width: 200px;
 			text-align: center;
 			padding: 5px;
+			font-size: 20px;
 		}
 
 		.event-info.babak {
@@ -316,7 +317,9 @@
 				<!-- Logo Kota Dumai -->
 				<div class="col-3 text-center">
 					<img src="../../assets/img/Lambang_Kota_Dumai.png" width="20%" class="mb-2 dumai">
-					<p class="m-0"><small class="text-light fw-bold">KOTA DUMAI</small></p>
+					<p class="m-0">
+					<h5 class="text-light fw-bold">KOTA DUMAI</h5>
+					</p>
 				</div>
 
 				<!-- Judul utama -->
@@ -340,7 +343,9 @@
 
 				<div class="col-3 text-center">
 					<img src="../../assets/img/LogoIPSI.png" class="mb-2 ipsi">
-					<p class="m-0"><small class="text-light fw-bold">IPSI</small></p>
+					<p class="m-0">
+					<h5 class="text-light fw-bold">IPSI</h5>
+					</p>
 				</div>
 			</div>
 		</div>
@@ -777,8 +782,8 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 
 								// Render UI sama seperti di handler partai_data
 								$('#kelas').text(p.kelas);
-								// $('#bbk').text(p.bbk);
-								$('#bbk').text(p.st ? p.st : p.bbk);
+								$('#bbk').text(localStorage.getItem('bbk') || p.bbk);
+								// $('#bbk').text(p.st ? p.st : p.bbk);
 
 								$('.nm_biru').text(p.biru.nama);
 								$('.kontingen_biru').text(p.biru.kontingen);
@@ -892,7 +897,6 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 							let res;
 							try {
 								res = JSON.parse(event.data);
-								console.log(res);
 
 								if (res.type === 'ip_server') {
 									console.log(res.ip);
@@ -909,7 +913,7 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 									$('#kelas').text(p.kelas);
 									// $('#bbk').text(p.bbk);
 									localStorage.setItem('bbk', p.bbk);
-									$('#bbk').text(p.st ? p.st : p.bbk);
+									$('#bbk').text(p.bbk);
 
 									$('.nm_biru').text(p.biru.nama);
 									$('.kontingen_biru').text(p.biru.kontingen);
@@ -932,7 +936,6 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 
 								// Babak
 								if (res.type === 'babak_data') {
-									// console.log("Babak sekarang:", res.round);
 									localStorage.setItem('babak', res.round);
 									babakUI(res.round);
 
@@ -947,7 +950,6 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 								}
 
 								if (res.type === 'set_jumlah_babak') {
-									console.log(res.jumlah);
 									localStorage.setItem('jumlahBabak', res.jumlah);
 									renderTombolBabak();
 									babakUI(localStorage.getItem('babak'));
@@ -1008,7 +1010,6 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 									$('.verifikasi').html('<h1>VERIFIKASI <b class="jenis text-uppercase"></b></h1>');
 									$('.verifikasi-bg').removeClass('bg-danger bg-primary bg-warning').addClass('bg-light bg-gradient');
 									$('.verifikasi').removeClass('text-white').addClass('text-dark');
-									console.log(res.data);
 									verifikasi.show();
 									winner.hide();
 									diskualifikasi.hide();
@@ -1020,7 +1021,6 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 								}
 
 								if (res.type === "set_diskualifikasi") {
-									console.log("DISK : " + res.sudut);
 									$('.sudut').html('SUDUT ' + res.sudut);
 									if (res.sudut === 'BIRU') {
 										$('.sudut').removeClass('bg-danger').addClass('bg-primary');
@@ -1042,7 +1042,7 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 										// const pemenang = res.sudut === 'BIRU' ? 'MERAH' : 'BIRU';
 										// $('.winner-bio').html('SUDUT ' + pemenang);
 										// winner.show();
-									}, 5000);
+									}, 3000);
 
 									// setTimeout(function() {
 									// 	winner.hide();
@@ -1159,6 +1159,7 @@ background: linear-gradient(0deg,rgba(222, 31, 31, 1) 0%, rgba(31, 0, 0, 1) 100%
 
 					socket.onclose = () => {
 						alert("Koneksi server terputus.");
+						setTimeout(connectWebSocket, 1000);
 					};
 
 

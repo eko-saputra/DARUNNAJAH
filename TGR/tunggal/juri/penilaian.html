@@ -41,9 +41,9 @@
     }
 
     .button-active {
-      background-color: #dc3545 !important;
+      background-color: #28a745 !important;
       color: white !important;
-      border-color: #dc3545 !important;
+      border-color: #28a745 !important;
     }
 
     /* Style untuk tombol stamina */
@@ -59,7 +59,7 @@
       border: 1px solid #dee2e6;
     }
 
-    .stamina-btn:hover {
+    .stamina-btn:hover:not(:disabled) {
       transform: translateY(-1px);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
     }
@@ -72,6 +72,11 @@
       background-color: #28a745 !important;
       border-color: #28a745 !important;
       color: white !important;
+    }
+
+    .stamina-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     /* Style untuk tombol aksi (wrong & ready) */
@@ -243,115 +248,6 @@
       flex-wrap: wrap;
     }
 
-    /* Style untuk notification */
-    #temp-notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      z-index: 9999;
-      display: none;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    /* Responsif untuk layar kecil */
-    @media (max-width: 768px) {
-      .action-btn {
-        height: 190px;
-      }
-
-      .action-btn i {
-        font-size: 70px;
-      }
-
-      .action-btn .count-display {
-        font-size: 40px;
-      }
-
-      .stamina-container {
-        height: 190px;
-        padding: 5px 3px;
-      }
-
-      .stamina-value {
-        font-size: 22px;
-      }
-
-      .stamina-btn {
-        padding: 4px 0;
-        font-size: 11px;
-        margin: 1px;
-        width: calc(33.333% - 2px);
-      }
-
-      .total-score-value {
-        font-size: 18px;
-        padding: 2px 8px;
-      }
-
-      .score-detail {
-        font-size: 10px;
-      }
-
-      #status-message {
-        font-size: 11px !important;
-      }
-    }
-
-    /* Menghilangkan backdrop modal yang tertinggal */
-    .modal-backdrop {
-      z-index: 1040 !important;
-    }
-
-    .modal {
-      z-index: 1050 !important;
-    }
-
-    /* Row dengan tinggi sama */
-    .equal-height-row {
-      display: flex;
-      flex-wrap: wrap;
-    }
-
-    .equal-height-row>[class*='col-'] {
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Status ready badge */
-    .ready-status {
-      font-size: 10px;
-      padding: 2px 5px;
-      border-radius: 20px;
-      background-color: #ffc107;
-      color: black;
-      font-weight: bold;
-      margin-left: 2px;
-      white-space: nowrap;
-    }
-
-    .ready-status.ready {
-      background-color: #28a745;
-      color: white;
-    }
-
     /* Animasi pulse untuk ready button */
     @keyframes pulse {
       0% {
@@ -406,6 +302,16 @@
       padding-left: 3px;
       padding-right: 3px;
     }
+
+    /* Status badge untuk stamina sudah dipilih */
+    .stamina-selected-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 20px;
+      background-color: #28a745;
+      color: white;
+      margin-left: 5px;
+    }
   </style>
 
   <title>JURI - IPSI Kota Dumai</title>
@@ -440,10 +346,10 @@
             </td>
           </tr>
           <tr>
-            <td class="text-uppercase text-primary fw-bold small" width="40%" style="font-size: 11px;">
+            <td class="text-uppercase text-primary fw-bold small" width="35%" style="font-size: 11px;">
               <h6 class="nm"></h6>
             </td>
-            <td class="text-uppercase text-center" width="20%">
+            <td class="text-uppercase text-center" width="30%">
               <button class="btn btn-danger bg-gradient btn-sm keluar small p-1" style="font-size: 10px;"
                 onclick="konfirmasiKeluar()">
                 KELUAR
@@ -458,7 +364,7 @@
                 REFRESH
               </a>
             </td>
-            <td class="text-uppercase text-danger fw-bold text-end small" width="40%" style="font-size: 11px;">
+            <td class="text-uppercase text-danger fw-bold text-end small" width="35%" style="font-size: 11px;">
               <h6 class="kontingen"></h6>
             </td>
           </tr>
@@ -480,6 +386,8 @@
               <div class="text-center">
                 <span class="stamina-label">STAMINA</span>
                 <div class="stamina-value" id="stamina-value">+0.00</div>
+                <!-- <span id="stamina-status-badge" class="stamina-selected-badge" style="display: none;">✓ SUDAH
+                  DIPILIH</span> -->
               </div>
               <div class="stamina-buttons-wrapper" id="stamina-buttons-container">
                 <!-- Tombol stamina akan diisi JS -->
@@ -504,10 +412,6 @@
                 <span class="total-score-label">TOTAL:</span>
                 <span class="total-score-value" id="total-nilai">9.90</span>
               </div>
-              <!-- <div class="score-detail">
-                <span id="wrong-detail">0</span>×0.01=<span id="pengurangan-detail">0.00</span> |
-                +<span id="stamina-detail">0.00</span>
-              </div> -->
               <div class="alert text-center py-0 px-2 mb-0" id="status-message"
                 style="font-size: 14px; font-weight: 500; line-height: 1.5;">
                 Menunggu data...
@@ -518,8 +422,6 @@
       </div>
     </div>
   </div>
-
-  <!-- <div id="temp-notification"></div> -->
 
   <script type="text/javascript" src="../../../assets/jquery/jquery.min.js"></script>
   <script type="text/javascript" src="../../../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -538,13 +440,7 @@
     let isTimerRunning = false;
     let currentPartaiData = null;
     let hasUserClickedReady = false;
-
-    // ======= FUNGSI NOTIFIKASI =======
-    // function showNotification(message, isError = false) {
-    //   let notif = $('#temp-notification');
-    //   notif.css('background', isError ? '#dc3545' : '#28a745');
-    //   notif.text(message).fadeIn(200).delay(1500).fadeOut(200);
-    // }
+    let hasSelectedStamina = false; // Flag apakah stamina sudah dipilih (setelah timer habis)
 
     // ======= FUNGSI LOCALSTORAGE =======
     function simpanDataKeLocalStorage() {
@@ -559,12 +455,14 @@
         timestamp: new Date().toISOString(),
         partai_id: localStorage.getItem('partai'),
         sudut: currentPartaiData.peserta.sudut,
-        nama_peserta: currentPartaiData.peserta.nama
+        nama_peserta: currentPartaiData.peserta.nama,
+        stamina_selected: hasSelectedStamina
       };
 
       localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
       localStorage.setItem('wrong_count', wrongCount.toString());
       localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+      localStorage.setItem('stamina_selected', hasSelectedStamina.toString());
 
       console.log('💾 Data tersimpan di localStorage:', dataPenilaian);
     }
@@ -574,15 +472,16 @@
       if (savedPenilaian && currentPartaiData) {
         try {
           const data = JSON.parse(savedPenilaian);
-          // Validasi apakah data untuk partai yang sama
           if (data.partai_id === localStorage.getItem('partai') &&
             data.sudut === currentPartaiData.peserta.sudut) {
 
             wrongCount = data.wrong_count || 0;
             selectedStamina = data.selected_stamina || 0;
+            hasSelectedStamina = data.stamina_selected || false;
 
             localStorage.setItem('wrong_count', wrongCount);
             localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+            localStorage.setItem('stamina_selected', hasSelectedStamina.toString());
 
             console.log('✅ Data dimuat dari localStorage:', data);
             return true;
@@ -594,52 +493,26 @@
       return false;
     }
 
-    // Fungsi baru untuk memuat data dari server ke localStorage
-    function simpanDataDariServerKeLocalStorage(dataServer) {
-      if (!currentPartaiData || !dataServer) return false;
+    // Fungsi untuk mengirim status selesai menilai (stamina dipilih)
+    function kirimStatusSelesaiMenilai() {
+      if (!currentPartaiData) return false;
 
-      try {
-        // Data server bisa dalam bentuk array atau object
-        let dataNilai = dataServer;
-
-        // Jika dataServer adalah array, cari data untuk sudut yang sesuai
-        if (Array.isArray(dataServer)) {
-          dataNilai = dataServer.find(item => item.sudut === currentPartaiData.peserta.sudut);
-        }
-
-        if (!dataNilai) return false;
-
-        // Update nilai dari server
-        if (dataNilai.wrong !== undefined) {
-          wrongCount = parseFloat(dataNilai.wrong) || 0;
-          localStorage.setItem('wrong_count', wrongCount);
-        }
-
-        if (dataNilai.stamina !== undefined) {
-          selectedStamina = parseFloat(dataNilai.stamina) || 0;
-          localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
-        }
-
-        // Simpan ke penilaian_data
-        const totalData = hitungTotalNilai();
-        const dataPenilaian = {
-          wrong_count: wrongCount,
-          selected_stamina: selectedStamina,
-          total_nilai: totalData.totalFormatted,
-          pengurangan: totalData.pengurangan.toFixed(2),
-          timestamp: new Date().toISOString(),
-          partai_id: localStorage.getItem('partai'),
+      if (ws.readyState === WebSocket.OPEN) {
+        const dataToSend = {
+          type: 'juri_selesai_menilai',
+          id_jadwal: localStorage.getItem('partai'),
+          id_juri: localStorage.getItem('juri'),
+          nama_juri: localStorage.getItem('nama_juri'),
           sudut: currentPartaiData.peserta.sudut,
-          nama_peserta: currentPartaiData.peserta.nama,
-          sumber: 'server' // Menandakan data berasal dari server
+          stamina: selectedStamina,
+          timestamp: new Date().toISOString()
         };
 
-        localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
-
-        console.log('💾 Data dari server tersimpan di localStorage:', dataPenilaian);
+        ws.send(JSON.stringify(dataToSend));
+        console.log(`📤 Status selesai menilai dikirim: Stamina=${selectedStamina.toFixed(2)}`);
         return true;
-      } catch (e) {
-        console.error('Error saving server data to localStorage:', e);
+      } else {
+        console.log('⚠️ WebSocket tidak tersambung, status tidak terkirim');
         return false;
       }
     }
@@ -669,6 +542,11 @@
           if (isStartedFromStorage) {
             isStarted = true;
             isTimerRunning = true;
+          }
+
+          const staminaSelectedFromStorage = localStorage.getItem('stamina_selected') === 'true';
+          if (staminaSelectedFromStorage) {
+            hasSelectedStamina = true;
           }
 
         } catch (e) {
@@ -716,17 +594,29 @@
       const btnWrong = $('#btn-wrong');
 
       if (isStarted && isTimerRunning) {
-        // Timer sedang berjalan - aktif (merah terang, enabled)
         btnWrong.removeClass('ready-state').addClass('active-state');
         btnWrong.prop('disabled', false);
       } else if (isReady) {
-        // Sudah ready tapi timer belum jalan - merah tapi disabled
         btnWrong.removeClass('active-state').addClass('ready-state');
         btnWrong.prop('disabled', true);
       } else {
-        // Belum ready - abu-abu disabled
         btnWrong.removeClass('ready-state active-state');
         btnWrong.prop('disabled', true);
+      }
+    }
+
+    function updateStaminaButtonsState() {
+      // Stamina hanya bisa dipilih saat timer TIDAK berjalan (timer habis)
+      // dan setelah user sudah klik READY
+      const staminaEnabled = !isTimerRunning && isReady && !hasSelectedStamina;
+
+      $('.stamina-btn').prop('disabled', !staminaEnabled);
+
+      // Update tampilan badge status stamina
+      if (hasSelectedStamina) {
+        $('#stamina-status-badge').show();
+      } else {
+        $('#stamina-status-badge').hide();
       }
     }
 
@@ -744,14 +634,6 @@
       $('#pengurangan-detail').text(totalData.pengurangan.toFixed(2));
       $('#stamina-detail').text(selectedStamina.toFixed(2));
 
-      // Update status ready badge
-      // const readyBadge = $('#ready-status-badge');
-      // if (isReady) {
-      //   readyBadge.text('✓ SIAP').addClass('ready').removeClass('bg-warning');
-      // } else {
-      //   readyBadge.text('⏳ BELUM').removeClass('ready').addClass('bg-warning');
-      // }
-
       // Update tombol ready
       const btnReady = $('#btn-ready');
       const readyIconText = $('#ready-icon-text');
@@ -761,9 +643,14 @@
         btnReady.css('animation', 'none');
         readyIconText.text('RUNNING');
       } else if (isReady) {
-        btnReady.prop('disabled', true).addClass('ready-clicked');
-        btnReady.css('animation', 'none');
-        readyIconText.text('✓ SIAP');
+        if (hasSelectedStamina) {
+          btnReady.prop('disabled', true).addClass('ready-clicked');
+          readyIconText.text('✓ SELESAI');
+        } else {
+          btnReady.prop('disabled', false).addClass('ready-clicked');
+          btnReady.css('animation', 'none');
+          readyIconText.text('✓ SIAP');
+        }
       } else if (currentPartaiData && !hasUserClickedReady) {
         btnReady.prop('disabled', false).removeClass('ready-clicked');
         btnReady.css('animation', 'pulse 2s infinite');
@@ -777,16 +664,21 @@
       // Update style tombol wrong
       updateWrongButtonStyle();
 
-      // Update status message dengan info lengkap
+      // Update status tombol stamina
+      updateStaminaButtonsState();
+
+      // Update status message
       let statusMsg = '';
       if (!currentPartaiData) {
         statusMsg = '⏳ Menunggu data...';
       } else if (isTimerRunning) {
         statusMsg = `⚡ Berjalan | Wrong: ${wrongCount} | Stamina: +${selectedStamina.toFixed(2)} | Total: ${totalData.totalFormatted}`;
-      } else if (isReady && !isTimerRunning) {
-        statusMsg = `✅ Siap | Wrong: ${wrongCount} | Stamina: +${selectedStamina.toFixed(2)} | Total: ${totalData.totalFormatted}`;
+      } else if (isReady && !hasSelectedStamina) {
+        statusMsg = `✅ Siap pilih stamina | Wrong: ${wrongCount} | Total: ${totalData.totalFormatted}`;
+      } else if (isReady && hasSelectedStamina) {
+        statusMsg = `🏁 Selesai menilai | Stamina: +${selectedStamina.toFixed(2)} | Total: ${totalData.totalFormatted}`;
       } else if (!isReady && !hasUserClickedReady) {
-        statusMsg = `🟢 Tekan READY | Wrong: ${wrongCount} | Stamina: +${selectedStamina.toFixed(2)} | Total: ${totalData.totalFormatted}`;
+        statusMsg = `🟢 Tekan READY | Wrong: ${wrongCount} | Total: ${totalData.totalFormatted}`;
       }
 
       $('#status-message').text(statusMsg);
@@ -802,7 +694,6 @@
 
       const totalData = hitungTotalNilai();
 
-      // Simpan ke localStorage TERLEBIH DAHULU
       simpanDataKeLocalStorage();
 
       if (ws.readyState === WebSocket.OPEN) {
@@ -819,10 +710,8 @@
 
         ws.send(JSON.stringify(dataToSend));
         console.log(`📤 Data dikirim: Total=${totalData.totalFormatted}`);
-        // showNotification(`Data tersimpan: Total ${totalData.totalFormatted}`);
       } else {
         console.log('⚠️ WebSocket tidak tersambung, data hanya tersimpan di localStorage');
-        // showNotification('Data tersimpan lokal (offline)', true);
       }
     }
 
@@ -830,43 +719,54 @@
       const container = document.getElementById("stamina-buttons-container");
       container.innerHTML = "";
 
-      // Membuat 11 tombol (0.00 sampai 0.10)
       for (let i = 0; i <= 10; i++) {
         const val = (i / 100).toFixed(2);
         const btn = document.createElement("button");
         btn.className = "btn btn-outline-dark stamina-btn";
-
-        // Format tampilan
-        if (i === 0) {
-          btn.textContent = "0";
-        } else {
-          btn.textContent = `+${i}`;
-        }
-
+        btn.textContent = i === 0 ? "0" : `+${i}`;
         btn.setAttribute("data-stamina", val);
         btn.setAttribute("data-value", i);
 
-        // Tandai tombol aktif
         if (parseFloat(val) === selectedStamina) {
           btn.classList.add("button-active");
         }
 
         btn.onclick = function () {
+          // Cek apakah boleh pilih stamina
+          if (isTimerRunning) {
+            alert('⚠️ Stamina hanya bisa dipilih setelah timer habis!');
+            return;
+          }
+          if (!isReady) {
+            alert('⚠️ Silakan tekan READY terlebih dahulu!');
+            return;
+          }
+          if (hasSelectedStamina) {
+            alert('⚠️ Anda sudah memilih stamina!');
+            return;
+          }
+
           document.querySelectorAll(".stamina-btn").forEach(b => {
             b.classList.remove("button-active");
           });
           this.classList.add("button-active");
 
           selectedStamina = parseFloat(this.getAttribute("data-stamina"));
+          hasSelectedStamina = true;
+
           localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+          localStorage.setItem('stamina_selected', 'true');
 
           // Update display
           updateDisplay();
 
-          // Kirim ke server dan simpan ke localStorage
+          // Kirim data ke server
           kirimDataKeServer();
 
-          // showNotification(`Stamina: +${selectedStamina.toFixed(2)}`);
+          // Kirim status selesai menilai ke server untuk broadcast
+          kirimStatusSelesaiMenilai();
+
+          // alert(`✅ Stamina +${selectedStamina.toFixed(2)} dipilih. Penilaian selesai!`);
         };
 
         container.appendChild(btn);
@@ -897,11 +797,9 @@
       }
 
       updateDisplay();
-      // showNotification('Siap memulai penilaian');
       return true;
     }
 
-    // Fungsi untuk update tampilan tombol stamina
     function updateStaminaButtons() {
       document.querySelectorAll(".stamina-btn").forEach(b => {
         const btnValue = parseFloat(b.getAttribute("data-stamina"));
@@ -918,7 +816,6 @@
       if (loadDataFromLocalStorage()) {
         buatTombolStamina();
 
-        // Load data dari localStorage setelah partai dimuat
         if (currentPartaiData) {
           loadDataDariLocalStorage();
           updateStaminaButtons();
@@ -928,7 +825,7 @@
       }
 
       $('#btn-wrong').on('click', function () {
-        if (!isStarted) {
+        if (!isStarted || !isTimerRunning) {
           alert('Penilaian belum dimulai oleh operator');
           return;
         }
@@ -936,16 +833,10 @@
         wrongCount++;
         localStorage.setItem('wrong_count', wrongCount);
 
-        // Update display dulu
         updateDisplay();
-
-        // Kirim ke server dan simpan ke localStorage
         kirimDataKeServer();
-
-        // showNotification(`Wrong: ${wrongCount}`);
       });
 
-      // Tombol READY langsung di sini (tanpa modal)
       $('#btn-ready').on('click', function () {
         if (isTimerRunning) {
           alert('Tidak bisa ready saat penilaian sedang berjalan');
@@ -1000,21 +891,19 @@
 
             case 'ambil_nilai_terkini_success':
               console.log('📥 Nilai terkini diterima:', message.data);
-              // Cek apakah data kosong (array kosong)
               if (message.data && Array.isArray(message.data) && message.data.length === 0) {
                 console.log('⚠️ Data nilai terkini kosong, mereset nilai ke 0');
 
-                // Reset nilai ke 0
                 wrongCount = 0;
                 selectedStamina = 0.00;
+                hasSelectedStamina = false;
 
-                // Simpan ke localStorage
                 localStorage.setItem('wrong_count', '0');
                 localStorage.setItem('selected_stamina', '0.00');
+                localStorage.setItem('stamina_selected', 'false');
 
-                // Simpan ke penilaian_data dengan nilai 0
                 if (currentPartaiData) {
-                  const totalData = hitungTotalNilai(); // Akan menghitung dengan wrongCount=0, selectedStamina=0
+                  const totalData = hitungTotalNilai();
                   const dataPenilaian = {
                     wrong_count: 0,
                     selected_stamina: 0.00,
@@ -1024,20 +913,16 @@
                     partai_id: localStorage.getItem('partai'),
                     sudut: currentPartaiData.peserta.sudut,
                     nama_peserta: currentPartaiData.peserta.nama,
-                    sumber: 'server_kosong'
+                    stamina_selected: false
                   };
 
                   localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
                   console.log('💾 Data reset ke 0 disimpan ke localStorage:', dataPenilaian);
                 }
 
-                // Update tampilan
                 updateStaminaButtons();
                 updateDisplay();
-
-                // showNotification('Data nilai direset ke 0');
               } else if (currentPartaiData) {
-                // Jika data tidak kosong, simpan data dari server ke localStorage
                 simpanDataDariServerKeLocalStorage(message.data);
                 updateStaminaButtons();
                 updateDisplay();
@@ -1058,19 +943,18 @@
 
             case 'ended':
               localStorage.setItem('is_started', 'false');
-              localStorage.setItem('is_ready', 'false');
-              localStorage.setItem('has_clicked_ready', 'false');
-              $('#btn-ready').prop('disabled', false).removeClass('ready-clicked');
-              $('#status-message').text('🟢 Tekan READY').removeClass('alert-info alert-success').addClass('alert-warning');
+              isStarted = false;
+              isTimerRunning = false;
 
-              const readyIconText = $('#ready-icon-text');
-              readyIconText.text('READY');
+              // Jangan reset isReady dan hasSelectedStamina agar stamina bisa dipilih setelah timer habis
+              // Tapi pastikan user bisa memilih stamina sekarang
+              updateDisplay();
 
-              // Cek apakah stamina belum dipilih (masih 0)
-              if (selectedStamina === 0) {
-                alert('⚠️ PERHATIAN: Anda belum memilih stamina! Silakan pilih nilai stamina sebelum pertandingan berakhir.');
-                // Atau gunakan notifikasi yang lebih halus:
-                // showNotification('⚠️ Stamina belum dipilih!', true);
+              $('#status-message').text('⏰ Waktu habis! Silakan pilih stamina').removeClass('alert-success').addClass('alert-warning');
+
+              // Jika stamina belum dipilih, beri peringatan
+              if (!hasSelectedStamina && isReady) {
+                alert('⏰ Waktu telah habis! Silakan pilih nilai stamina untuk menyelesaikan penilaian.');
               }
               break;
 
@@ -1091,6 +975,53 @@
     initWebSocket();
 
     // ======= HANDLER =======
+    function simpanDataDariServerKeLocalStorage(dataServer) {
+      if (!currentPartaiData || !dataServer) return false;
+
+      try {
+        let dataNilai = dataServer;
+        if (Array.isArray(dataServer)) {
+          dataNilai = dataServer.find(item => item.sudut === currentPartaiData.peserta.sudut);
+        }
+
+        if (!dataNilai) return false;
+
+        if (dataNilai.wrong !== undefined) {
+          wrongCount = parseFloat(dataNilai.wrong) || 0;
+          localStorage.setItem('wrong_count', wrongCount);
+        }
+
+        if (dataNilai.stamina !== undefined) {
+          selectedStamina = parseFloat(dataNilai.stamina) || 0;
+          localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+          if (selectedStamina > 0) {
+            hasSelectedStamina = true;
+            localStorage.setItem('stamina_selected', 'true');
+          }
+        }
+
+        const totalData = hitungTotalNilai();
+        const dataPenilaian = {
+          wrong_count: wrongCount,
+          selected_stamina: selectedStamina,
+          total_nilai: totalData.totalFormatted,
+          pengurangan: totalData.pengurangan.toFixed(2),
+          timestamp: new Date().toISOString(),
+          partai_id: localStorage.getItem('partai'),
+          sudut: currentPartaiData.peserta.sudut,
+          nama_peserta: currentPartaiData.peserta.nama,
+          stamina_selected: hasSelectedStamina
+        };
+
+        localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
+        console.log('💾 Data dari server tersimpan di localStorage:', dataPenilaian);
+        return true;
+      } catch (e) {
+        console.error('Error saving server data to localStorage:', e);
+        return false;
+      }
+    }
+
     function handlePartaiData(data) {
       currentPartaiData = data;
       localStorage.setItem('partai', data.partai);
@@ -1106,10 +1037,8 @@
 
       ws.send(JSON.stringify(dataNilai));
 
-      // CEK DATA DARI LOCALSTORAGE TERLEBIH DAHULU
       let dataLoaded = loadDataDariLocalStorage();
 
-      // Jika tidak ada data di localStorage, cek dari server
       if (!dataLoaded && data.nilai_terkini) {
         if (data.nilai_terkini && data.nilai_terkini[data.peserta.sudut]) {
           const nilaiSudut = data.nilai_terkini[data.peserta.sudut];
@@ -1122,9 +1051,12 @@
           if (nilaiSudut.stamina !== undefined) {
             selectedStamina = nilaiSudut.stamina;
             localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
+            if (selectedStamina > 0) {
+              hasSelectedStamina = true;
+              localStorage.setItem('stamina_selected', 'true');
+            }
           }
 
-          // Simpan ke penilaian_data
           const totalData = hitungTotalNilai();
           const dataPenilaian = {
             wrong_count: wrongCount,
@@ -1135,79 +1067,63 @@
             partai_id: localStorage.getItem('partai'),
             sudut: data.peserta.sudut,
             nama_peserta: data.peserta.nama,
-            sumber: 'server_nilai_terkini'
+            stamina_selected: hasSelectedStamina
           };
 
           localStorage.setItem('penilaian_data', JSON.stringify(dataPenilaian));
-
-          console.log(`📥 Memuat data dari server: Wrong=${wrongCount}, Stamina=${selectedStamina}`);
           dataLoaded = true;
         }
       }
 
-      // RESET STATE: Matikan timer dan ready status
+      // RESET STATE untuk partai baru
       isStarted = false;
       isTimerRunning = false;
-      isReady = false;
 
-      // Simpan ke localStorage
+      // Jangan reset isReady dan hasSelectedStamina untuk partai baru
+      isReady = false;
+      hasUserClickedReady = false;
+      hasSelectedStamina = false;
+
       localStorage.setItem('is_started', 'false');
       localStorage.setItem('is_ready', 'false');
-
-      // Jangan reset hasUserClickedReady agar tombol ready bisa diklik lagi
-      // Tapi kita perlu set agar user bisa klik ready lagi
-      if (hasUserClickedReady) {
-        // Jika sebelumnya sudah pernah klik ready, reset agar bisa klik lagi
-        hasUserClickedReady = false;
-        localStorage.setItem('has_clicked_ready', 'false');
-      }
+      localStorage.setItem('has_clicked_ready', 'false');
+      localStorage.setItem('stamina_selected', 'false');
 
       updatePartaiDisplay();
-
-      // Simpan data ke localStorage setelah memuat
       simpanDataKeLocalStorage();
 
-      // Update tampilan tombol stamina dengan nilai yang sudah di-load
       updateStaminaButtons();
       updateDisplay();
 
-      console.log('✅ State direset: Timer mati, ready status false, wrong button disabled');
+      console.log('✅ State direset untuk partai baru');
     }
 
     function handleUpdateTotalNilai(message) {
       console.log('📥 Menerima update total nilai:', message);
 
-      // Cek apakah pesan untuk partai yang sedang aktif
       const currentPartaiId = localStorage.getItem('partai');
       if (message.partai !== currentPartaiId) {
-        return; // Bukan untuk partai ini
+        return;
       }
 
-      // Cek apakah untuk sudut yang sama
       if (currentPartaiData && message.sudut === currentPartaiData.peserta.sudut) {
         const data = message.data;
 
-        // Update wrong count jika ada
         if (data.wrong !== undefined) {
           wrongCount = data.wrong;
           localStorage.setItem('wrong_count', wrongCount);
         }
 
-        // Update stamina jika ada
         if (data.stamina !== undefined) {
           selectedStamina = data.stamina;
           localStorage.setItem('selected_stamina', selectedStamina.toFixed(2));
         }
 
-        // Update tampilan
         updateStaminaButtons();
         updateDisplay();
-
-        // Simpan ke localStorage dengan format penilaian_data
         simpanDataKeLocalStorage();
 
         console.log(`✅ Nilai diupdate dari broadcast: Wrong=${wrongCount}, Stamina=${selectedStamina}`);
-        // showNotification('Data diupdate dari server');
       }
     }
 
@@ -1224,6 +1140,13 @@
 
       if (wasRunning !== isTimerRunning) {
         updateDisplay();
+        // Saat timer berhenti (habis), aktifkan tombol stamina
+        if (!isTimerRunning && isReady) {
+          updateStaminaButtonsState();
+          if (!hasSelectedStamina) {
+            $('#status-message').text('⏰ Waktu habis! Silakan pilih stamina');
+          }
+        }
       }
     }
 
@@ -1233,19 +1156,15 @@
       localStorage.setItem('is_started', 'true');
 
       updateDisplay();
-      // showNotification('Penilaian dimulai');
     }
 
     function handleStopped() {
       isStarted = false;
       isTimerRunning = false;
       localStorage.setItem('is_started', 'false');
-      localStorage.setItem('is_ready', 'false');
-      localStorage.setItem('has_clicked_ready', 'false');
 
       kirimDataKeServer();
       updateDisplay();
-      // showNotification('Penilaian selesai');
     }
 
     // ======= FUNGSI TAMBAHAN =======

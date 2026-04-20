@@ -303,6 +303,13 @@
             animation: ready-pulse 2s infinite;
         }
 
+        /* Warna hijau untuk juri yang sudah selesai menilai */
+        .bg-success {
+            background: linear-gradient(135deg, #198754 0%, #20c997 100%) !important;
+            color: white;
+            animation: none;
+        }
+
         @keyframes ready-pulse {
             0% {
                 box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
@@ -340,7 +347,6 @@
             width: 90%;
             max-width: 1200px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            /* border: 10px solid #0d6efd; */
         }
 
         .rekap-title {
@@ -395,7 +401,6 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 15px 30px rgba(25, 135, 84, 0.3);
-            /* border: 5px solid #dc3545; */
         }
 
         .rekap-total-label {
@@ -428,7 +433,6 @@
             font-weight: bold;
             cursor: pointer;
             z-index: 10000;
-            /* box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4); */
             transition: all 0.3s ease;
         }
 
@@ -471,7 +475,6 @@
                 transform: translateX(-100%);
             }
         }
-
 
         .ipsi {
             width: 25%;
@@ -671,7 +674,6 @@
 
     <!-- Container untuk rekap nilai fullscreen -->
     <div class="rekap-fullscreen" id="rekapFullscreen">
-        <!-- <button class="close-rekap" onclick="closeRekapFullscreen()">×</button> -->
         <div class="rekap-content">
             <h1 class="rekap-title">REKAPITULASI NILAI</h1>
 
@@ -774,10 +776,10 @@
                     <div class="card-body p-0">
                         <table id="tabelnilai" class="table mb-0">
                             <thead>
-                                <tr id="judgeHeaders"></tr>
-                                <tr id="judgeScores"></tr>
+                                <tr id="judgeHeaders"> </tr>
+                                <tr id="judgeScores"> </tr>
                             </thead>
-                        </table>
+                         </table>
                     </div>
                 </div>
             </div>
@@ -810,6 +812,12 @@
 
         // Flag untuk menandai apakah rekap harus ditampilkan (hanya dari broadcast_selesai_seni)
         let shouldShowRekap = false;
+
+        // Fungsi untuk mengecek apakah juri sudah selesai menilai (stamina > 0)
+        function isJuriSelesai(juriId) {
+            const juriData = totalNilaiJuri.find(item => item.juri === juriId);
+            return juriData && juriData.stamina > 0;
+        }
 
         // Fungsi untuk menampilkan modal winner
         let winnerModalTimer = null;
@@ -885,8 +893,6 @@
 
             // Simpan nilai dewan
             localStorage.setItem('dewan_values', JSON.stringify(dewanValues));
-
-            // console.log('All data saved to localStorage');
         }
 
         // Fungsi untuk memuat semua data dari localStorage
@@ -938,7 +944,6 @@
                 ws.send(JSON.stringify(dataNilai1));
             }
 
-            // console.log('All data loaded from localStorage');
             return totalNilaiJuri;
         }
 
@@ -955,9 +960,13 @@
                 const headerCell = document.createElement("td");
                 headerCell.textContent = `JURI ${i}`;
                 headerCell.className = "judge-header bg-secondary text-light text-center";
+                headerCell.style.fontSize = "3.0rem";
+                headerCell.style.fontWeight = "bold";
                 judgeHeaders.appendChild(headerCell);
 
                 const scoreCell = document.createElement("td");
+                scoreCell.style.fontSize = "3.5rem";
+                scoreCell.style.fontWeight = "bold";
 
                 // Cari nilai untuk juri ini dari data yang sudah ada
                 const existingScore = totalNilaiJuri.find(item => item.juri === i);
@@ -978,15 +987,24 @@
             }
         }
 
-        // Fungsi untuk mengupdate tampilan juri
+        // Fungsi untuk mengupdate tampilan juri (warna berdasarkan status)
         function updateJudgeDisplay() {
             judgeStatus.forEach((isReady, index) => {
                 const judge = judgeElements[index];
+                const juriId = index + 1;
+                const isSelesai = isJuriSelesai(juriId);
+                
                 if (judge) {
-                    if (isReady) {
+                    if (isSelesai) {
+                        // Juri sudah selesai menilai (stamina > 0) - warna HIJAU
+                        judge.header.className = "judge-header bg-success text-light text-center";
+                        judge.score.className = "bg-success text-light text-center";
+                    } else if (isReady) {
+                        // Juri sudah ready tapi belum pilih stamina - warna BIRU
                         judge.header.className = "judge-header bg-primary text-light text-center";
                         judge.score.className = "bg-primary text-light text-center";
                     } else {
+                        // Juri belum ready - warna ABU-ABU
                         judge.header.className = "judge-header bg-secondary text-light text-center";
                         judge.score.className = "bg-secondary text-light text-center";
                     }
@@ -995,6 +1013,29 @@
 
             // Simpan perubahan status juri
             saveAllData();
+        }
+
+        // Fungsi untuk update tampilan dari data server
+        function updateJudgeDisplayFromServer() {
+            for (let i = 1; i <= 4; i++) {
+                const juriIndex = i - 1;
+                const judge = judgeElements[juriIndex];
+                const isSelesai = isJuriSelesai(i);
+                const isReady = judgeStatus[juriIndex];
+                
+                if (judge) {
+                    if (isSelesai) {
+                        judge.header.className = "judge-header bg-success text-light text-center";
+                        judge.score.className = "bg-success text-light text-center";
+                    } else if (isReady) {
+                        judge.header.className = "judge-header bg-primary text-light text-center";
+                        judge.score.className = "bg-primary text-light text-center";
+                    } else {
+                        judge.header.className = "judge-header bg-secondary text-light text-center";
+                        judge.score.className = "bg-secondary text-light text-center";
+                    }
+                }
+            }
         }
 
         // Fungsi format waktu
@@ -1079,7 +1120,6 @@
                 closeRekapFullscreen();
             }, 5000);
 
-            // Untuk debugging
             console.log('Rekap ditampilkan, auto-hide dalam 5 detik');
         }
 
@@ -1136,7 +1176,7 @@
             // WebSocket connection
             ws.onopen = function() {
                 console.log('WebSocket connected');
-                saveAllData(); // Simpan state saat koneksi terbuka
+                saveAllData();
 
                 // Ambil data partai dari localStorage
                 const dataString = localStorage.getItem('currentPartai');
@@ -1237,8 +1277,7 @@
 
                     if (message.type === 'partai_selesai') {
                         console.log('🏆 Partai selesai, pemenang:', message);
-                        // message memiliki properti: partai, pemenang, nilai_biru, nilai_merah
-                        const sudut = message.pemenang; // 'biru' atau 'merah'
+                        const sudut = message.pemenang;
                         const nilai = sudut === 'biru' ? message.nilai_biru : message.nilai_merah;
                         showWinnerModal(sudut, nilai);
                     }
@@ -1251,7 +1290,6 @@
 
                         // Proses data dari server
                         if (message.data && Array.isArray(message.data) && message.data.length > 0) {
-                            // Konversi data dari server ke format yang digunakan aplikasi
                             message.data.forEach(item => {
                                 const wrong = parseFloat(item.wrong) || 0;
                                 const stamina = parseFloat(item.stamina) || 0;
@@ -1278,19 +1316,19 @@
                                 }
                             });
 
+                            // Update tampilan warna berdasarkan stamina (selesai menilai)
+                            updateJudgeDisplayFromServer();
+
                             // Hitung statistik jika semua juri sudah ada nilainya
                             if (totalNilaiJuri.length === 4) {
-                                // Ambil penalty dari dewan yang sudah tersimpan
                                 const totalPenalty = calculateDewanPenalty(dewanValues);
                                 localStorage.setItem('penalty', totalPenalty.toString());
                                 calculateStats(totalPenalty);
                             }
 
-                            // Simpan ke localStorage sebagai cache
                             saveAllData();
                         } else {
                             console.log('⚠️ Data nilai kosong dari server');
-                            // Reset nilai ke 9.90 untuk semua juri
                             for (let i = 1; i <= 4; i++) {
                                 totalNilaiJuri.push({
                                     juri: i,
@@ -1304,17 +1342,14 @@
                                     judgeElements[juriIndex].score.textContent = "9.90";
                                 }
                             }
+                            updateJudgeDisplayFromServer();
                             saveAllData();
                         }
                     }
 
-                    // Handler untuk data dewan
                     if (message.type === 'ambil_nilai_terkini_dewan_monitor_success') {
-                        // console.log('📥 Nilai dewan terkini diterima dari server:', message.data);
-
-                        // Simpan nilai dewan
                         if (message.data && message.data.length > 0) {
-                            const dewanData = message.data[0]; // Ambil data pertama
+                            const dewanData = message.data[0];
                             console.log('📥 Nilai dewan:', dewanData);
                             dewanValues = {
                                 hukum_1: parseFloat(dewanData.hukum_1) || 0,
@@ -1324,7 +1359,6 @@
                                 hukum_5: parseFloat(dewanData.hukum_5) || 0
                             };
 
-                            // Hitung total penalty
                             const totalPenalty = calculateDewanPenalty(dewanValues);
                             localStorage.setItem('penalty', totalPenalty.toString());
                             localStorage.setItem('dewan_values', JSON.stringify(dewanValues));
@@ -1332,28 +1366,13 @@
                             console.log('✅ Nilai dewan tersimpan:', dewanValues);
                             console.log('✅ Total penalty:', totalPenalty);
 
-                            // Update statistik jika data juri sudah ada
                             if (totalNilaiJuri.length === 4) {
                                 calculateStats(totalPenalty);
                             }
                         }
                     }
 
-                    // if (message.type === 'ambil_nilai_terkini_dewan_monitor_success') {
-                    //     console.log('📥 Nilai dewan terkini diterima dari server:', message.data);
-
-                    //     // Proses data jurus aktif dan hasil per gerakan
-                    //     if (message.data && message.data.jurus_aktif) {
-                    //         localStorage.setItem('jurus_aktif', JSON.stringify(message.data.jurus_aktif));
-                    //     }
-
-                    //     if (message.data && message.data.hasil_per_gerakan) {
-                    //         localStorage.setItem('hasil_per_gerakan', JSON.stringify(message.data.hasil_per_gerakan));
-                    //     }
-                    // }
-
                     if (message.type === 'update_total_nilai') {
-                        // Update total nilai juri dari server
                         console.log('📥 Update total nilai:', message.data);
 
                         message.data.forEach(newItem => {
@@ -1364,12 +1383,14 @@
                                 totalNilaiJuri.push(newItem);
                             }
 
-                            // Update tampilan langsung
                             const juriIndex = newItem.juri - 1;
                             if (judgeElements[juriIndex]) {
                                 judgeElements[juriIndex].score.textContent = parseFloat(newItem.total).toFixed(2);
                             }
                         });
+
+                        // Update tampilan warna berdasarkan stamina (selesai menilai)
+                        updateJudgeDisplayFromServer();
 
                         saveAllData();
                     }
@@ -1378,7 +1399,6 @@
                         const penalty = message.data.penalty || 0;
                         localStorage.setItem('penalty', penalty);
 
-                        // Transform data
                         const transformed = message.data.rekap_nilai.map(item => ({
                             juri: parseInt(item.id_juri),
                             rata_rata_jurus: item.rata_rata_jurus,
@@ -1387,10 +1407,8 @@
                             penalty: penalty,
                         }));
 
-                        // Update data
                         totalNilaiJuri = transformed;
 
-                        // Update tampilan nilai juri
                         transformed.forEach((item) => {
                             const juriIndex = item.juri - 1;
                             if (judgeElements[juriIndex]) {
@@ -1398,17 +1416,14 @@
                             }
                         });
 
-                        // Hitung dan tampilkan statistik
-                        const stats = calculateStats(penalty);
+                        // Update tampilan warna berdasarkan stamina (selesai menilai)
+                        updateJudgeDisplayFromServer();
 
-                        // Set flag bahwa rekap harus ditampilkan
+                        const stats = calculateStats(penalty);
                         shouldShowRekap = true;
 
-                        // Tampilkan rekap fullscreen secara otomatis
                         setTimeout(() => {
                             showRekapFullscreen();
-
-                            // Auto-close setelah 5 detik
                             setTimeout(() => {
                                 closeRekapFullscreen();
                             }, 5000);
@@ -1430,12 +1445,40 @@
                         }
                     }
 
+                    if (message.type === "juri_selesai_menilai") {
+                        console.log('📥 Juri selesai menilai:', message.data);
+                        const { sudut, id_juri, nama_juri, stamina } = message.data;
+                        
+                        // Update status juri yang sudah selesai menilai
+                        const juriId = parseInt(id_juri);
+                        if (!isNaN(juriId) && juriId >= 1 && juriId <= 4) {
+                            // Update stamina di totalNilaiJuri jika ada
+                            const existingData = totalNilaiJuri.find(item => item.juri === juriId);
+                            if (existingData) {
+                                existingData.stamina = stamina;
+                                const total = (9.90 - (existingData.wrong * 0.01)) + stamina;
+                                existingData.total = parseFloat(total);
+                                
+                                // Update tampilan
+                                const juriIndex = juriId - 1;
+                                if (judgeElements[juriIndex]) {
+                                    judgeElements[juriIndex].score.textContent = total.toFixed(2);
+                                }
+                            }
+                            
+                            // Update warna juri menjadi hijau
+                            updateJudgeDisplayFromServer();
+                            saveAllData();
+                        }
+                        
+                        console.log(`✅ Juri ${nama_juri} (${id_juri}) selesai menilai dengan stamina +${stamina}`);
+                    }
+
                     if (message.type === "tick") {
                         currentTimer = message.remaining;
                         const timerElement = document.getElementById("timer");
                         if (timerElement) {
                             timerElement.textContent = formatTime(currentTimer);
-                            // Tambahkan efek peringatan saat waktu hampir habis
                             if (currentTimer <= 30) {
                                 timerElement.style.color = '#dc3545';
                                 timerElement.style.animation = 'timer-glow 0.5s infinite alternate';
@@ -1464,7 +1507,7 @@
 
             ws.onclose = function() {
                 console.log('WebSocket disconnected');
-                saveAllData(); // Simpan data saat koneksi ditutup
+                saveAllData();
             };
         });
 
@@ -1515,26 +1558,16 @@
 
         // Initialize on load
         window.onload = function() {
-            // Load data terlebih dahulu
             loadAllData();
             generateJudgeTable();
             updateJudgeDisplay();
 
-            // HAPUS bagian yang menampilkan rekap otomatis saat load
-            // Rekap hanya akan muncul dari event broadcast_selesai_seni
-            // atau dari shortcut keyboard Ctrl+R
-
-            // Inisialisasi marquee
             function createSmoothMarquee() {
                 const marqueeContent = document.querySelector(".marquee-content");
                 const contentWidth = marqueeContent.scrollWidth;
-                const containerWidth =
-                    document.querySelector(".footer-marquee").offsetWidth;
+                const containerWidth = document.querySelector(".footer-marquee").offsetWidth;
 
-                // Duplikat konten untuk perulangan mulus
                 marqueeContent.innerHTML += " &nbsp; " + marqueeContent.innerHTML;
-
-                // Sesuaikan durasi animasi berdasarkan panjang konten
                 const duration = Math.max(20, contentWidth / 50);
                 marqueeContent.style.animationDuration = duration + "s";
             }

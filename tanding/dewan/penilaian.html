@@ -1316,8 +1316,8 @@
 
       const id_jadwal = localStorage.getItem("partai");
       const currentPartai = localStorage.getItem("currentPartai");
-      const nilaiakhirbiru = $("#nilai_akhir_biru").text();
-      const nilaiakhirmerah = $("#nilai_akhir_merah").text();
+      const nilaiakhirbiru = Number($("#nilai_akhir_biru").text());
+      const nilaiakhirmerah = Number($("#nilai_akhir_merah").text());
 
       // Dapatkan nama pemenang
       let namaPemenang = "";
@@ -1385,7 +1385,7 @@
         type: "nilai_dewan",
         id_juri,
         id_jadwal,
-        button: nilai,
+        button: Number(nilai),
         sudut,
         babak,
         bbk,
@@ -1437,7 +1437,6 @@
     ws.onopen = () => {
       console.log("Server terhubung.");
       sendBabakToServer(localStorage.getItem("babak"));
-      console.log("Babak", localStorage.getItem("babak"));
       $(".button_nilai, .hapus-skor").prop("disabled", true);
 
       const overlay = document.getElementById("verifOverlay");
@@ -1464,7 +1463,6 @@
 
           currentTimer = setTimeout(() => {
             currentJenis = btn.dataset.jenis;
-            console.log(currentJenis);
             ws.send(JSON.stringify({
               type: "kirim_verifikasi",
               jenis: currentJenis,
@@ -1495,7 +1493,6 @@
       document.querySelector(".tutup").addEventListener("click", () => {
         document.activeElement.blur();
 
-        console.log("TUTUP");
         ws.send(JSON.stringify({
           type: "tutup_verifikasi",
         }));

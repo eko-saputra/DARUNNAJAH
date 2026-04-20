@@ -104,7 +104,7 @@
                                             $import = "INSERT INTO jadwal_tanding (id_partai, tgl, kelas, gelanggang, partai, nm_merah, kontingen_merah,
                             nm_biru, kontingen_biru, babak) 
                           VALUES ('$escapedData[3]', '$mysqlDate', '$escapedData[1]', '$escapedData[2]', '$escapedData[3]', 
-                                  '$escapedData[4]', '$escapedData[5]', '$escapedData[6]', '$escapedData[7]', '$escapedData[8]')";
+                                  '$escapedData[6]', '$escapedData[7]', '$escapedData[4]', '$escapedData[5]', '$escapedData[8]')";
 
                                             if (mysqli_query($koneksi, $import)) {
                                                 $importCount++;
@@ -140,7 +140,7 @@
         confirmButtonColor: '#3085d6'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '?page=tambah_jadwal';
+            window.location.href = '?page=tambah_jadwal_tanding';
         }
     });
 </script>";

@@ -8,13 +8,10 @@
   <title>Admin - Login</title>
 
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="../assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="assets/css/sweetalert2.min.css">
 
   <!-- Custom CSS -->
   <style>
@@ -243,13 +240,13 @@
         <form id="loginForm">
           <div class="mb-4">
             <label for="username" class="form-label">
-              <i class="fas fa-user"></i> Username
+              Username
             </label>
             <div class="input-group">
               <span class="input-group-text">
-                <i class="fas fa-at"></i>
+                <img src="../assets/bootstrap/dist/icon/person-fill.svg" alt="">
               </span>
-              <input type="text" class="form-control" id="username" name="username" placeholder="Enter username or email" required>
+              <input type=" text" class="form-control" id="username" name="username" placeholder="Enter username or email">
             </div>
             <div class="invalid-feedback" id="usernameError">
               Username tidak boleh kosong
@@ -258,15 +255,15 @@
 
           <div class="mb-4">
             <label for="password" class="form-label">
-              <i class="fas fa-key"></i> Password
+              Password
             </label>
             <div class="input-group">
               <span class="input-group-text">
-                <i class="fas fa-lock"></i>
+                <img src="../assets/bootstrap/dist/icon/key-fill.svg" alt="">
               </span>
-              <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
               <span class="input-group-text password-toggle" id="togglePassword">
-                <i class="fas fa-eye"></i>
+                <img src="../assets/bootstrap/dist/icon/eye-fill.svg" alt="">
               </span>
             </div>
             <div class="invalid-feedback" id="passwordError">
@@ -275,7 +272,7 @@
           </div>
 
           <button type="submit" class="btn btn-login" id="loginButton">
-            <i class="fas fa-sign-in-alt me-2"></i> Login to Dashboard
+            Login to Dashboard
           </button>
 
           <div class="divider">
@@ -285,20 +282,13 @@
       </div>
     </div>
   </div>
-
-  <!-- Bootstrap Bundle with Popper -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
-
-  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-
-
   <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="assets/js/sweetalert2.js"></script>
 
-  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- jQuery (untuk AJAX) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../assets/jquery/jquery-3.6.0.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -1,0 +1,101 @@
+nm_lengkap,jenis_kelamin,tpt_lahir,tgl_lahir,tb,bb,kelas,asal_sekolah,kategori_tanding,golongan,kode_gr,kelas_tanding_FK,kontingen,status
+Ahmad Rizki,LAKI-LAKI,Jakarta,2016-05-12,120,25,1 SD,SD Negeri 01 Jakarta,TANDING,Usia Dini 2A,GR001,Kelas A,Kontingen Jakarta Pusat,AKTIF
+Bunga Citra,PEREMPUAN,Bandung,2016-08-23,118,24,1 SD,SD Negeri 02 Bandung,TUNGGAL,Usia Dini 2A,GR002,Kelas B,Kontingen Bandung,AKTIF
+Candra Wijaya,LAKI-LAKI,Surabaya,2016-03-15,122,26,1 SD,SD Negeri 03 Surabaya,REGU,Usia Dini 2A,GR003,Kelas A,Kontingen Surabaya,AKTIF
+Diana Putri,PEREMPUAN,Medan,2016-11-08,117,23,1 SD,SD Negeri 04 Medan,TANDING,Usia Dini 2A,GR004,Kelas B,Kontingen Medan,AKTIF
+Eko Prasetyo,LAKI-LAKI,Semarang,2016-07-19,121,25,1 SD,SD Negeri 05 Semarang,TUNGGAL,Usia Dini 2A,GR005,Kelas A,Kontingen Semarang,AKTIF
+Fitri Handayani,PEREMPUAN,Palembang,2016-09-27,119,24,1 SD,SD Negeri 06 Palembang,REGU,Usia Dini 2A,GR006,Kelas B,Kontingen Palembang,AKTIF
+Galih Saputra,LAKI-LAKI,Makassar,2016-04-03,123,26,1 SD,SD Negeri 07 Makassar,TANDING,Usia Dini 2A,GR007,Kelas A,Kontingen Makassar,AKTIF
+Hesti Purnama,PEREMPUAN,Yogyakarta,2016-10-14,116,23,1 SD,SD Negeri 08 Yogyakarta,TUNGGAL,Usia Dini 2A,GR008,Kelas B,Kontingen Yogyakarta,AKTIF
+Indra Lesmana,LAKI-LAKI,Malang,2016-06-30,120,25,1 SD,SD Negeri 09 Malang,REGU,Usia Dini 2A,GR009,Kelas A,Kontingen Malang,AKTIF
+Joko Susilo,LAKI-LAKI,Bogor,2016-02-18,121,25,1 SD,SD Negeri 10 Bogor,TANDING,Usia Dini 2A,GR010,Kelas B,Kontingen Bogor,AKTIF
+Kevin Pratama,LAKI-LAKI,Jakarta,2015-05-12,125,27,2 SD,SD Negeri 11 Jakarta,TUNGGAL,Usia Dini 2B,GR011,Kelas C,Kontingen Jakarta Timur,AKTIF
+Lestari Dewi,PEREMPUAN,Bandung,2015-08-23,123,26,2 SD,SD Negeri 12 Bandung,REGU,Usia Dini 2B,GR012,Kelas D,Kontingen Bandung Barat,AKTIF
+Muhammad Rizky,LAKI-LAKI,Surabaya,2015-03-15,127,28,2 SD,SD Negeri 13 Surabaya,TANDING,Usia Dini 2B,GR013,Kelas C,Kontingen Surabaya Selatan,AKTIF
+Nurul Aini,PEREMPUAN,Medan,2015-11-08,122,25,2 SD,SD Negeri 14 Medan,TUNGGAL,Usia Dini 2B,GR014,Kelas D,Kontingen Medan Utara,AKTIF
+Oscar Permana,LAKI-LAKI,Semarang,2015-07-19,126,27,2 SD,SD Negeri 15 Semarang,REGU,Usia Dini 2B,GR015,Kelas C,Kontingen Semarang Timur,AKTIF
+Putri Amelia,PEREMPUAN,Palembang,2015-09-27,124,26,2 SD,SD Negeri 16 Palembang,TANDING,Usia Dini 2B,GR016,Kelas D,Kontingen Palembang Selatan,AKTIF
+Qori Firmansyah,LAKI-LAKI,Makassar,2015-04-03,128,29,2 SD,SD Negeri 17 Makassar,TUNGGAL,Usia Dini 2B,GR017,Kelas C,Kontingen Makassar Timur,AKTIF
+Rina Melati,PEREMPUAN,Yogyakarta,2015-10-14,121,25,2 SD,SD Negeri 18 Yogyakarta,REGU,Usia Dini 2B,GR018,Kelas D,Kontingen Yogyakarta Selatan,AKTIF
+Sandy Kurniawan,LAKI-LAKI,Malang,2015-06-30,125,27,2 SD,SD Negeri 19 Malang,TANDING,Usia Dini 2B,GR019,Kelas C,Kontingen Malang Utara,AKTIF
+Teguh Wijaya,LAKI-LAKI,Bogor,2015-02-18,126,28,2 SD,SD Negeri 20 Bogor,TUNGGAL,Usia Dini 2B,GR020,Kelas D,Kontingen Bogor Selatan,AKTIF
+Agus Salim,LAKI-LAKI,Jakarta,2013-05-12,135,35,5 SD,SD Negeri 21 Jakarta,REGU,Pra Remaja,GR021,Kelas E,Kontingen Jakarta Barat,AKTIF
+Betty Siregar,PEREMPUAN,Bandung,2014-08-23,132,33,4 SD,SD Negeri 22 Bandung,TANDING,Pra Remaja,GR022,Kelas F,Kontingen Bandung Timur,AKTIF
+Cahyono Putra,LAKI-LAKI,Surabaya,2013-03-15,138,37,5 SD,SD Negeri 23 Surabaya,TUNGGAL,Pra Remaja,GR023,Kelas E,Kontingen Surabaya Barat,AKTIF
+Dian Permatasari,PEREMPUAN,Medan,2014-11-08,130,32,4 SD,SD Negeri 24 Medan,REGU,Pra Remaja,GR024,Kelas F,Kontingen Medan Selatan,AKTIF
+Edi Santoso,LAKI-LAKI,Semarang,2013-07-19,137,36,5 SD,SD Negeri 25 Semarang,TANDING,Pra Remaja,GR025,Kelas E,Kontingen Semarang Barat,AKTIF
+Fatimah Azzahra,PEREMPUAN,Palembang,2014-09-27,133,34,4 SD,SD Negeri 26 Palembang,TUNGGAL,Pra Remaja,GR026,Kelas F,Kontingen Palembang Timur,AKTIF
+Gunawan Wibowo,LAKI-LAKI,Makassar,2013-04-03,139,38,5 SD,SD Negeri 27 Makassar,REGU,Pra Remaja,GR027,Kelas E,Kontingen Makassar Selatan,AKTIF
+Heni Kusuma,PEREMPUAN,Yogyakarta,2014-10-14,131,32,4 SD,SD Negeri 28 Yogyakarta,TANDING,Pra Remaja,GR028,Kelas F,Kontingen Yogyakarta Utara,AKTIF
+Irfan Hakim,LAKI-LAKI,Malang,2013-06-30,136,35,5 SD,SD Negeri 29 Malang,TUNGGAL,Pra Remaja,GR029,Kelas E,Kontingen Malang Selatan,AKTIF
+Juwita Sari,PEREMPUAN,Bogor,2014-02-18,134,33,4 SD,SD Negeri 30 Bogor,REGU,Pra Remaja,GR030,Kelas F,Kontingen Bogor Utara,AKTIF
+Adi Nugroho,LAKI-LAKI,Jakarta,2012-05-12,145,42,6 SD,SD Negeri 31 Jakarta,TANDING,Pra Remaja,GR031,Kelas G,Kontingen Jakarta Selatan,AKTIF
+Bella Safira,PEREMPUAN,Bandung,2013-08-23,140,38,5 SD,SD Negeri 32 Bandung,TUNGGAL,Pra Remaja,GR032,Kelas H,Kontingen Bandung Utara,AKTIF
+Citra Kirana,PEREMPUAN,Surabaya,2012-03-15,143,40,6 SD,SD Negeri 33 Surabaya,REGU,Pra Remaja,GR033,Kelas G,Kontingen Surabaya Timur,AKTIF
+Doni Setiawan,LAKI-LAKI,Medan,2013-11-08,142,39,5 SD,SD Negeri 34 Medan,TANDING,Pra Remaja,GR034,Kelas H,Kontingen Medan Barat,AKTIF
+Eka Pratiwi,PEREMPUAN,Semarang,2012-07-19,146,43,6 SD,SD Negeri 35 Semarang,TUNGGAL,Pra Remaja,GR035,Kelas G,Kontingen Semarang Selatan,AKTIF
+Fajar Nugraha,LAKI-LAKI,Palembang,2013-09-27,141,38,5 SD,SD Negeri 36 Palembang,REGU,Pra Remaja,GR036,Kelas H,Kontingen Palembang Utara,AKTIF
+Gita Permata,PEREMPUAN,Makassar,2012-04-03,147,44,6 SD,SD Negeri 37 Makassar,TANDING,Pra Remaja,GR037,Kelas G,Kontingen Makassar Barat,AKTIF
+Hendra Saputra,LAKI-LAKI,Yogyakarta,2013-10-14,144,41,5 SD,SD Negeri 38 Yogyakarta,TUNGGAL,Pra Remaja,GR038,Kelas H,Kontingen Yogyakarta Timur,AKTIF
+Indah Lestari,PEREMPUAN,Malang,2012-06-30,148,45,6 SD,SD Negeri 39 Malang,REGU,Pra Remaja,GR039,Kelas G,Kontingen Malang Timur,AKTIF
+Jaka Prasetya,LAKI-LAKI,Bogor,2013-02-18,143,40,5 SD,SD Negeri 40 Bogor,TANDING,Pra Remaja,GR040,Kelas H,Kontingen Bogor Timur,AKTIF
+Budi Santoso,LAKI-LAKI,Jakarta,2007-05-15,160,50,7 SMP,SMP Negeri 1 Jakarta,TUNGGAL,Remaja,GR041,Kelas I,Kontingen Jakarta Utara,AKTIF
+Siti Aminah,PEREMPUAN,Bandung,2008-08-20,155,45,7 SMP,SMP Negeri 2 Bandung,REGU,Remaja,GR042,Kelas J,Kontingen Bandung Selatan,AKTIF
+Ahmad Dani,LAKI-LAKI,Surabaya,2007-03-10,162,52,8 SMP,SMP Negeri 3 Surabaya,TANDING,Remaja,GR043,Kelas I,Kontingen Surabaya Utara,AKTIF
+Dewi Sartika,PEREMPUAN,Medan,2008-11-25,153,44,7 SMP,SMP Negeri 4 Medan,TUNGGAL,Remaja,GR044,Kelas J,Kontingen Medan Timur,AKTIF
+Eko Yulianto,LAKI-LAKI,Semarang,2007-07-19,163,53,8 SMP,SMP Negeri 5 Semarang,REGU,Remaja,GR045,Kelas I,Kontingen Semarang Utara,AKTIF
+Fitriani,PEREMPUAN,Palembang,2008-09-27,154,45,7 SMP,SMP Negeri 6 Palembang,TANDING,Remaja,GR046,Kelas J,Kontingen Palembang Barat,AKTIF
+Guntur Prakoso,LAKI-LAKI,Makassar,2007-04-03,165,54,8 SMP,SMP Negeri 7 Makassar,TUNGGAL,Remaja,GR047,Kelas I,Kontingen Makassar Utara,AKTIF
+Hj. Aminah,PEREMPUAN,Yogyakarta,2008-10-14,152,43,7 SMP,SMP Negeri 8 Yogyakarta,REGU,Remaja,GR048,Kelas J,Kontingen Yogyakarta Barat,AKTIF
+Ibrahim,LAKI-LAKI,Malang,2007-06-30,164,53,8 SMP,SMP Negeri 9 Malang,TANDING,Remaja,GR049,Kelas I,Kontingen Malang Barat,AKTIF
+Juminten,PEREMPUAN,Bogor,2008-02-18,153,44,7 SMP,SMP Negeri 10 Bogor,TUNGGAL,Remaja,GR050,Kelas J,Kontingen Bogor Barat,AKTIF
+Kartika Sari,PEREMPUAN,Jakarta,2007-11-12,158,48,8 SMP,SMP Negeri 11 Jakarta,REGU,Remaja,GR051,Kelas K,Kontingen Jakarta Selatan,AKTIF
+Lukman Hakim,LAKI-LAKI,Bandung,2008-05-23,168,56,7 SMP,SMP Negeri 12 Bandung,TANDING,Remaja,GR052,Kelas L,Kontingen Bandung Tengah,AKTIF
+Maya Sari,PEREMPUAN,Surabaya,2007-08-15,157,47,8 SMP,SMP Negeri 13 Surabaya,TUNGGAL,Remaja,GR053,Kelas K,Kontingen Surabaya Tengah,AKTIF
+Nanda Putra,LAKI-LAKI,Medan,2008-03-18,167,55,7 SMP,SMP Negeri 14 Medan,REGU,Remaja,GR054,Kelas L,Kontingen Medan Tengah,AKTIF
+Olivia,PEREMPUAN,Semarang,2007-12-20,156,46,8 SMP,SMP Negeri 15 Semarang,TANDING,Remaja,GR055,Kelas K,Kontingen Semarang Tengah,AKTIF
+Pandu Wijaya,LAKI-LAKI,Palembang,2008-07-09,166,54,7 SMP,SMP Negeri 16 Palembang,TUNGGAL,Remaja,GR056,Kelas L,Kontingen Palembang Tengah,AKTIF
+Qonita,PEREMPUAN,Makassar,2007-09-30,158,48,8 SMP,SMP Negeri 17 Makassar,REGU,Remaja,GR057,Kelas K,Kontingen Makassar Tengah,AKTIF
+Rizki Ramadhan,LAKI-LAKI,Yogyakarta,2008-04-14,165,54,7 SMP,SMP Negeri 18 Yogyakarta,TANDING,Remaja,GR058,Kelas L,Kontingen Yogyakarta Tengah,AKTIF
+Siska,PEREMPUAN,Malang,2007-10-25,157,47,8 SMP,SMP Negeri 19 Malang,TUNGGAL,Remaja,GR059,Kelas K,Kontingen Malang Tengah,AKTIF
+Tomi Suhendra,LAKI-LAKI,Bogor,2008-06-05,166,55,7 SMP,SMP Negeri 20 Bogor,REGU,Remaja,GR060,Kelas L,Kontingen Bogor Tengah,AKTIF
+Umar Bakri,LAKI-LAKI,Jakarta,2005-05-10,170,58,10 SMA,SMA Negeri 21 Jakarta,TANDING,Remaja,GR061,Kelas M,Kontingen Jakarta Timur,AKTIF
+Vina Septiana,PEREMPUAN,Bandung,2006-08-18,162,50,10 SMA,SMA Negeri 22 Bandung,TUNGGAL,Remaja,GR062,Kelas N,Kontingen Bandung Timur,AKTIF
+Wawan Setiawan,LAKI-LAKI,Surabaya,2005-03-12,172,60,11 SMA,SMA Negeri 23 Surabaya,REGU,Remaja,GR063,Kelas M,Kontingen Surabaya Timur,AKTIF
+Xaveria,PEREMPUAN,Medan,2006-11-22,160,49,10 SMA,SMA Negeri 24 Medan,TANDING,Remaja,GR064,Kelas N,Kontingen Medan Timur,AKTIF
+Yudi Hermawan,LAKI-LAKI,Semarang,2005-07-17,171,59,11 SMA,SMA Negeri 25 Semarang,TUNGGAL,Remaja,GR065,Kelas M,Kontingen Semarang Timur,AKTIF
+Zaskia,PEREMPUAN,Palembang,2006-09-25,161,50,10 SMA,SMA Negeri 26 Palembang,REGU,Remaja,GR066,Kelas N,Kontingen Palembang Timur,AKTIF
+Andre Pratama,LAKI-LAKI,Makassar,2005-04-05,173,61,11 SMA,SMA Negeri 27 Makassar,TANDING,Remaja,GR067,Kelas M,Kontingen Makassar Timur,AKTIF
+Bella Yuliana,PEREMPUAN,Yogyakarta,2006-10-12,159,48,10 SMA,SMA Negeri 28 Yogyakarta,TUNGGAL,Remaja,GR068,Kelas N,Kontingen Yogyakarta Timur,AKTIF
+Cici Parmida,PEREMPUAN,Malang,2005-06-28,163,51,11 SMA,SMA Negeri 29 Malang,REGU,Remaja,GR069,Kelas O,Kontingen Malang Timur,AKTIF
+Denny Caknan,LAKI-LAKI,Bogor,2006-02-14,168,56,10 SMA,SMA Negeri 30 Bogor,TANDING,Remaja,GR070,Kelas P,Kontingen Bogor Timur,AKTIF
+Euis,PEREMPUAN,Jakarta,2005-09-18,164,52,11 SMA,SMA Negeri 31 Jakarta,TUNGGAL,Remaja,GR071,Kelas O,Kontingen Jakarta Barat,AKTIF
+Ferdinand,LAKI-LAKI,Bandung,2006-04-22,172,59,10 SMA,SMA Negeri 32 Bandung,REGU,Remaja,GR072,Kelas P,Kontingen Bandung Barat,AKTIF
+Galuh,PEREMPUAN,Surabaya,2005-11-30,162,50,11 SMA,SMA Negeri 33 Surabaya,TANDING,Remaja,GR073,Kelas O,Kontingen Surabaya Barat,AKTIF
+Hadi Pranoto,LAKI-LAKI,Medan,2006-07-08,170,57,10 SMA,SMA Negeri 34 Medan,TUNGGAL,Remaja,GR074,Kelas P,Kontingen Medan Barat,AKTIF
+Intan,PEREMPUAN,Semarang,2005-12-15,163,51,11 SMA,SMA Negeri 35 Semarang,REGU,Remaja,GR075,Kelas O,Kontingen Semarang Barat,AKTIF
+Joko Widodo,LAKI-LAKI,Palembang,2006-03-21,171,58,10 SMA,SMA Negeri 36 Palembang,TANDING,Remaja,GR076,Kelas P,Kontingen Palembang Barat,AKTIF
+Kurniawan,LAKI-LAKI,Makassar,2005-08-11,174,62,11 SMA,SMA Negeri 37 Makassar,TUNGGAL,Remaja,GR077,Kelas O,Kontingen Makassar Barat,AKTIF
+Lilis Karlina,PEREMPUAN,Yogyakarta,2006-05-17,161,49,10 SMA,SMA Negeri 38 Yogyakarta,REGU,Remaja,GR078,Kelas P,Kontingen Yogyakarta Barat,AKTIF
+Mulyono,LAKI-LAKI,Malang,2005-10-09,172,60,11 SMA,SMA Negeri 39 Malang,TANDING,Remaja,GR079,Kelas Q,Kontingen Malang Barat,AKTIF
+Nina Zatulini,PEREMPUAN,Bogor,2006-01-25,162,50,10 SMA,SMA Negeri 40 Bogor,TUNGGAL,Remaja,GR080,Kelas R,Kontingen Bogor Barat,AKTIF
+Oman,LAKI-LAKI,Jakarta,2005-04-17,173,61,11 SMA,SMA Negeri 41 Jakarta,REGU,Remaja,GR081,Kelas Q,Kontingen Jakarta Pusat,AKTIF
+Putri,PEREMPUAN,Bandung,2006-08-29,160,48,10 SMA,SMA Negeri 42 Bandung,TANDING,Remaja,GR082,Kelas R,Kontingen Bandung Pusat,AKTIF
+Qomar,LAKI-LAKI,Surabaya,2005-07-13,171,59,11 SMA,SMA Negeri 43 Surabaya,TUNGGAL,Remaja,GR083,Kelas Q,Kontingen Surabaya Pusat,AKTIF
+Raisa,PEREMPUAN,Medan,2006-09-08,161,49,10 SMA,SMA Negeri 44 Medan,REGU,Remaja,GR084,Kelas R,Kontingen Medan Pusat,AKTIF
+Samsul,LAKI-LAKI,Semarang,2005-11-19,172,60,11 SMA,SMA Negeri 45 Semarang,TANDING,Remaja,GR085,Kelas Q,Kontingen Semarang Pusat,AKTIF
+Tari,PEREMPUAN,Palembang,2006-12-03,159,48,10 SMA,SMA Negeri 46 Palembang,TUNGGAL,Remaja,GR086,Kelas R,Kontingen Palembang Pusat,AKTIF
+Ujang,LAKI-LAKI,Makassar,2005-06-21,170,58,11 SMA,SMA Negeri 47 Makassar,REGU,Remaja,GR087,Kelas S,Kontingen Makassar Pusat,AKTIF
+Vera,PEREMPUAN,Yogyakarta,2006-10-07,160,49,10 SMA,SMA Negeri 48 Yogyakarta,TANDING,Remaja,GR088,Kelas T,Kontingen Yogyakarta Pusat,AKTIF
+Wahyudi,LAKI-LAKI,Malang,2005-09-14,171,59,11 SMA,SMA Negeri 49 Malang,TUNGGAL,Remaja,GR089,Kelas S,Kontingen Malang Pusat,AKTIF
+Xena,PEREMPUAN,Bogor,2006-11-11,158,47,10 SMA,SMA Negeri 50 Bogor,REGU,Remaja,GR090,Kelas T,Kontingen Bogor Pusat,AKTIF
+Yanto,LAKI-LAKI,Jakarta,2005-08-23,172,60,11 SMA,SMA Negeri 51 Jakarta,TANDING,Remaja,GR091,Kelas S,Kontingen Jakarta Selatan,AKTIF
+Zara,PEREMPUAN,Bandung,2006-07-16,161,49,10 SMA,SMA Negeri 52 Bandung,TUNGGAL,Remaja,GR092,Kelas T,Kontingen Bandung Selatan,AKTIF
+Arip,LAKI-LAKI,Surabaya,2005-03-29,173,61,11 SMA,SMA Negeri 53 Surabaya,REGU,Remaja,GR093,Kelas U,Kontingen Surabaya Selatan,AKTIF
+Bunga,PEREMPUAN,Medan,2006-05-04,162,50,10 SMA,SMA Negeri 54 Medan,TANDING,Remaja,GR094,Kelas V,Kontingen Medan Selatan,AKTIF
+Cecep,LAKI-LAKI,Semarang,2005-12-22,170,58,11 SMA,SMA Negeri 55 Semarang,TUNGGAL,Remaja,GR095,Kelas U,Kontingen Semarang Selatan,AKTIF
+Dina,PEREMPUAN,Palembang,2006-04-13,160,48,10 SMA,SMA Negeri 56 Palembang,REGU,Remaja,GR096,Kelas V,Kontingen Palembang Selatan,AKTIF
+Endang,PEREMPUAN,Makassar,2005-09-30,163,51,11 SMA,SMA Negeri 57 Makassar,TANDING,Remaja,GR097,Kelas U,Kontingen Makassar Selatan,AKTIF
+Fahmi,LAKI-LAKI,Yogyakarta,2006-06-25,169,56,10 SMA,SMA Negeri 58 Yogyakarta,TUNGGAL,Remaja,GR098,Kelas V,Kontingen Yogyakarta Selatan,AKTIF
+Gina,PEREMPUAN,Malang,2005-10-18,162,50,11 SMA,SMA Negeri 59 Malang,REGU,Remaja,GR099,Kelas W,Kontingen Malang Selatan,AKTIF
+Herman,LAKI-LAKI,Bogor,2006-02-07,168,55,10 SMA,SMA Negeri 60 Bogor,TANDING,Remaja,GR100,Kelas X,Kontingen Bogor Selatan,AKTIF
