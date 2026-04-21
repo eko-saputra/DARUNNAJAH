@@ -223,8 +223,8 @@ function getFinalMatchestgr($koneksi)
   return $matches;
 }
 
-// Fungsi untuk mendapatkan peringkat kontingen dari kedua tabel
-// Fungsi untuk mendapatkan peringkat kontingen dari kedua tabel - DIREVISI
+// ==================== FUNGSI RANKING KONTINGEN DENGAN POIN ====================
+// Ranking berdasarkan poin: Emas=100, Perak=75, Perunggu=50
 function getKontingenRanking($koneksi)
 {
   $query = "SELECT 
@@ -233,9 +233,10 @@ function getKontingenRanking($koneksi)
                 COALESCE(m.total_medali, 0) as total_medali,
                 COALESCE(m.emas, 0) as emas,
                 COALESCE(m.perak, 0) as perak,
-                COALESCE(m.perunggu, 0) as perunggu
+                COALESCE(m.perunggu, 0) as perunggu,
+                COALESCE(m.total_poin, 0) as total_poin
               FROM (
-                -- Hitung total peserta per kontingen (hapus kontingen kosong)
+                -- Hitung total peserta per kontingen
                 SELECT 
                   kontingen,
                   COUNT(*) as total_peserta
@@ -248,13 +249,16 @@ function getKontingenRanking($koneksi)
                 GROUP BY kontingen
               ) as k
               LEFT JOIN (
-                -- Hitung medali per kontingen (sesuaikan dengan nilai medali sebenarnya)
+                -- Hitung medali per kontingen dengan POIN
                 SELECT 
                   kontingen,
                   COUNT(*) as total_medali,
                   SUM(CASE WHEN medali = 'Emas' THEN 1 ELSE 0 END) as emas,
                   SUM(CASE WHEN medali = 'Perak' THEN 1 ELSE 0 END) as perak,
-                  SUM(CASE WHEN medali = 'Perunggu' THEN 1 ELSE 0 END) as perunggu
+                  SUM(CASE WHEN medali = 'Perunggu' THEN 1 ELSE 0 END) as perunggu,
+                  (SUM(CASE WHEN medali = 'Emas' THEN 100 ELSE 0 END) +
+                   SUM(CASE WHEN medali = 'Perak' THEN 75 ELSE 0 END) +
+                   SUM(CASE WHEN medali = 'Perunggu' THEN 50 ELSE 0 END)) as total_poin
                 FROM medali 
                 WHERE medali IS NOT NULL 
                   AND medali != '' 
@@ -263,23 +267,38 @@ function getKontingenRanking($koneksi)
                 GROUP BY kontingen
               ) as m ON k.kontingen = m.kontingen
               ORDER BY 
-                total_medali DESC, 
-                emas DESC, 
-                perak DESC, 
-                perunggu DESC,
+                total_poin DESC,      -- Urutkan berdasarkan poin tertinggi
+                emas DESC,            -- Jika poin sama, berdasarkan emas terbanyak
+                perak DESC,           -- Jika masih sama, berdasarkan perak terbanyak
+                perunggu DESC,        -- Jika masih sama, berdasarkan perunggu terbanyak
                 total_peserta DESC";
 
   $result = $koneksi->query($query);
 
   $ranking = [];
   $rank = 1;
+  $prevPoin = null;
+  $rankOffset = 0;
+
   while ($row = $result->fetch_assoc()) {
-    $row['rank'] = $rank++;
+    // Handle peringkat yang sama (jika poin sama)
+    if ($prevPoin === $row['total_poin']) {
+      $rankOffset++;
+      $displayRank = $rank - $rankOffset;
+    } else {
+      $rankOffset = 0;
+      $displayRank = $rank;
+    }
+    $prevPoin = $row['total_poin'];
+
+    $row['rank'] = $displayRank;
+    $row['rank_number'] = $rank; // Untuk keperluan internal
 
     // Filter kontingen yang valid
     if (!empty($row['kontingen']) && $row['kontingen'] != '-' && $row['kontingen'] != '') {
       $ranking[] = $row;
     }
+    $rank++;
   }
   return $ranking;
 }
@@ -317,7 +336,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
             </div>
           </div>
         </div>
-        <h6 class="text-muted font-weight-normal">Sisa Partai</h6>
+        <h6 class="text-muted font-weight-normal">Total Peserta</h6>
       </div>
     </div>
   </div>
@@ -390,7 +409,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
             </div>
           </div>
         </div>
-        <h6 class="text-muted font-weight-normal">Total Medaldsadsai</h6>
+        <h6 class="text-muted font-weight-normal">Total Medali</h6>
       </div>
     </div>
   </div>
@@ -456,7 +475,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
     </div>
   </div>
 
-  <!-- Jadwal Partai Terbaru dengan Tab -->
+  <!-- Jadwal Partai Terbaru TANDING -->
   <div class="col-md-4 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
@@ -500,11 +519,6 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
                     <div class="preview-item-content d-sm-flex flex-grow">
                       <div class="flex-grow">
                         <h6 class="preview-subject">Partai <?php echo htmlspecialchars($match['partai']); ?> <br> <?php echo htmlspecialchars($match['kelas']); ?></h6>
-                        <!-- <p class="text-muted mb-0">
-                          <span class="fw-bold text-primary"><?php echo htmlspecialchars($match['nm_biru']); ?></span>
-                          vs
-                          <span class="fw-bold text-danger"><?php echo htmlspecialchars($match['nm_merah']); ?></span>
-                        </p> -->
                       </div>
                       <div class="me-auto text-sm-right pt-2 pt-sm-0">
                         <p class="text-muted mb-0">
@@ -568,15 +582,17 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
       </div>
     </div>
   </div>
+
+  <!-- Jadwal Partai Terbaru TGR -->
   <div class="col-md-4 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
         <div class="d-flex flex-row justify-content-between">
-          <h4 class="card-title mb-1">Jadwal Tanding 5 Partai Terbaru</h4>
+          <h4 class="card-title mb-1">Jadwal TGR 5 Partai Terbaru</h4>
         </div>
 
         <!-- Tab Navigation -->
-        <ul class="nav nav-tabs" id="jadwalTab" role="tablist">
+        <ul class="nav nav-tabs" id="jadwalTabTgr" role="tablist">
           <li class="nav-item">
             <a class="nav-link active" id="semifinal-tab1" data-bs-toggle="tab" href="#semifinal1" role="tab" aria-controls="semifinal1" aria-selected="true">
               <i class="mdi mdi-sword-cross me-1"></i> SEMIFINAL
@@ -592,7 +608,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
         </ul>
 
         <!-- Tab Content -->
-        <div class="tab-content pt-3" id="jadwalTabContent">
+        <div class="tab-content pt-3" id="jadwalTabContentTgr">
           <!-- Tab SEMIFINAL -->
           <div class="tab-pane fade show active" id="semifinal1" role="tabpanel" aria-labelledby="semifinal-tab1">
             <div class="preview-list">
@@ -711,7 +727,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
   <div class="col-sm-4 grid-margin">
     <div class="card">
       <div class="card-body">
-        <h5>Top Kontingen</h5>
+        <h5>Top Kontingen (Terbanyak Peserta)</h5>
         <div class="row">
           <div class="col-8 col-sm-12 col-xl-8 my-auto">
             <?php if (!empty($stats['top_kontingen'])): ?>
@@ -784,90 +800,193 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
 </div>
 
 <div class="row">
-  <!-- Peringkat Kontingen -->
+  <!-- ==================== PERINGKAT KONTINGEN BERDASARKAN POIN ==================== -->
   <div class="col-12 grid-margin">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title">Peringkat Kontingen</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="card-title mb-0">🏆 Peringkat Kontingen (Berdasarkan Poin)</h4>
+          <div class="alert alert-info py-2 px-3 mb-0">
+            <small>📊 Poin: 🥇 Emas = 100 | 🥈 Perak = 75 | 🥉 Perunggu = 50</small>
+          </div>
+        </div>
+
         <div class="table-responsive">
-          <table class="table">
-            <thead>
+          <table class="table table-hover">
+            <thead class="table-dark">
               <tr>
-                <th>Peringkat</th>
-                <th>Nama Kontingen</th>
-                <th>Jumlah Peserta</th>
-                <th>Total Medali</th>
-                <th class="text-warning">Emas</th>
-                <th class="text-secondary">Perak</th>
-                <th class="text-danger">Perunggu</th>
-                <th>Status</th>
+                <th width="5%">Peringkat</th>
+                <th width="20%">Kontingen</th>
+                <th width="10%" class="text-center">Jumlah Peserta</th>
+                <th width="10%" class="text-center">Total Medali</th>
+                <th width="10%" class="text-center text-warning">🥇 Emas</th>
+                <th width="10%" class="text-center text-secondary">🥈 Perak</th>
+                <th width="10%" class="text-center text-danger">🥉 Perunggu</th>
+                <th width="10%" class="text-center">⭐ Total Poin</th>
+                <th width="15%" class="text-center">Status</th>
               </tr>
             </thead>
             <tbody>
               <?php if (empty($kontingenRanking)): ?>
                 <tr>
-                  <td colspan="8" class="text-center">Tidak ada data peringkat</td>
+                  <td colspan="9" class="text-center py-4">
+                    <i class="mdi mdi-emoticon-sad fs-1"></i>
+                    <p class="mt-2">Belum ada data peringkat kontingen</p>
+                  </td>
                 </tr>
               <?php else: ?>
-                <?php foreach ($kontingenRanking as $ranking): ?>
-                  <tr>
+                <?php
+                $rankColors = ['🥇', '🥈', '🥉'];
+                foreach ($kontingenRanking as $index => $ranking):
+                  $isTop3 = $ranking['rank'] <= 3;
+                  $rowClass = '';
+                  if ($ranking['rank'] == 1) $rowClass = 'table-warning';
+                  elseif ($ranking['rank'] == 2) $rowClass = 'table-secondary';
+                  elseif ($ranking['rank'] == 3) $rowClass = 'table-danger';
+                ?>
+                  <tr class="<?php echo $rowClass; ?>">
+                    <td class="text-center">
+                      <?php if ($isTop3): ?>
+                        <span class="fs-2">
+                          <?php echo $rankColors[$ranking['rank'] - 1]; ?>
+                        </span>
+                        <br>
+                        <span class="badge bg-<?php echo ($ranking['rank'] == 1) ? 'warning' : (($ranking['rank'] == 2) ? 'secondary' : 'danger'); ?> text-dark">
+                          #<?php echo $ranking['rank']; ?>
+                        </span>
+                      <?php else: ?>
+                        <span class="badge bg-dark">
+                          #<?php echo $ranking['rank']; ?>
+                        </span>
+                      <?php endif; ?>
+                    </td>
                     <td>
                       <div class="d-flex align-items-center">
-                        <?php if ($ranking['rank'] <= 3): ?>
-                          <span class="mdi mdi-trophy me-2 
+                        <?php if ($isTop3): ?>
+                          <span class="mdi mdi-trophy fs-4 me-2 
                             <?php echo ($ranking['rank'] == 1) ? 'text-warning' : (($ranking['rank'] == 2) ? 'text-secondary' : 'text-danger'); ?>">
                           </span>
                         <?php endif; ?>
-                        <span class="fw-bold"><?php echo $ranking['rank']; ?></span>
+                        <span class="fw-bold fs-5"><?php echo htmlspecialchars($ranking['kontingen']); ?></span>
                       </div>
                     </td>
-                    <td>
-                      <span class="ps-2 fw-bold"><?php echo htmlspecialchars($ranking['kontingen']); ?></span>
+                    <td class="text-center">
+                      <span class="badge bg-info text-dark px-3 py-2">
+                        <i class="mdi mdi-account"></i> <?php echo $ranking['total_peserta']; ?>
+                      </span>
                     </td>
-                    <td>
-                      <span class="badge badge-info"><?php echo $ranking['total_peserta']; ?></span>
+                    <td class="text-center">
+                      <span class="badge bg-primary px-3 py-2">
+                        <i class="mdi mdi-medal"></i> <?php echo $ranking['total_medali']; ?>
+                      </span>
                     </td>
-                    <td>
-                      <span class="fw-bold"><?php echo $ranking['total_medali']; ?></span>
+                    <td class="text-center">
+                      <span class="badge bg-warning text-dark px-3 py-2 fs-6">
+                        🥇 <?php echo $ranking['emas']; ?>
+                      </span>
                     </td>
-                    <td class="text-warning fw-bold">
-                      <?php echo $ranking['emas']; ?>
+                    <td class="text-center">
+                      <span class="badge bg-secondary px-3 py-2 fs-6">
+                        🥈 <?php echo $ranking['perak']; ?>
+                      </span>
                     </td>
-                    <td class="text-secondary">
-                      <?php echo isset($ranking['perak']) ? $ranking['perak'] : '0'; ?>
+                    <td class="text-center">
+                      <span class="badge bg-danger px-3 py-2 fs-6">
+                        🥉 <?php echo $ranking['perunggu']; ?>
+                      </span>
                     </td>
-                    <td class="text-danger">
-                      <?php echo isset($ranking['perunggu']) ? $ranking['perunggu'] : '0'; ?>
+                    <td class="text-center">
+                      <span class="badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 1rem; min-width: 80px; padding: 8px 12px;">
+                        ⭐ <?php echo number_format($ranking['total_poin']); ?>
+                      </span>
                     </td>
-                    <td>
-                      <div class="badge badge-outline-<?php echo ($ranking['rank'] == 1) ? 'warning' : (($ranking['rank'] == 2) ? 'secondary' : (($ranking['rank'] == 3) ? 'danger' : 'success')); ?>">
-                        <?php if ($ranking['rank'] == 1): ?>
-                          Juara 1
-                        <?php elseif ($ranking['rank'] == 2): ?>
-                          Juara 2
-                        <?php elseif ($ranking['rank'] == 3): ?>
-                          Juara 3
-                        <?php else: ?>
+                    <td class="text-center">
+                      <?php if ($ranking['rank'] == 1): ?>
+                        <span class="badge bg-warning text-dark px-3 py-2">
+                          <i class="mdi mdi-crown"></i> JUARA 1
+                        </span>
+                      <?php elseif ($ranking['rank'] == 2): ?>
+                        <span class="badge bg-secondary px-3 py-2">
+                          <i class="mdi mdi-trophy"></i> JUARA 2
+                        </span>
+                      <?php elseif ($ranking['rank'] == 3): ?>
+                        <span class="badge bg-danger px-3 py-2">
+                          <i class="mdi mdi-trophy"></i> JUARA 3
+                        </span>
+                      <?php else: ?>
+                        <span class="badge bg-dark px-3 py-2">
                           Peringkat <?php echo $ranking['rank']; ?>
-                        <?php endif; ?>
-                      </div>
+                        </span>
+                      <?php endif; ?>
                     </td>
                   </tr>
                 <?php endforeach; ?>
               <?php endif; ?>
             </tbody>
+            <?php
+            // Hitung total keseluruhan untuk footer
+            $sqlTotalPoin = "SELECT 
+                              SUM(CASE WHEN medali = 'Emas' THEN 100 ELSE 0 END) +
+                              SUM(CASE WHEN medali = 'Perak' THEN 75 ELSE 0 END) +
+                              SUM(CASE WHEN medali = 'Perunggu' THEN 50 ELSE 0 END) as grand_total_poin,
+                              COUNT(*) as grand_total_medali,
+                              SUM(CASE WHEN medali = 'Emas' THEN 1 ELSE 0 END) as grand_emas,
+                              SUM(CASE WHEN medali = 'Perak' THEN 1 ELSE 0 END) as grand_perak,
+                              SUM(CASE WHEN medali = 'Perunggu' THEN 1 ELSE 0 END) as grand_perunggu
+                            FROM medali";
+            $totalResult = $koneksi->query($sqlTotalPoin);
+            $totalRow = $totalResult->fetch_assoc();
+            ?>
+            <tfoot class="table-dark">
+              <tr>
+                <td colspan="2" class="fw-bold text-end">GRAND TOTAL :</td>
+                <td class="text-center">-</td>
+                <td class="text-center fw-bold"><?php echo $totalRow['grand_total_medali']; ?></td>
+                <td class="text-center fw-bold text-warning">🥇 <?php echo $totalRow['grand_emas']; ?></td>
+                <td class="text-center fw-bold text-secondary">🥈 <?php echo $totalRow['grand_perak']; ?></td>
+                <td class="text-center fw-bold text-danger">🥉 <?php echo $totalRow['grand_perunggu']; ?></td>
+                <td class="text-center fw-bold">
+                  <span class="badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 0.9rem;">
+                    ⭐ <?php echo number_format($totalRow['grand_total_poin']); ?>
+                  </span>
+                </td>
+                <td class="text-center">-</td>
+              </tr>
+            </tfoot>
           </table>
+        </div>
+
+        <!-- Keterangan -->
+        <div class="alert alert-light mt-3 mb-0">
+          <small>
+            <i class="mdi mdi-information-outline"></i>
+            <strong>Sistem Peringkat:</strong> Kontingen diurutkan berdasarkan TOTAL POIN tertinggi.
+            Jika poin sama, maka diurutkan berdasarkan jumlah medali EMAS terbanyak,
+            kemudian PERAK, kemudian PERUNGGU.
+          </small>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
   // Inisialisasi Bootstrap tabs
   document.addEventListener('DOMContentLoaded', function() {
+    // Tab untuk Jadwal Tanding
     var triggerTabList = [].slice.call(document.querySelectorAll('#jadwalTab a'))
     triggerTabList.forEach(function(triggerEl) {
+      var tabTrigger = new bootstrap.Tab(triggerEl)
+      triggerEl.addEventListener('click', function(event) {
+        event.preventDefault()
+        tabTrigger.show()
+      })
+    });
+
+    // Tab untuk Jadwal TGR
+    var triggerTabListTgr = [].slice.call(document.querySelectorAll('#jadwalTabTgr a'))
+    triggerTabListTgr.forEach(function(triggerEl) {
       var tabTrigger = new bootstrap.Tab(triggerEl)
       triggerEl.addEventListener('click', function(event) {
         event.preventDefault()
@@ -877,7 +996,6 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
   });
 
   // Chart.js untuk Distribusi Medali
-  // Tunggu sampai DOM sepenuhnya dimuat
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeChart);
   } else {
@@ -890,7 +1008,6 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
 
     var ctx = canvas.getContext('2d');
 
-    // Cek apakah chart sudah ada sebelumnya, jika ya hancurkan
     if (window.medaliChartInstance) {
       window.medaliChartInstance.destroy();
     }
@@ -921,7 +1038,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: false, // Nonaktifkan legend karena sudah ada di teks
+            display: false,
           },
           tooltip: {
             callbacks: {
@@ -929,7 +1046,7 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
                 let label = context.label || '';
                 let value = context.raw || 0;
                 let total = context.dataset.data.reduce((a, b) => a + b, 0);
-                let percentage = Math.round((value / total) * 100);
+                let percentage = total > 0 ? Math.round((value / total) * 100) : 0;
                 return `${label}: ${value} medali (${percentage}%)`;
               }
             }
@@ -944,7 +1061,6 @@ $belumDitentukan = $stats['medali_distribusi']['belum_ditentukan'] ?? 0;
     });
   }
 
-  // Pastikan chart di-redraw saat window di-resize
   let resizeTimer;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);

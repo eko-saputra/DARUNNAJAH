@@ -461,38 +461,21 @@
       box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
     }
 
+    .btn-selesai-biru.btn-success, .btn-selesai-merah.btn-success {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      opacity: 0.9;
+    }
+
     @keyframes pulse-blue {
-      0% {
-        transform: scale(1);
-        opacity: 0.8;
-      }
-
-      50% {
-        transform: scale(1.02);
-        opacity: 1;
-      }
-
-      100% {
-        transform: scale(1);
-        opacity: 0.8;
-      }
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
     }
 
     @keyframes pulse-red {
-      0% {
-        transform: scale(1);
-        opacity: 0.8;
-      }
-
-      50% {
-        transform: scale(1.02);
-        opacity: 1;
-      }
-
-      100% {
-        transform: scale(1);
-        opacity: 0.8;
-      }
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
     }
 
     .btn-winner-biru {
@@ -503,6 +486,16 @@
     .btn-winner-merah {
       background: linear-gradient(135deg, #ff4757, #ff6b81);
       color: white;
+    }
+
+    .btn-winner-biru.active, .btn-winner-merah.active {
+      animation: pulse-winner 1s infinite;
+    }
+
+    @keyframes pulse-winner {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+      70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
     }
 
     .btn-diskualifikasi {
@@ -629,15 +622,8 @@
     }
 
     @keyframes bounce {
-
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-10px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .winner-name {
@@ -657,32 +643,14 @@
     }
 
     @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-
-      50% {
-        transform: scale(1.05);
-        opacity: 0.8;
-      }
-
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .fade-in {
@@ -706,76 +674,31 @@
     }
 
     @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
 
     @keyframes fadeOut {
-      from {
-        opacity: 1;
-      }
-
-      to {
-        opacity: 0;
-      }
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
 
     @media (max-width: 1024px) {
-      .main-content {
-        grid-template-columns: 1fr;
-        height: calc(100vh - 160px);
-      }
-
-      .penalty-column {
-        max-height: 40vh;
-      }
-
-      .broadcast-column {
-        max-height: 40vh;
-      }
+      .main-content { grid-template-columns: 1fr; height: calc(100vh - 160px); }
+      .penalty-column { max-height: 40vh; }
+      .broadcast-column { max-height: 40vh; }
     }
 
     @media (max-width: 768px) {
-      .header-bar {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-      }
-
-      .timer-display {
-        font-size: 28px;
-        padding: 8px 20px;
-      }
-
-      .btn-penalty {
-        padding: 6px 12px;
-        font-size: 12px;
-      }
-
-      .stats-container {
-        flex-direction: column;
-      }
-
-      .sudut-header {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-      }
-
-      .total-nilai {
-        font-size: 24px;
-      }
+      .header-bar { flex-direction: column; gap: 15px; text-align: center; }
+      .timer-display { font-size: 28px; padding: 8px 20px; }
+      .btn-penalty { padding: 6px 12px; font-size: 12px; }
+      .stats-container { flex-direction: column; }
+      .sudut-header { flex-direction: column; gap: 10px; text-align: center; }
+      .total-nilai { font-size: 24px; }
     }
 
-    #openfull,
-    #exitfull {
+    #openfull, #exitfull {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 6px;
@@ -788,10 +711,7 @@
       cursor: pointer;
     }
 
-    #openfull svg,
-    #exitfull svg {
-      fill: white;
-    }
+    #openfull svg, #exitfull svg { fill: white; }
   </style>
 
   <title>DEWAN SENI</title>
@@ -807,12 +727,9 @@
           <span class="nm text-uppercase">-</span>
         </div>
         <div class="player-details d-flex flex-wrap align-items-center gap-2 mt-2">
-          <span class="badge bg-info text-muted"><i class="fas fa-flag me-1"></i> <span
-              class="kontingen">-</span></span>
-          <span class="badge bg-secondary text-muted"><i class="fas fa-tag me-1"></i> <span
-              class="kategori">-</span>/<span class="kelas">-</span></span>
-          <span class="badge bg-primary text-muted"><i class="fas fa-hashtag me-1"></i> PARTAI <span
-              id="current-partai">-</span></span>
+          <span class="badge bg-info text-muted"><i class="fas fa-flag me-1"></i> <span class="kontingen">-</span></span>
+          <span class="badge bg-secondary text-muted"><i class="fas fa-tag me-1"></i> <span class="kategori">-</span>/<span class="kelas">-</span></span>
+          <span class="badge bg-primary text-muted"><i class="fas fa-hashtag me-1"></i> PARTAI <span id="current-partai">-</span></span>
           <span class="badge text-muted" style="background: #00e5ff;" id="current-sudut-badge">
             <i class="fas fa-arrow-right me-1"></i> <span id="current-sudut">-</span>
           </span>
@@ -826,20 +743,17 @@
         <div class="vr text-white-50" style="height: 100px;"></div>
         <div class="d-flex align-items-center gap-2">
           <div class="btn-group" role="group">
-            <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="control-btn"
-              title="Fullscreen">
+            <button aria-label="Open Fullscreen" id="openfull" onclick="openFullscreen();" class="control-btn" title="Fullscreen">
               <i class="fas fa-expand"></i>
             </button>
-            <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="control-btn d-none"
-              title="Exit Fullscreen">
+            <button aria-label="Exit Fullscreen" id="exitfull" onclick="closeFullscreen();" class="control-btn d-none" title="Exit Fullscreen">
               <i class="fas fa-compress"></i>
             </button>
           </div>
           <button class="control-btn btn-danger" onclick="konfirmasiKeluar()" title="Keluar">
             <i class="fas fa-sign-out-alt me-1"></i> EXIT
           </button>
-          <a href="#" class="control-btn btn-light" onclick="konfirmasiRefresh(event)" style="text-decoration: none;"
-            title="Refresh">
+          <a href="#" class="control-btn btn-light" onclick="konfirmasiRefresh(event)" style="text-decoration: none;" title="Refresh">
             <i class="fas fa-sync-alt me-1"></i> REFRESH
           </a>
         </div>
@@ -851,11 +765,8 @@
       <!-- PENALTY COLUMN -->
       <div class="penalty-column">
         <div class="penalty-item" id="penalty-1">
-          <div class="penalty-title">
-            1. Performanya Melampaui Arena 10m x 10m
-            <span class="penalty-badge" id="penalty-badge-1" style="display: none;">
-              <i class="fas fa-exclamation-triangle"></i> PENALTY
-            </span>
+          <div class="penalty-title">1. Performanya Melampaui Arena 10m x 10m
+            <span class="penalty-badge" id="penalty-badge-1" style="display: none;"><i class="fas fa-exclamation-triangle"></i> PENALTY</span>
           </div>
           <div class="penalty-controls">
             <div class="penalty-buttons" id="penalty-buttons-1">
@@ -866,11 +777,8 @@
         </div>
 
         <div class="penalty-item" id="penalty-2">
-          <div class="penalty-title">
-            2. Menjatuh Kan Senjata Dan Memegang Matras
-            <span class="penalty-badge" id="penalty-badge-2" style="display: none;">
-              <i class="fas fa-exclamation-triangle"></i> PENALTY
-            </span>
+          <div class="penalty-title">2. Menjatuh Kan Senjata Dan Memegang Matras
+            <span class="penalty-badge" id="penalty-badge-2" style="display: none;"><i class="fas fa-exclamation-triangle"></i> PENALTY</span>
           </div>
           <div class="penalty-controls">
             <div class="penalty-buttons" id="penalty-buttons-2">
@@ -881,11 +789,8 @@
         </div>
 
         <div class="penalty-item" id="penalty-3">
-          <div class="penalty-title">
-            3. Pakaian Tidak Sesuai Dengan Aturan (Tanjak atau Samping lepas)
-            <span class="penalty-badge" id="penalty-badge-3" style="display: none;">
-              <i class="fas fa-exclamation-triangle"></i> PENALTY
-            </span>
+          <div class="penalty-title">3. Pakaian Tidak Sesuai Dengan Aturan (Tanjak atau Samping lepas)
+            <span class="penalty-badge" id="penalty-badge-3" style="display: none;"><i class="fas fa-exclamation-triangle"></i> PENALTY</span>
           </div>
           <div class="penalty-controls">
             <div class="penalty-buttons" id="penalty-buttons-3">
@@ -896,11 +801,8 @@
         </div>
 
         <div class="penalty-item" id="penalty-4">
-          <div class="penalty-title">
-            4. Atlet Bertahan Pada Satu Gerakan Selama Lebih Dari 5 Detik
-            <span class="penalty-badge" id="penalty-badge-4" style="display: none;">
-              <i class="fas fa-exclamation-triangle"></i> PENALTY
-            </span>
+          <div class="penalty-title">4. Atlet Bertahan Pada Satu Gerakan Selama Lebih Dari 5 Detik
+            <span class="penalty-badge" id="penalty-badge-4" style="display: none;"><i class="fas fa-exclamation-triangle"></i> PENALTY</span>
           </div>
           <div class="penalty-controls">
             <div class="penalty-buttons" id="penalty-buttons-4">
@@ -911,11 +813,8 @@
         </div>
 
         <div class="penalty-item" id="penalty-5">
-          <div class="penalty-title">
-            5. Waktu Penampilan +/- <span style="font-size: 12px; color: #a0aec0;">(berulang)</span>
-            <span class="penalty-badge" id="penalty-badge-5" style="display: none;">
-              <i class="fas fa-exclamation-triangle"></i> PENALTY
-            </span>
+          <div class="penalty-title">5. Waktu Penampilan +/- <span style="font-size: 12px; color: #a0aec0;">(berulang)</span>
+            <span class="penalty-badge" id="penalty-badge-5" style="display: none;"><i class="fas fa-exclamation-triangle"></i> PENALTY</span>
           </div>
           <div class="penalty-controls">
             <div class="penalty-buttons" id="penalty-buttons-5">
@@ -934,32 +833,13 @@
             <i class="fas fa-crown winner-icon-biru" style="display:none; margin-right:5px; color:gold;"></i>
           </div>
           <div class="stats-container">
-            <div class="stat-item">
-              <div class="stat-label">MEDIAN</div>
-              <div class="stat-value" id="broadcast-median-biru">0.000</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">PENALTY</div>
-              <div class="stat-value" id="broadcast-penalty-value-biru">0.00</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">DEVIASI</div>
-              <div class="stat-value deviation" id="broadcast-stddev-biru">0.000000</div>
-            </div>
-            <div class="stat-item bg-info">
-              <div class="stat-label text-dark fw-bold">TOTAL</div>
-              <div class="stat-value deviation text-dark fw-bold" id="broadcast-total-biru">0.00</div>
-            </div>
+            <div class="stat-item"><div class="stat-label">MEDIAN</div><div class="stat-value" id="broadcast-median-biru">0.000</div></div>
+            <div class="stat-item"><div class="stat-label">PENALTY</div><div class="stat-value" id="broadcast-penalty-value-biru">0.00</div></div>
+            <div class="stat-item"><div class="stat-label">DEVIASI</div><div class="stat-value deviation" id="broadcast-stddev-biru">0.000000</div></div>
+            <div class="stat-item bg-info"><div class="stat-label text-dark fw-bold">TOTAL</div><div class="stat-value deviation text-dark fw-bold" id="broadcast-total-biru">0.00</div></div>
           </div>
           <table class="broadcast-table">
-            <thead>
-              <tr>
-                <th>Juri</th>
-                <th>Wrong</th>
-                <th>Stamina</th>
-                <th>Total</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Juri</th><th>Wrong</th><th>Stamina</th><th>Total</th></tr></thead>
             <tbody id="broadcast-table-biru"></tbody>
           </table>
         </div>
@@ -969,32 +849,13 @@
             <i class="fas fa-crown winner-icon-merah" style="display:none; margin-right:5px; color:gold;"></i>
           </div>
           <div class="stats-container">
-            <div class="stat-item">
-              <div class="stat-label">MEDIAN</div>
-              <div class="stat-value" id="broadcast-median-merah">0.000</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">PENALTY</div>
-              <div class="stat-value" id="broadcast-penalty-value-merah">0.00</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">DEVIASI</div>
-              <div class="stat-value deviation" id="broadcast-stddev-merah">0.000000</div>
-            </div>
-            <div class="stat-item bg-danger">
-              <div class="stat-label text-light fw-bold">TOTAL</div>
-              <div class="stat-value deviation text-light fw-bold" id="broadcast-total-merah">0.00</div>
-            </div>
+            <div class="stat-item"><div class="stat-label">MEDIAN</div><div class="stat-value" id="broadcast-median-merah">0.000</div></div>
+            <div class="stat-item"><div class="stat-label">PENALTY</div><div class="stat-value" id="broadcast-penalty-value-merah">0.00</div></div>
+            <div class="stat-item"><div class="stat-label">DEVIASI</div><div class="stat-value deviation" id="broadcast-stddev-merah">0.000000</div></div>
+            <div class="stat-item bg-danger"><div class="stat-label text-light fw-bold">TOTAL</div><div class="stat-value deviation text-light fw-bold" id="broadcast-total-merah">0.00</div></div>
           </div>
           <table class="broadcast-table">
-            <thead>
-              <tr>
-                <th>Juri</th>
-                <th>Wrong</th>
-                <th>Stamina</th>
-                <th>Total</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Juri</th><th>Wrong</th><th>Stamina</th><th>Total</th></tr></thead>
             <tbody id="broadcast-table-merah"></tbody>
           </table>
         </div>
@@ -1006,13 +867,11 @@
       <!-- SUMMARY COLUMN -->
       <div class="summary-column">
         <div class="action-buttons">
-          <button class="btn-action btn-selesai-biru" id="selesai-biru-btn" onclick="handleSelesaiSudut('BIRU')"
-            disabled>
-            <i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN BIRU
+          <button class="btn-action btn-selesai-biru" id="selesai-biru-btn" onclick="handleSelesaiSudut('BIRU')" disabled>
+            <i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN BIRU (0/4)
           </button>
-          <button class="btn-action btn-selesai-merah" id="selesai-merah-btn" onclick="handleSelesaiSudut('MERAH')"
-            disabled>
-            <i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH
+          <button class="btn-action btn-selesai-merah" id="selesai-merah-btn" onclick="handleSelesaiSudut('MERAH')" disabled>
+            <i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH (0/4)
           </button>
           <button class="btn-action btn-winner-biru" id="winner-biru-btn" onclick="declareWinner('BIRU')" disabled>
             <i class="fas fa-crown me-2"></i> WINNER BIRU
@@ -1020,8 +879,7 @@
           <button class="btn-action btn-winner-merah" id="winner-merah-btn" onclick="declareWinner('MERAH')" disabled>
             <i class="fas fa-crown me-2"></i> WINNER MERAH
           </button>
-          <button class="btn-action btn-diskualifikasi" id="diskualifikasi-btn" onclick="handleDiskualifikasi()"
-            disabled>
+          <button class="btn-action btn-diskualifikasi" id="diskualifikasi-btn" onclick="handleDiskualifikasi()" disabled>
             <i class="fas fa-ban me-2"></i> DISKUALIFIKASI
           </button>
         </div>
@@ -1040,16 +898,10 @@
         <div class="modal-body p-0">
           <div class="result-container">
             <div class="sudut-section biru-section">
-              <div class="sudut-header">
-                <div class="sudut-label biru"><i class="fas fa-user me-2"></i>SUDUT BIRU</div>
-                <div class="total-nilai" id="total-biru">0.00</div>
-              </div>
+              <div class="sudut-header"><div class="sudut-label biru"><i class="fas fa-user me-2"></i>SUDUT BIRU</div><div class="total-nilai" id="total-biru">0.00</div></div>
             </div>
             <div class="sudut-section merah-section">
-              <div class="sudut-header">
-                <div class="sudut-label merah"><i class="fas fa-user me-2"></i>SUDUT MERAH</div>
-                <div class="total-nilai" id="total-merah">0.00</div>
-              </div>
+              <div class="sudut-header"><div class="sudut-label merah"><i class="fas fa-user me-2"></i>SUDUT MERAH</div><div class="total-nilai" id="total-merah">0.00</div></div>
             </div>
             <div class="winner-section">
               <div class="winner-trophy"><i class="fas fa-trophy"></i></div>
@@ -1077,11 +929,11 @@
     let isTimerRunning = false;
     let isDiskualified = false;
 
-    // Status apakah penilaian sudah selesai untuk masing-masing sudut
+    // Status apakah penilaian sudah selesai untuk masing-masing sudut (tombol selesai sudah ditekan)
     let biruPenilaianSelesai = false;
     let merahPenilaianSelesai = false;
 
-    // Array untuk menyimpan status selesai per juri (4 juri)
+    // Array untuk menyimpan status selesai per juri (4 juri) - berdasarkan stamina > 0
     let juriSelesaiStatus = {
       BIRU: [false, false, false, false],
       MERAH: [false, false, false, false]
@@ -1095,16 +947,16 @@
     // Fungsi untuk mengirim selesai penilaian ke server untuk sudut tertentu
     function sendSelesaiPenilaian(sudut) {
       if (!currentPartaiData) return false;
-
+      
       ws.send(JSON.stringify({
         type: 'selesai_seni',
         partai: currentPartaiData.partai,
         sudut: sudut
       }));
-
+      
       console.log(`✅ Mengirim selesai penilaian untuk SUDUT ${sudut}`);
       showNotification(`✅ Penilaian SUDUT ${sudut} selesai`, 'success');
-
+      
       return true;
     }
 
@@ -1115,36 +967,50 @@
           showNotification('⚠️ Penilaian BIRU sudah selesai!', 'error');
           return;
         }
-
+        
         const biruComplete = juriSelesaiStatus.BIRU.every(status => status === true);
         if (!biruComplete) {
           showNotification(`⚠️ Belum semua juri BIRU selesai! (${juriSelesaiStatus.BIRU.filter(s => s === true).length}/4)`, 'error');
           return;
         }
-
+        
         biruPenilaianSelesai = true;
         sendSelesaiPenilaian('BIRU');
-        $('#selesai-biru-btn').prop('disabled', true).removeClass('active');
-        $('#selesai-biru-btn').html('<i class="fas fa-check-circle me-2"></i> PENILAIAN BIRU SELESAI');
-        $('#broadcast-biru').addClass('completed');
-
+        $('#selesai-biru-btn').removeClass('active').addClass('btn-success');
+        $('#selesai-biru-btn').html('<i class="fas fa-check-circle me-2"></i> ✓ PENILAIAN BIRU SELESAI');
+        
       } else if (sudut === 'MERAH') {
         if (merahPenilaianSelesai) {
           showNotification('⚠️ Penilaian MERAH sudah selesai!', 'error');
           return;
         }
-
+        
         const merahComplete = juriSelesaiStatus.MERAH.every(status => status === true);
         if (!merahComplete) {
           showNotification(`⚠️ Belum semua juri MERAH selesai! (${juriSelesaiStatus.MERAH.filter(s => s === true).length}/4)`, 'error');
           return;
         }
-
+        
         merahPenilaianSelesai = true;
         sendSelesaiPenilaian('MERAH');
-        $('#selesai-merah-btn').prop('disabled', true).removeClass('active');
-        $('#selesai-merah-btn').html('<i class="fas fa-check-circle me-2"></i> PENILAIAN MERAH SELESAI');
-        $('#broadcast-merah').addClass('completed');
+        $('#selesai-merah-btn').removeClass('active').addClass('btn-success');
+        $('#selesai-merah-btn').html('<i class="fas fa-check-circle me-2"></i> ✓ PENILAIAN MERAH SELESAI');
+      }
+      
+      // Update winner buttons
+      updateWinnerButtons();
+    }
+
+    // Fungsi untuk update tombol winner - AKTIF ketika kedua sudut sudah centang 4 (stamina > 0)
+    function updateWinnerButtons() {
+      const biruComplete = juriSelesaiStatus.BIRU.every(status => status === true);
+      const merahComplete = juriSelesaiStatus.MERAH.every(status => status === true);
+      
+      // Winner aktif jika kedua sudut sudah centang 4 DAN timer tidak berjalan
+      if (biruComplete && merahComplete && !isTimerRunning && !isDiskualified) {
+        $('#winner-biru-btn, #winner-merah-btn').prop('disabled', false).addClass('active');
+      } else {
+        $('#winner-biru-btn, #winner-merah-btn').prop('disabled', true).removeClass('active');
       }
     }
 
@@ -1152,53 +1018,37 @@
     function updateSelesaiButtons() {
       const biruComplete = juriSelesaiStatus.BIRU.every(status => status === true);
       const merahComplete = juriSelesaiStatus.MERAH.every(status => status === true);
-
-      // Tombol selesai biru - aktif jika 4 juri centang DAN timer tidak berjalan
-      if (biruComplete && !isTimerRunning && !isDiskualified) {
-        $('#selesai-biru-btn').prop('disabled', false);
-        if (biruPenilaianSelesai) {
-          $('#selesai-biru-btn').removeClass('active').addClass('btn-success');
-          $('#selesai-biru-btn').html('<i class="fas fa-check-circle me-2"></i> ✓ PENILAIAN BIRU SELESAI');
-        } else {
-          $('#selesai-biru-btn').addClass('active');
+      
+      // Tombol selesai biru - aktif jika 4 juri centang DAN timer tidak berjalan DAN belum selesai
+      if (!biruPenilaianSelesai) {
+        if (biruComplete && !isTimerRunning && !isDiskualified) {
+          $('#selesai-biru-btn').prop('disabled', false).addClass('active');
           $('#selesai-biru-btn').html('<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN BIRU (4/4 ✓)');
-        }
-      } else {
-        const biruCount = juriSelesaiStatus.BIRU.filter(s => s === true).length;
-        $('#selesai-biru-btn').prop('disabled', true).removeClass('active btn-success');
-        $('#selesai-biru-btn').html(`<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN BIRU (${biruCount}/4)`);
-      }
-
-      // Tombol selesai merah - aktif jika 4 juri centang DAN timer tidak berjalan
-      if (merahComplete && !isTimerRunning && !isDiskualified) {
-        $('#selesai-merah-btn').prop('disabled', false);
-        if (merahPenilaianSelesai) {
-          $('#selesai-merah-btn').removeClass('active').addClass('btn-success');
-          $('#selesai-merah-btn').html('<i class="fas fa-check-circle me-2"></i> ✓ PENILAIAN MERAH SELESAI');
         } else {
-          $('#selesai-merah-btn').addClass('active');
-          $('#selesai-merah-btn').html('<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH (4/4 ✓)');
+          const biruCount = juriSelesaiStatus.BIRU.filter(s => s === true).length;
+          $('#selesai-biru-btn').prop('disabled', true).removeClass('active btn-success');
+          $('#selesai-biru-btn').html(`<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN BIRU (${biruCount}/4)`);
         }
       } else {
-        const merahCount = juriSelesaiStatus.MERAH.filter(s => s === true).length;
-        $('#selesai-merah-btn').prop('disabled', true).removeClass('active btn-success');
-        $('#selesai-merah-btn').html(`<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH (${merahCount}/4)`);
+        // Sudah selesai - tampilkan status selesai
+        $('#selesai-biru-btn').prop('disabled', true).removeClass('active');
+        $('#selesai-biru-btn').html('<i class="fas fa-check-circle me-2"></i> ✓ PENILAIAN BIRU SELESAI');
       }
-    }
-
-    // Fungsi untuk mengecek apakah semua juri sudah selesai menilai (stamina > 0)
-    function checkAllJuriComplete() {
-      const biruComplete = juriSelesaiStatus.BIRU.every(status => status === true);
-      const merahComplete = juriSelesaiStatus.MERAH.every(status => status === true);
-
-      // Update tombol selesai
-      updateSelesaiButtons();
-
-      // Update tombol winner jika kedua sudut sudah selesai penilaian
-      if (biruPenilaianSelesai && merahPenilaianSelesai && !isTimerRunning && !isDiskualified) {
-        $('#winner-biru-btn, #winner-merah-btn').prop('disabled', false);
+      
+      // Tombol selesai merah - aktif jika 4 juri centang DAN timer tidak berjalan DAN belum selesai
+      if (!merahPenilaianSelesai) {
+        if (merahComplete && !isTimerRunning && !isDiskualified) {
+          $('#selesai-merah-btn').prop('disabled', false).addClass('active');
+          $('#selesai-merah-btn').html('<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH (4/4 ✓)');
+        } else {
+          const merahCount = juriSelesaiStatus.MERAH.filter(s => s === true).length;
+          $('#selesai-merah-btn').prop('disabled', true).removeClass('active btn-success');
+          $('#selesai-merah-btn').html(`<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH (${merahCount}/4)`);
+        }
       } else {
-        $('#winner-biru-btn, #winner-merah-btn').prop('disabled', true);
+        // Sudah selesai - tampilkan status selesai
+        $('#selesai-merah-btn').prop('disabled', true).removeClass('active');
+        $('#selesai-merah-btn').html('<i class="fas fa-check-circle me-2"></i> ✓ PENILAIAN MERAH SELESAI');
       }
     }
 
@@ -1234,10 +1084,12 @@
 
       const biruCount = juriSelesaiStatus.BIRU.filter(s => s === true).length;
       const merahCount = juriSelesaiStatus.MERAH.filter(s => s === true).length;
-
+      
       console.log(`📊 Status juri - BIRU: ${biruCount}/4, MERAH: ${merahCount}/4`);
-
-      checkAllJuriComplete();
+      
+      // Update tombol
+      updateSelesaiButtons();
+      updateWinnerButtons();
     }
 
     function updateButtonStates() {
@@ -1474,7 +1326,7 @@
 
       dataJuri.forEach(juri => {
         const isComplete = juri.stamina > 0;
-
+        
         tableBody.append(`
           <tr>
             <td>Juri ${juri.id_juri} ${isComplete ? '<i class="fas fa-check-circle judge-check" style="color:#28a745;"></i>' : ''}</td>
@@ -1505,8 +1357,12 @@
         return;
       }
 
-      if (!biruPenilaianSelesai || !merahPenilaianSelesai) {
-        showNotification('⚠️ Penilaian kedua sudut harus selesai terlebih dahulu!', 'error');
+      // Cek apakah kedua sudut sudah centang 4 (stamina > 0)
+      const biruComplete = juriSelesaiStatus.BIRU.every(status => status === true);
+      const merahComplete = juriSelesaiStatus.MERAH.every(status => status === true);
+      
+      if (!biruComplete || !merahComplete) {
+        showNotification('⚠️ Penilaian kedua sudut belum lengkap!', 'error');
         return;
       }
 
@@ -1644,45 +1500,45 @@
     function resetAllData() {
       broadcastData = null;
       lastValidBroadcastData = null;
-
+      
       juriSelesaiStatus = {
         BIRU: [false, false, false, false],
         MERAH: [false, false, false, false]
       };
-
+      
       biruPenilaianSelesai = false;
       merahPenilaianSelesai = false;
       isTimerRunning = false;
       isDiskualified = false;
-
+      
       $('#broadcast-biru, #broadcast-merah').hide();
       $('#broadcast-empty').show();
       $('#broadcast-biru, #broadcast-merah').removeClass('winner completed');
       $('.winner-icon-biru, .winner-icon-merah').hide();
       $('#broadcast-table-biru, #broadcast-table-merah').empty();
-
+      
       $('#broadcast-median-biru, #broadcast-median-merah').text('0.000');
       $('#broadcast-stddev-biru, #broadcast-stddev-merah').text('0.000000');
       $('#broadcast-penalty-value-biru, #broadcast-penalty-value-merah').text('0.00');
       $('#broadcast-total-biru, #broadcast-total-merah').text('0.00');
-
+      
       for (let i = 1; i <= 5; i++) {
         $(`.target${i}`).text('0.00');
         $(`#penalty-${i}`).removeClass('active');
         $(`#penalty-badge-${i}`).hide();
         $(`#penalty-buttons-${i} .btn-minus`).show();
       }
-
-      $('#winner-biru-btn, #winner-merah-btn').prop('disabled', true);
-      $('#selesai-biru-btn').prop('disabled', true).removeClass('active').html('<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN BIRU (0/4)');
-      $('#selesai-merah-btn').prop('disabled', true).removeClass('active').html('<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH (0/4)');
+      
+      $('#winner-biru-btn, #winner-merah-btn').prop('disabled', true).removeClass('active');
+      $('#selesai-biru-btn').prop('disabled', true).removeClass('active btn-success').html('<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN BIRU (0/4)');
+      $('#selesai-merah-btn').prop('disabled', true).removeClass('active btn-success').html('<i class="fas fa-flag-checkered me-2"></i> SELESAI PENILAIAN MERAH (0/4)');
       $('#diskualifikasi-btn').removeClass('diskualified').html('<i class="fas fa-ban me-2"></i> DISKUALIFIKASI');
       $('.btn-penalty').prop('disabled', true);
-
+      
       Object.keys(localStorage).forEach(key => {
         if (key.startsWith('penalty_')) localStorage.removeItem(key);
       });
-
+      
       console.log('🔄 Semua data telah direset untuk partai/sudut baru');
     }
 
@@ -1709,7 +1565,8 @@
           case 'ended':
             isTimerRunning = false;
             updateButtonStates();
-            checkAllJuriComplete();
+            updateSelesaiButtons();
+            updateWinnerButtons();
             console.log('⏰ Timer ended');
             break;
           case 'partai_result_response':
@@ -1742,11 +1599,11 @@
       localStorage.setItem('partai', data.partai);
       localStorage.setItem('currentPartai', JSON.stringify(data));
       currentPartaiData = data;
-
+      
       updateDisplay(data);
       updateWinnerHighlight();
       ws.send(JSON.stringify({ type: 'getNilaiSeniAll', partai: data.partai }));
-
+      
       console.log(`📥 Partai baru dimuat: ${data.partai} - Sudut ${data.peserta?.sudut}`);
     }
 
@@ -1762,7 +1619,8 @@
       isTimerRunning = false;
       updateButtonStates();
       $('#timer').text('⏱️ 02:00');
-      checkAllJuriComplete();
+      updateSelesaiButtons();
+      updateWinnerButtons();
     }
 
     function showNotification(message, type = 'info') {

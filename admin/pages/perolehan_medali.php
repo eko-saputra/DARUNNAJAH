@@ -420,11 +420,9 @@
                             <h6 class="rounded p-2 bg-dark border border-1 border-muted text-primary my-3">
                                 <i class="halflings-icon white user"></i><span class="break"></span>Perolehan Medali (Kelas Tanding) Perorangan
                             </h6>
-                            <!-- <div class="float-end"> -->
                             <a href="medali_rekap_pesilat.php" class="btn btn-warning btn-sm" role="button">
                                 <i class="halflings-icon white download"></i> Download Data
                             </a>
-                            <!-- </div> -->
                         </div>
 
                         <div class="box-content">
@@ -448,7 +446,6 @@
                                                 $no++;
                                                 $badgeClass = '';
 
-                                                // Perbaikan 1: untuk strtolower()
                                                 $medaliType = strtolower($medali['medali'] ?? '');
 
                                                 switch ($medaliType) {
@@ -467,13 +464,11 @@
                                         ?>
                                                 <tr>
                                                     <td class="text-center"><?php echo $no; ?></td>
-                                                    <!-- Perbaikan 2: untuk htmlspecialchars() -->
                                                     <td class="text-uppercase"><?php echo htmlspecialchars($medali['nama'] ?? ''); ?></td>
                                                     <td class="text-uppercase"><?php echo htmlspecialchars($medali['kontingen'] ?? ''); ?></td>
                                                     <td class="text-uppercase"><?php echo htmlspecialchars($medali['kelas'] ?? ''); ?></td>
                                                     <td>
                                                         <span class="badge <?php echo $badgeClass; ?>">
-                                                            <!-- Perbaikan 3: untuk medali -->
                                                             <?php echo htmlspecialchars($medali['medali'] ?? 'Tidak ada'); ?>
                                                         </span>
                                                     </td>
@@ -503,11 +498,9 @@
                             <h6 class="rounded p-2 bg-dark border border-1 border-muted text-primary my-3">
                                 <i class="halflings-icon white flag"></i><span class="break"></span>Perolehan Medali (Kelas Tanding) Kontingen
                             </h6>
-                            <!-- <div class="float-end"> -->
                             <a href="medali_rekap_kontingen.php" class="btn btn-warning btn-sm" role="button">
                                 <i class="halflings-icon white download"></i> Download Data
                             </a>
-                            <!-- </div> -->
                         </div>
 
                         <div class="box-content">
@@ -527,7 +520,6 @@
                                         $totalEmas = $totalPerak = $totalPerunggu = 0;
                                         if (mysqli_num_rows($datakoleksi) > 0) {
                                             while ($koleksimedali = mysqli_fetch_array($datakoleksi)) {
-                                                // Hitung medali per kontingen
                                                 $kontingen = mysqli_real_escape_string($koneksi, $koleksimedali['kontingen']);
 
                                                 $sqlcountemas = mysqli_query($koneksi, "SELECT COUNT(*) FROM medali WHERE kontingen='$kontingen' AND medali='emas'");
@@ -563,26 +555,179 @@
                                         <?php }
                                         } ?>
                                     </tbody>
-                                    <tr>
-                                        <td class="fw-bold">TOTAL</td>
-                                        <td class="text-center fw-bold">
-                                            <span class="badge bg-warning text-dark"><?php echo $totalEmas; ?></span>
-                                        </td>
-                                        <td class="text-center fw-bold">
-                                            <span class="badge bg-secondary"><?php echo $totalPerak; ?></span>
-                                        </td>
-                                        <td class="text-center fw-bold">
-                                            <span class="badge bg-danger"><?php echo $totalPerunggu; ?></span>
-                                        </td>
-                                        <td class="text-center fw-bold">
-                                            <span class="badge bg-info text-dark"><?php echo $totalEmas + $totalPerak + $totalPerunggu; ?></span>
-                                        </td>
-                                    </tr>
+                                    <tfoot>
+                                        <tr class="bg-dark text-white">
+                                            <td class="fw-bold">TOTAL</td>
+                                            <td class="text-center fw-bold">
+                                                <span class="badge bg-warning text-dark"><?php echo $totalEmas; ?></span>
+                                            </td>
+                                            <td class="text-center fw-bold">
+                                                <span class="badge bg-secondary"><?php echo $totalPerak; ?></span>
+                                            </td>
+                                            <td class="text-center fw-bold">
+                                                <span class="badge bg-danger"><?php echo $totalPerunggu; ?></span>
+                                            </td>
+                                            <td class="text-center fw-bold">
+                                                <span class="badge bg-info text-dark"><?php echo $totalEmas + $totalPerak + $totalPerunggu; ?></span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- ==================== RANKING KONTINGEN BERDASARKAN POIN ==================== -->
+                <!-- Ranking Kontingen Berdasarkan Poin (Emas=100, Perak=75, Perunggu=50) -->
+                <div class="row-fluid sortable mt-4">
+                    <div class="box span12">
+                        <div class="box-header" data-original-title>
+                            <h6 class="rounded p-2 bg-dark border border-1 border-muted text-primary my-3">
+                                <i class="halflings-icon white ranking"></i><span class="break"></span>🏆 RANKING KONTINGEN (Poin: 🥇 Emas=100 | 🥈 Perak=75 | 🥉 Perunggu=50)
+                            </h6>
+                        </div>
+
+                        <div class="box-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered datatable">
+                                    <thead>
+                                        <tr class="bg-dark text-white">
+                                            <th class="text-center" width="5%">RANK</th>
+                                            <th>KONTINGEN</th>
+                                            <th class="text-center">🥇 EMAS</th>
+                                            <th class="text-center">🥈 PERAK</th>
+                                            <th class="text-center">🥉 PERUNGGU</th>
+                                            <th class="text-center">TOTAL MEDALI</th>
+                                            <th class="text-center">⭐ TOTAL POIN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        // Query ranking dengan perhitungan poin
+                                        $sqlRanking = "SELECT 
+                                                        kontingen,
+                                                        SUM(CASE WHEN LOWER(medali) = 'emas' THEN 1 ELSE 0 END) as emas,
+                                                        SUM(CASE WHEN LOWER(medali) = 'perak' THEN 1 ELSE 0 END) as perak,
+                                                        SUM(CASE WHEN LOWER(medali) = 'perunggu' THEN 1 ELSE 0 END) as perunggu,
+                                                        COUNT(*) as total_medali,
+                                                        (SUM(CASE WHEN LOWER(medali) = 'emas' THEN 100 ELSE 0 END) +
+                                                         SUM(CASE WHEN LOWER(medali) = 'perak' THEN 75 ELSE 0 END) +
+                                                         SUM(CASE WHEN LOWER(medali) = 'perunggu' THEN 50 ELSE 0 END)) as total_poin
+                                                      FROM medali 
+                                                      GROUP BY kontingen 
+                                                      ORDER BY total_poin DESC, emas DESC, perak DESC, perunggu DESC";
+
+                                        $dataRanking = mysqli_query($koneksi, $sqlRanking);
+                                        $rank = 0;
+                                        $prevPoin = null;
+                                        $rankOffset = 0;
+
+                                        if (mysqli_num_rows($dataRanking) > 0) {
+                                            while ($ranking = mysqli_fetch_array($dataRanking)) {
+                                                $rank++;
+
+                                                // Handle peringkat yang sama (jika poin sama)
+                                                if ($prevPoin === $ranking['total_poin']) {
+                                                    $rankOffset++;
+                                                    $displayRank = $rank - $rankOffset;
+                                                } else {
+                                                    $rankOffset = 0;
+                                                    $displayRank = $rank;
+                                                }
+                                                $prevPoin = $ranking['total_poin'];
+
+                                                // Warna untuk peringkat 1, 2, 3
+                                                $rankClass = '';
+                                                $rankIcon = '';
+                                                if ($displayRank == 1) {
+                                                    $rankClass = 'bg-warning text-dark';
+                                                    $rankIcon = '👑 ';
+                                                } elseif ($displayRank == 2) {
+                                                    $rankClass = 'bg-secondary text-white';
+                                                    $rankIcon = '🥈 ';
+                                                } elseif ($displayRank == 3) {
+                                                    $rankClass = 'bg-danger text-white';
+                                                    $rankIcon = '🥉 ';
+                                                }
+                                        ?>
+                                                <tr>
+                                                    <td class="text-center fw-bold">
+                                                        <?php if ($rankClass): ?>
+                                                            <span class="badge <?php echo $rankClass; ?>" style="font-size: 1rem; padding: 5px 12px;">
+                                                                <?php echo $rankIcon . $displayRank; ?>
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-dark text-white" style="font-size: 1rem; padding: 5px 12px;">
+                                                                <?php echo $displayRank; ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td class="text-uppercase fw-bold">
+                                                        <?php echo htmlspecialchars($ranking['kontingen']); ?>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-warning text-dark" style="min-width: 40px; font-size: 0.9rem;">
+                                                            🥇 <?php echo $ranking['emas']; ?>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-secondary text-white" style="min-width: 40px; font-size: 0.9rem;">
+                                                            🥈 <?php echo $ranking['perak']; ?>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-danger text-white" style="min-width: 40px; font-size: 0.9rem;">
+                                                            🥉 <?php echo $ranking['perunggu']; ?>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="badge bg-info text-dark" style="min-width: 40px; font-size: 0.9rem;">
+                                                            📊 <?php echo $ranking['total_medali']; ?>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center fw-bold">
+                                                        <span class="badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 1rem; min-width: 80px; padding: 5px 12px;">
+                                                            ⭐ <?php echo number_format($ranking['total_poin']); ?>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                    </tbody>
+                                    <?php
+                                    // Hitung total keseluruhan untuk ranking
+                                    $sqlTotalRanking = "SELECT 
+                                                            SUM(CASE WHEN LOWER(medali) = 'emas' THEN 1 ELSE 0 END) as total_emas,
+                                                            SUM(CASE WHEN LOWER(medali) = 'perak' THEN 1 ELSE 0 END) as total_perak,
+                                                            SUM(CASE WHEN LOWER(medali) = 'perunggu' THEN 1 ELSE 0 END) as total_perunggu,
+                                                            COUNT(*) as total_all,
+                                                            (SUM(CASE WHEN LOWER(medali) = 'emas' THEN 100 ELSE 0 END) +
+                                                             SUM(CASE WHEN LOWER(medali) = 'perak' THEN 75 ELSE 0 END) +
+                                                             SUM(CASE WHEN LOWER(medali) = 'perunggu' THEN 50 ELSE 0 END)) as total_poin_all
+                                                          FROM medali";
+                                    $totalDataRanking = mysqli_query($koneksi, $sqlTotalRanking);
+                                    $totalRowRanking = mysqli_fetch_assoc($totalDataRanking);
+                                    ?>
+                                    <tfoot class="bg-dark text-white">
+                                        <tr>
+                                            <td colspan="2" class="fw-bold text-end">TOTAL KESELURUHAN :</td>
+                                            <td class="text-center fw-bold">🥇 <?php echo $totalRowRanking['total_emas']; ?></td>
+                                            <td class="text-center fw-bold">🥈 <?php echo $totalRowRanking['total_perak']; ?></td>
+                                            <td class="text-center fw-bold">🥉 <?php echo $totalRowRanking['total_perunggu']; ?></td>
+                                            <td class="text-center fw-bold">📊 <?php echo $totalRowRanking['total_all']; ?></td>
+                                            <td class="text-center fw-bold">⭐ <?php echo number_format($totalRowRanking['total_poin_all']); ?></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ==================== END RANKING KONTINGEN ==================== -->
+
             </div>
         </div>
     </div>
@@ -597,11 +742,12 @@
     <input type="hidden" name="idjadwal" id="medalIdJadwal">
 </form>
 
-<script src="js/jquery-3.6.0.min.js"></script>
+<script src="../assets/jquery/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.datatable').DataTable();
     });
+
     document.addEventListener('DOMContentLoaded', function() {
         // ============ TOMBOL BERI MEDALI BARU (GIVE) ============
         const giveButtons = document.querySelectorAll('.btn-give-medal');
@@ -673,19 +819,16 @@
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Hapus medali lama, beri yang baru
                         Swal.fire({
                             title: 'Memproses...',
                             html: 'Sedang memindahkan medali...',
                             allowOutsideClick: false,
                             didOpen: () => {
                                 Swal.showLoading();
-                                // Hapus medali lama dulu
                                 fetch(`admin_del_medali.php?id_medali=${medaliId}`, {
                                     method: 'GET'
                                 }).then(response => {
                                     if (response.ok) {
-                                        // Setelah berhasil dihapus, tambah yang baru
                                         submitMedal(id, toName, toCont, kelas, medali);
                                     } else {
                                         Swal.fire({
@@ -768,13 +911,11 @@
                 didOpen: () => {
                     Swal.showLoading();
 
-                    // Buat form dinamis
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = 'pages/proses/admin_medali.php';
                     form.style.display = 'none';
 
-                    // Tambahkan input fields
                     const inputs = [{
                             name: 'nama',
                             value: name
@@ -805,21 +946,15 @@
                         form.appendChild(inputField);
                     });
 
-                    // Submit form
                     document.body.appendChild(form);
                     form.submit();
                 }
             });
         }
     });
-
-    // Hapus event listener lama untuk menghindari konflik
-    document.querySelectorAll('.btn-medali').forEach(button => {
-        button.removeEventListener('click', null);
-    });
 </script>
 
-<!-- Styling untuk tombol medali -->
+<!-- Styling untuk tombol medali dan ranking -->
 <style>
     .btn-bronze {
         background-color: #CD7F32 !important;
@@ -889,6 +1024,49 @@
     .badge.bg-secondary,
     .badge.bg-danger {
         animation: pulse 2s infinite;
+    }
+
+    /* Styling untuk ranking table */
+    .badge[style*="linear-gradient"] {
+        transition: transform 0.3s ease;
+    }
+
+    .badge[style*="linear-gradient"]:hover {
+        transform: scale(1.05);
+    }
+
+    /* Animasi untuk baris peringkat */
+    tbody tr {
+        transition: background-color 0.3s ease;
+    }
+
+    tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.1);
+    }
+
+    /* Styling untuk kolom ranking */
+    td:first-child .badge {
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Animasi untuk podium rank 1 */
+    @keyframes goldGlow {
+        0% {
+            box-shadow: 0 0 5px #FFD700;
+        }
+
+        50% {
+            box-shadow: 0 0 20px #FFD700;
+        }
+
+        100% {
+            box-shadow: 0 0 5px #FFD700;
+        }
+    }
+
+    .badge.bg-warning {
+        animation: goldGlow 2s infinite;
     }
 
     /* Highlight untuk penerima medali */
