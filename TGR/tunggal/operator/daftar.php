@@ -281,6 +281,7 @@ $partaiselesai = mysqli_fetch_array($sqlpartaiselesai);
 
     <script>
         const hostname = window.location.hostname;
+
         function keluar() {
             window.location.href = "http://" + hostname + "/DARUNNAJAH/TGR/tunggal/operator";
         }

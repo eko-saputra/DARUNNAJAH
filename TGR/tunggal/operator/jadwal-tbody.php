@@ -2,7 +2,7 @@
 include "../../../backend/includes/connection.php";
 $status_filter = isset($_GET['status']) ? ($_GET['status'] == '' ? '-' : $_GET['status']) : '';
 //mencari TOTAL partai
-$sqljadwal = "SELECT * FROM jadwal_tgr WHERE kategori='TUNGGAL' AND status='$status_filter' ORDER BY id_partai ASC";
+$sqljadwal = "SELECT * FROM jadwal_tgr WHERE status='$status_filter' ORDER BY id_partai ASC";
 $jadwal_tgr = mysqli_query($koneksi, $sqljadwal);
 
 while ($jadwal = mysqli_fetch_array($jadwal_tgr)) {
