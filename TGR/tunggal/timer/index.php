@@ -324,6 +324,45 @@
             border: 1px solid #dc3545;
         }
 
+        /* Juri Status Container */
+        .juri-status-container {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            text-align: center;
+        }
+
+        .juri-count {
+            font-size: 3rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .juri-count.ready {
+            color: #28a745;
+            text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+
+        .juri-count.waiting {
+            color: #ffc107;
+        }
+
+        .juri-count.incomplete {
+            color: #dc3545;
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+
         @media (max-width: 768px) {
             .timer-display {
                 font-size: 5rem;
@@ -363,6 +402,10 @@
                 gap: 10px;
                 align-items: flex-start;
             }
+
+            .juri-count {
+                font-size: 2.5rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -376,22 +419,9 @@
                 font-size: 1rem;
                 min-width: 100px;
             }
-        }
 
-        /* Loading animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 229, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #00e5ff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
+            .juri-count {
+                font-size: 2rem;
             }
         }
     </style>
@@ -452,7 +482,7 @@
 
                     <!-- Timer Controls -->
                     <div class="timer-controls mt-4">
-                        <button id="btn-start" class="btn-timer btn-start" onclick="startTimer()">
+                        <button id="btn-start" class="btn-timer btn-start" onclick="startTimer()" disabled>
                             <i class="fas fa-play me-2"></i>Start
                         </button>
                         <button id="btn-pause" class="btn-timer btn-pause" onclick="pauseTimer()" style="display: none;">
@@ -464,6 +494,30 @@
                         <button id="btn-stop" class="btn-timer btn-stop" onclick="stopTimer()" style="display: none;">
                             <i class="fas fa-stop me-2"></i>Stop
                         </button>
+                    </div>
+
+                    <!-- Juri Status Container -->
+                    <div id="juri-status-container" class="juri-status-container">
+                        <div class="text-center mb-2">
+                            <small class="text-secondary">
+                                <i class="fas fa-users me-1"></i> STATUS KESIAPAN JURI
+                            </small>
+                        </div>
+                        <div class="text-center">
+                            <div id="juri-count" class="juri-count incomplete">0</div>
+                            <small class="text-secondary">/4 Juri Ready</small>
+                        </div>
+                        <div class="progress mt-3">
+                            <div id="juri-progress" class="progress-bar bg-danger" role="progressbar"
+                                style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="4">
+                            </div>
+                        </div>
+                        <div id="juri-status-text" class="mt-2">
+                            <small class="text-secondary">
+                                <i class="fas fa-hourglass-half me-1"></i>
+                                Menunggu 4 juri siap...
+                            </small>
+                        </div>
                     </div>
 
                     <!-- Status Container dengan Connection Status -->
@@ -483,6 +537,7 @@
                             <i class="fas fa-keyboard me-2"></i>
                             Shortcut: <kbd>Space</kbd> (Start/Pause/Resume) |
                             <kbd>S</kbd> (Stop) |
+                            <kbd>R</kbd> (Reset Time) |
                             <kbd>F</kbd> (Fullscreen)
                         </small>
                     </div>
@@ -492,6 +547,7 @@
     </div>
 
     <script>
+        // DOM Elements
         const timerDisplay = document.getElementById('timer');
         const btnStart = document.getElementById('btn-start');
         const btnPause = document.getElementById('btn-pause');
@@ -503,7 +559,8 @@
         const openfullBtn = document.getElementById('openfull');
         const exitfullBtn = document.getElementById('exitfull');
 
-        let remaining = 120; // Default 2 minutes
+        // Timer Variables
+        let remaining = 120;
         let timerActive = false;
         let timerState = 'stopped';
         let lastValidTime = '2:00';
@@ -511,123 +568,184 @@
         let reconnectAttempts = 0;
         const maxReconnectAttempts = 5;
 
+        // Juri Status Variables
+        let juriReadyCount = 0;
+        let totalJuriRequired = 4;
+        let isTimerReady = false;
+        let processedJuriIds = [];
+
+        // Storage Keys
+        const STORAGE_JURI_COUNT = 'timer_juri_ready_count';
+        const STORAGE_TIMER_READY = 'timer_is_ready';
+        const STORAGE_PROCESSED_JURIS = 'timer_processed_juris';
+
         const hostname = window.location.hostname;
         let ws;
 
-        function connectWebSocket() {
-            ws = new WebSocket('ws://' + hostname + ':3000');
+        // ========== JURI STATUS FUNCTIONS ==========
 
-            // WebSocket connection
-            ws.onopen = () => {
-                console.log("Timer terhubung ke server");
-                updateConnectionStatus(true);
-                reconnectAttempts = 0;
-
-                // Load saved time
-                const savedTime = localStorage.getItem('timer');
-                const savedWaktu = localStorage.getItem('waktu');
-
-                if (savedTime) {
-                    remaining = parseInt(savedTime);
-                    if (savedWaktu) {
-                        document.getElementById('input-time').value = savedWaktu;
-                        lastValidTime = savedWaktu;
-                    }
-                }
-                updateDisplay();
-                updateTimerStatus('stopped');
-            };
-
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                // Handle timer updates
-                if (typeof data.remaining === 'number') {
-                    remaining = data.remaining;
-                    updateDisplay();
-                }
-
-                // Handle specific timer states
-                if (data.type === 'tick') {
-                    timerActive = true;
-                    timerState = 'active';
-                    updateButtons('active');
-                    updateTimerStatus('active');
-                } else if (data.type === 'stopped') {
-                    timerActive = false;
-                    timerState = 'stopped';
-                    updateButtons('stopped');
-                    updateTimerStatus('stopped');
-
-                    // Reset to initial time from input
-                    const inputTime = document.getElementById('input-time').value;
-                    remaining = parseTimeToSeconds(inputTime);
-                    localStorage.setItem('timer', remaining);
-                    updateDisplay();
-                } else if (data.type === 'paused') {
-                    timerActive = false;
-                    timerState = 'paused';
-                    updateButtons('paused');
-                    updateTimerStatus('paused');
-                } else if (data.type === 'resumed') {
-                    timerActive = true;
-                    timerState = 'active';
-                    updateButtons('active');
-                    updateTimerStatus('active');
-                } else if (data.type === 'ended') {
-                    timerActive = false;
-                    timerState = 'stopped';
-                    updateButtons('stopped');
-                    updateTimerStatus('stopped');
-                    playNotification();
-
-                    // Reset to initial time from input
-                    const inputTime = document.getElementById('input-time').value;
-                    remaining = parseTimeToSeconds(inputTime);
-                    localStorage.setItem('timer', remaining);
-                    updateDisplay();
-                }
-            };
-
-            ws.onclose = function() {
-                console.log('WebSocket disconnected');
-                updateConnectionStatus(false);
-
-                // Attempt to reconnect
-                if (reconnectAttempts < maxReconnectAttempts) {
-                    reconnectAttempts++;
-                    console.log(`Attempting to reconnect... (${reconnectAttempts}/${maxReconnectAttempts})`);
-                    setTimeout(connectWebSocket, 3000);
-                }
-            };
-
-            ws.onerror = function(error) {
-                console.log('WebSocket error:', error);
-                updateConnectionStatus(false);
-            };
+        function saveJuriStatusToStorage() {
+            localStorage.setItem(STORAGE_JURI_COUNT, juriReadyCount.toString());
+            localStorage.setItem(STORAGE_TIMER_READY, isTimerReady.toString());
+            localStorage.setItem(STORAGE_PROCESSED_JURIS, JSON.stringify(processedJuriIds));
+            console.log(`💾 Status juri disimpan: ${juriReadyCount}/${totalJuriRequired}, ready=${isTimerReady}`);
         }
 
-        // Initialize WebSocket connection
-        connectWebSocket();
+        function loadJuriStatusFromStorage() {
+            const savedCount = localStorage.getItem(STORAGE_JURI_COUNT);
+            const savedReady = localStorage.getItem(STORAGE_TIMER_READY);
+            const savedProcessed = localStorage.getItem(STORAGE_PROCESSED_JURIS);
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedWaktu = localStorage.getItem('waktu');
-            if (savedWaktu) {
-                document.getElementById('input-time').value = savedWaktu;
-                remaining = parseTimeToSeconds(savedWaktu);
-                lastValidTime = savedWaktu;
+            if (savedCount !== null) {
+                juriReadyCount = parseInt(savedCount);
+                console.log(`📂 Memuat status juri: ${juriReadyCount}/${totalJuriRequired}`);
             }
-            updateDisplay();
-        });
 
-        // Time Functions
+            if (savedReady !== null) {
+                isTimerReady = savedReady === 'true';
+                console.log(`📂 Memuat status timer ready: ${isTimerReady}`);
+            }
+
+            if (savedProcessed !== null) {
+                processedJuriIds = JSON.parse(savedProcessed);
+                console.log(`📂 Memuat daftar juri: ${processedJuriIds.join(', ') || 'kosong'}`);
+            }
+
+            updateJuriStatusDisplay();
+
+            if (isTimerReady && juriReadyCount >= totalJuriRequired) {
+                enableStartButton(true);
+                console.log('✅ Timer ready dari localStorage, tombol start diaktifkan');
+            } else {
+                enableStartButton(false);
+            }
+        }
+
+        function resetJuriStatus() {
+            juriReadyCount = 0;
+            isTimerReady = false;
+            processedJuriIds = [];
+            enableStartButton(false);
+            updateJuriStatusDisplay();
+
+            localStorage.removeItem(STORAGE_JURI_COUNT);
+            localStorage.removeItem(STORAGE_TIMER_READY);
+            localStorage.removeItem(STORAGE_PROCESSED_JURIS);
+
+            console.log('🔄 Status juri direset dan localStorage dibersihkan');
+        }
+
+        function updateJuriStatusDisplay() {
+            const countElem = document.getElementById('juri-count');
+            const progressBar = document.getElementById('juri-progress');
+            const statusText = document.getElementById('juri-status-text');
+
+            if (countElem) {
+                countElem.textContent = juriReadyCount;
+                countElem.classList.remove('ready', 'waiting', 'incomplete');
+
+                if (juriReadyCount === totalJuriRequired) {
+                    countElem.classList.add('ready');
+                } else if (juriReadyCount >= 2) {
+                    countElem.classList.add('waiting');
+                } else {
+                    countElem.classList.add('incomplete');
+                }
+            }
+
+            if (progressBar) {
+                const percentage = (juriReadyCount / totalJuriRequired) * 100;
+                progressBar.style.width = `${percentage}%`;
+                progressBar.setAttribute('aria-valuenow', juriReadyCount);
+
+                if (juriReadyCount === totalJuriRequired) {
+                    progressBar.className = 'progress-bar bg-success';
+                } else if (juriReadyCount >= 2) {
+                    progressBar.className = 'progress-bar bg-warning';
+                } else {
+                    progressBar.className = 'progress-bar bg-danger';
+                }
+            }
+
+            if (statusText) {
+                if (juriReadyCount === totalJuriRequired) {
+                    statusText.innerHTML = `
+                        <small class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            Semua juri sudah siap! Timer dapat dimulai.
+                        </small>
+                    `;
+                } else {
+                    const remaining = totalJuriRequired - juriReadyCount;
+                    statusText.innerHTML = `
+                        <small class="text-secondary">
+                            <i class="fas fa-hourglass-half me-1"></i>
+                            Menunggu ${remaining} juri lagi untuk siap...
+                        </small>
+                    `;
+                }
+            }
+        }
+
+        function enableStartButton(enabled) {
+            if (btnStart) {
+                btnStart.disabled = !enabled;
+
+                if (enabled) {
+                    btnStart.style.opacity = '1';
+                    btnStart.style.cursor = 'pointer';
+                    btnStart.title = 'Mulai timer (semua juri sudah siap)';
+                } else {
+                    btnStart.style.opacity = '0.5';
+                    btnStart.style.cursor = 'not-allowed';
+                    btnStart.title = 'Menunggu semua juri siap...';
+                }
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const oldNotif = document.getElementById('timer-notification');
+            if (oldNotif) oldNotif.remove();
+
+            const notif = document.createElement('div');
+            notif.id = 'timer-notification';
+            notif.style.position = 'fixed';
+            notif.style.top = '20px';
+            notif.style.right = '20px';
+            notif.style.padding = '15px 25px';
+            notif.style.borderRadius = '10px';
+            notif.style.zIndex = '9999';
+            notif.style.animation = 'slideIn 0.3s ease-out';
+            notif.style.boxShadow = '0 5px 20px rgba(0,0,0,0.3)';
+
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+            const bgColor = type === 'success' ? 'linear-gradient(135deg, #28a745, #20c997)' :
+                type === 'warning' ? 'linear-gradient(135deg, #ffc107, #ff9800)' :
+                'linear-gradient(135deg, #17a2b8, #138496)';
+
+            notif.style.background = bgColor;
+            notif.style.color = type === 'warning' ? '#212529' : 'white';
+
+            notif.innerHTML = `
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas ${icon} fa-2x"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notif);
+
+            setTimeout(() => {
+                if (notif) notif.remove();
+            }, 3000);
+        }
+
+        // ========== TIMER FUNCTIONS ==========
+
         function parseTimeToSeconds(timeString) {
             if (!timeString) return 120;
-
             timeString = timeString.trim();
 
-            // Format MM:SS
             if (timeString.match(/^\d+:\d{2}$/)) {
                 const parts = timeString.split(':');
                 const minutes = parseInt(parts[0]) || 0;
@@ -635,50 +753,34 @@
                 return (minutes * 60) + seconds;
             }
 
-            // Format angka saja (detik)
             if (timeString.match(/^\d+$/)) {
                 return parseInt(timeString);
             }
 
-            // Format fleksibel
             if (timeString.includes(':')) {
                 const parts = timeString.split(':');
                 if (parts.length === 2) {
                     const minutes = parseInt(parts[0]) || 0;
                     let seconds = parseInt(parts[1]) || 0;
-
-                    // Handle jika detik > 59
                     if (seconds >= 60) {
                         const extraMinutes = Math.floor(seconds / 60);
                         return ((minutes + extraMinutes) * 60) + (seconds % 60);
                     }
-
                     return (minutes * 60) + seconds;
                 }
             }
-
             return 120;
         }
 
         function secondsToDisplayTime(seconds) {
             if (seconds < 0) seconds = 0;
-
             const minutes = Math.floor(seconds / 60);
             const secs = seconds % 60;
-
-            if (minutes >= 60) {
-                const hours = Math.floor(minutes / 60);
-                const mins = minutes % 60;
-                return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            }
-
             return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
         function updateDisplay() {
             timerDisplay.textContent = secondsToDisplayTime(remaining);
-
-            // Update color based on time
             timerDisplay.classList.remove('warning', 'danger');
             if (remaining <= 10) {
                 timerDisplay.classList.add('danger');
@@ -688,64 +790,40 @@
         }
 
         function validateAndUpdateTime(input) {
-            // Clear previous timeout
-            if (updateTimeout) {
-                clearTimeout(updateTimeout);
-            }
+            if (updateTimeout) clearTimeout(updateTimeout);
 
-            // Set timeout to validate after user stops typing
             updateTimeout = setTimeout(() => {
                 const timeString = input.value.trim();
-
-                // Allow empty while typing
                 if (!timeString) return;
 
-                // Auto-format while typing
                 let formatted = timeString.replace(/[^0-9:]/g, '');
-
-                // Add colon if needed
                 if (formatted.length === 2 && !formatted.includes(':') && timeString.length === 2) {
                     formatted = formatted + ':';
                 }
-
-                // Limit to reasonable length
-                if (formatted.length > 5) {
-                    formatted = formatted.substring(0, 5);
-                }
-
+                if (formatted.length > 5) formatted = formatted.substring(0, 5);
                 input.value = formatted;
 
-                // Try to parse
                 const totalSeconds = parseTimeToSeconds(formatted);
-
                 if (!isNaN(totalSeconds) && totalSeconds > 0 && totalSeconds <= 599) {
-                    // Valid time
                     remaining = totalSeconds;
                     lastValidTime = formatted;
                     localStorage.setItem('timer', remaining);
                     localStorage.setItem('waktu', formatted);
                     updateDisplay();
-
-                    // Add visual feedback
                     input.style.borderColor = '#00e5ff';
                 } else if (totalSeconds > 599) {
-                    // Time too large
                     input.style.borderColor = '#ff6b6b';
                 } else {
-                    // Invalid, but don't change remaining yet
                     input.style.borderColor = '#ff6b6b';
                 }
-            }, 500); // Wait 500ms after user stops typing
+            }, 500);
         }
 
         function handleTimeInputKeypress(event) {
-            // Allow only numbers and colon
             const char = String.fromCharCode(event.which);
-            if (!char.match(/[0-9:]/) && event.which !== 8) { // 8 is backspace
+            if (!char.match(/[0-9:]/) && event.which !== 8) {
                 event.preventDefault();
             }
-
-            // Auto-submit on Enter
             if (event.key === 'Enter') {
                 event.preventDefault();
                 validateAndSetTime(event.target);
@@ -754,20 +832,18 @@
 
         function validateAndSetTime(input) {
             const timeString = input.value.trim();
-
             if (!timeString) {
                 input.value = lastValidTime;
                 return;
             }
 
             const totalSeconds = parseTimeToSeconds(timeString);
-
             if (isNaN(totalSeconds) || totalSeconds <= 0) {
                 input.value = lastValidTime;
                 return;
             }
 
-            if (totalSeconds > 599) { // Max 9:59
+            if (totalSeconds > 599) {
                 input.value = '9:59';
                 remaining = 599;
                 localStorage.setItem('timer', 599);
@@ -777,7 +853,6 @@
                 return;
             }
 
-            // Format waktu dengan benar
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
             const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -795,8 +870,6 @@
             const input = document.getElementById('input-time');
             input.value = timeString;
             validateAndSetTime(input);
-
-            // Visual feedback
             const totalSeconds = parseTimeToSeconds(timeString);
             remaining = totalSeconds;
             updateDisplay();
@@ -821,15 +894,14 @@
 
         function updateTimerStatus(status) {
             timerStatus.className = 'timer-status';
-
             if (status === 'active') {
-                timerStatus.classList.add('status-active');
+                timerStatus.classList.add('active');
                 timerStatus.innerHTML = '<i class="fas fa-play-circle me-2"></i>Active';
             } else if (status === 'paused') {
-                timerStatus.classList.add('status-paused');
+                timerStatus.classList.add('paused');
                 timerStatus.innerHTML = '<i class="fas fa-pause-circle me-2"></i>Paused';
             } else if (status === 'stopped') {
-                timerStatus.classList.add('status-stopped');
+                timerStatus.classList.add('stopped');
                 timerStatus.innerHTML = '<i class="fas fa-stop-circle me-2"></i>Stopped';
             }
         }
@@ -846,15 +918,23 @@
             }
         }
 
-        // Timer control functions
+        // ========== TIMER CONTROL FUNCTIONS ==========
+
         function startTimer() {
+            if (!isTimerReady) {
+                const remaining = totalJuriRequired - juriReadyCount;
+                showNotification(`⚠️ Belum semua juri siap! Menunggu ${remaining} juri lagi.`, 'warning');
+                return;
+            }
+
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: 'start',
                     remaining: remaining
                 }));
+                showNotification('⏱️ Timer dimulai!', 'success');
             } else {
-                alert('Koneksi server terputus. Menunggu koneksi kembali...');
+                showNotification('❌ Koneksi server terputus!', 'error');
             }
         }
 
@@ -863,6 +943,7 @@
                 ws.send(JSON.stringify({
                     type: 'pause'
                 }));
+                showNotification('⏸️ Timer dijeda', 'info');
             }
         }
 
@@ -871,6 +952,7 @@
                 ws.send(JSON.stringify({
                     type: 'resume'
                 }));
+                showNotification('▶️ Timer dilanjutkan', 'success');
             }
         }
 
@@ -879,6 +961,7 @@
                 ws.send(JSON.stringify({
                     type: 'stop'
                 }));
+                showNotification('⏹️ Timer dihentikan', 'info');
             }
         }
 
@@ -887,17 +970,13 @@
                 const audioContext = new(window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
-
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-
                 oscillator.frequency.value = 800;
                 oscillator.type = 'sine';
-
                 gainNode.gain.setValueAtTime(0, audioContext.currentTime);
                 gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.1);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
-
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.5);
             } catch (e) {
@@ -905,48 +984,144 @@
             }
         }
 
-        // Fullscreen functions
+        // ========== WEBSOCKET FUNCTIONS ==========
+
+        function connectWebSocket() {
+            ws = new WebSocket('ws://' + hostname + ':3000');
+
+            ws.onopen = () => {
+                console.log("✅ Timer terhubung ke server");
+                updateConnectionStatus(true);
+                reconnectAttempts = 0;
+
+                const savedTime = localStorage.getItem('timer');
+                const savedWaktu = localStorage.getItem('waktu');
+                if (savedTime) {
+                    remaining = parseInt(savedTime);
+                    if (savedWaktu) {
+                        document.getElementById('input-time').value = savedWaktu;
+                        lastValidTime = savedWaktu;
+                    }
+                }
+                updateDisplay();
+                updateTimerStatus('stopped');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (typeof data.remaining === 'number') {
+                    remaining = data.remaining;
+                    updateDisplay();
+                }
+
+                // Handle juri_ready dari server
+                if (data.type === 'juri_ready') {
+                    const idJuri = data.id_juri;
+                    console.log(`✅ Juri ${idJuri} ready`);
+
+                    if (!processedJuriIds.includes(idJuri)) {
+                        processedJuriIds.push(idJuri);
+                        juriReadyCount++;
+                        saveJuriStatusToStorage();
+                        updateJuriStatusDisplay();
+                        showNotification(`Juri ${idJuri} sudah siap! (${juriReadyCount}/4)`, 'success');
+
+                        if (juriReadyCount >= totalJuriRequired && !isTimerReady) {
+                            isTimerReady = true;
+                            saveJuriStatusToStorage();
+                            enableStartButton(true);
+                            updateJuriStatusDisplay();
+                            showNotification('🎉 Semua juri sudah siap! Timer dapat dimulai.', 'success');
+                        }
+                    }
+                }
+
+                // Handle partai baru - reset status juri
+                if (data.type === 'partai_data_tunggal') {
+                    console.log('🔄 Partai baru, reset status juri');
+                    resetJuriStatus();
+                }
+
+                if (data.type === 'tick') {
+                    timerActive = true;
+                    timerState = 'active';
+                    updateButtons('active');
+                    updateTimerStatus('active');
+                } else if (data.type === 'stopped') {
+                    timerActive = false;
+                    timerState = 'stopped';
+                    updateButtons('stopped');
+                    updateTimerStatus('stopped');
+                    const inputTime = document.getElementById('input-time').value;
+                    remaining = parseTimeToSeconds(inputTime);
+                    localStorage.setItem('timer', remaining);
+                    updateDisplay();
+                } else if (data.type === 'paused') {
+                    timerActive = false;
+                    timerState = 'paused';
+                    updateButtons('paused');
+                    updateTimerStatus('paused');
+                } else if (data.type === 'resumed') {
+                    timerActive = true;
+                    timerState = 'active';
+                    updateButtons('active');
+                    updateTimerStatus('active');
+                } else if (data.type === 'ended') {
+                    timerActive = false;
+                    timerState = 'stopped';
+                    updateButtons('stopped');
+                    updateTimerStatus('stopped');
+                    playNotification();
+                    const inputTime = document.getElementById('input-time').value;
+                    remaining = parseTimeToSeconds(inputTime);
+                    localStorage.setItem('timer', remaining);
+                    updateDisplay();
+                    showNotification('⏰ Waktu habis!', 'warning');
+                }
+            };
+
+            ws.onclose = function() {
+                console.log('WebSocket disconnected');
+                updateConnectionStatus(false);
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    console.log(`Attempting to reconnect... (${reconnectAttempts}/${maxReconnectAttempts})`);
+                    setTimeout(connectWebSocket, 3000);
+                }
+            };
+
+            ws.onerror = function(error) {
+                console.log('WebSocket error:', error);
+                updateConnectionStatus(false);
+            };
+        }
+
+        // ========== FULLSCREEN FUNCTIONS ==========
+
         var elem = document.documentElement;
 
         function openFullscreen() {
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.mozRequestFullScreen) {
-                elem.mozRequestFullScreen();
-            } else if (elem.webkitRequestFullscreen) {
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) {
-                elem.msRequestFullscreen();
-            }
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
+            else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+            else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
             openfullBtn.style.display = "none";
             exitfullBtn.style.display = "block";
         }
 
         function closeFullscreen() {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            }
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.msExitFullscreen) document.msExitFullscreen();
             openfullBtn.style.display = "block";
             exitfullBtn.style.display = "none";
         }
 
-        // Listen for fullscreen change
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
         function handleFullscreenChange() {
-            if (document.fullscreenElement ||
-                document.webkitFullscreenElement ||
-                document.mozFullScreenElement ||
-                document.msFullscreenElement) {
+            if (document.fullscreenElement || document.webkitFullscreenElement ||
+                document.mozFullScreenElement || document.msFullscreenElement) {
                 openfullBtn.style.display = "none";
                 exitfullBtn.style.display = "block";
             } else {
@@ -955,52 +1130,71 @@
             }
         }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Ignore if typing in input
-            if (e.target.matches('input, textarea')) {
-                return;
-            }
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
-            // Space bar untuk start/pause/resume
+        // ========== KEYBOARD SHORTCUTS ==========
+
+        document.addEventListener('keydown', function(e) {
+            if (e.target.matches('input, textarea')) return;
+
             if (e.code === 'Space') {
                 e.preventDefault();
-
-                if (timerState === 'stopped') {
-                    startTimer();
-                } else if (timerState === 'active') {
-                    pauseTimer();
-                } else if (timerState === 'paused') {
-                    resumeTimer();
-                }
+                if (timerState === 'stopped') startTimer();
+                else if (timerState === 'active') pauseTimer();
+                else if (timerState === 'paused') resumeTimer();
             }
 
-            // S key untuk stop
             if (e.code === 'KeyS') {
                 e.preventDefault();
                 stopTimer();
             }
 
-            // R key untuk reset time dari input
             if (e.code === 'KeyR') {
                 e.preventDefault();
                 const input = document.getElementById('input-time');
                 validateAndSetTime(input);
             }
 
-            // F key untuk fullscreen
             if (e.code === 'KeyF') {
                 e.preventDefault();
-                if (document.fullscreenElement ||
-                    document.webkitFullscreenElement ||
-                    document.mozFullScreenElement ||
-                    document.msFullscreenElement) {
-                    closeFullscreen();
-                } else {
-                    openFullscreen();
-                }
+                if (document.fullscreenElement) closeFullscreen();
+                else openFullscreen();
             }
         });
+
+        // ========== INITIALIZATION ==========
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedWaktu = localStorage.getItem('waktu');
+            if (savedWaktu) {
+                document.getElementById('input-time').value = savedWaktu;
+                remaining = parseTimeToSeconds(savedWaktu);
+                lastValidTime = savedWaktu;
+            }
+            updateDisplay();
+            loadJuriStatusFromStorage();
+        });
+
+        connectWebSocket();
+
+        // Tambahkan CSS untuk animasi slideIn
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 

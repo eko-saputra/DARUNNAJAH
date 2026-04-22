@@ -36,23 +36,23 @@
         <span class="menu-title">Users</span>
       </a>
     </li>
-    <li class="nav-item menu-items">
+    <!-- <li class="nav-item menu-items">
       <a class="nav-link" href="?page=peserta">
         <span class="menu-icon">
           <i class="mdi mdi-contacts"></i>
         </span>
         <span class="menu-title">Peserta</span>
       </a>
-    </li>
+    </li> -->
 
-    <li class="nav-item menu-items">
+    <!-- <li class="nav-item menu-items">
       <a class="nav-link" href="?page=shufle">
         <span class="menu-icon">
           <i class="mdi mdi-contacts"></i>
         </span>
         <span class="menu-title">Shufle</span>
       </a>
-    </li>
+    </li> -->
     <li class="nav-item menu-items">
       <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
         <span class="menu-icon">

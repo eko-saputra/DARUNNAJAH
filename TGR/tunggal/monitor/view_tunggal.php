@@ -645,6 +645,30 @@
                 transform: scale(1);
             }
         }
+
+        /* Animasi untuk modal diskualifikasi */
+        #diskualifikasiModal .modal-content {
+            /* transition: all 0.3s ease; */
+            /* animation: fadeIn 0.5s ease; */
+        }
+
+        #diskualifikasiModal .sudut {
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+            animation: scalePulse 0.5s ease;
+        }
+
+        /* @keyframes scalePulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        } */
     </style>
 </head>
 
@@ -779,7 +803,7 @@
                                 <tr id="judgeHeaders"> </tr>
                                 <tr id="judgeScores"> </tr>
                             </thead>
-                         </table>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -791,6 +815,27 @@
         <div class="marquee-content">
             APLIKASI DigitalScore Pencak Silat Kota Dumai &copy; 2025 - IPSI Kota
             Dumai
+        </div>
+    </div>
+
+    <div class="modal fade" id="diskualifikasiModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content bg-dark bg-gradient">
+                <div class="modal-body d-flex flex-column justify-content-center align-items-center vh-100">
+                    <div class="text-center">
+                        <!-- Icon besar -->
+                        <div class="mb-4">
+                            <i class="fas fa-ban" style="font-size: 6rem; color: #ff4757; filter: drop-shadow(0 0 20px rgba(255,71,87,0.5));"></i>
+                        </div>
+                        <!-- Teks DISKUALIFIKASI -->
+                        <h1 class="text-white mb-4" style="font-size: 5rem; font-weight: 900; letter-spacing: 5px; text-shadow: 3px 3px 6px rgba(0,0,0,0.5);">
+                            DISKUALIFIKASI
+                        </h1>
+                        <!-- Teks SUDUT -->
+                        <h1 class="sudut" style="font-size: 6rem; font-weight: 900; text-transform: uppercase; text-shadow: 3px 3px 6px rgba(0,0,0,0.5);"></h1>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -993,7 +1038,7 @@
                 const judge = judgeElements[index];
                 const juriId = index + 1;
                 const isSelesai = isJuriSelesai(juriId);
-                
+
                 if (judge) {
                     if (isSelesai) {
                         // Juri sudah selesai menilai (stamina > 0) - warna HIJAU
@@ -1022,7 +1067,7 @@
                 const judge = judgeElements[juriIndex];
                 const isSelesai = isJuriSelesai(i);
                 const isReady = judgeStatus[juriIndex];
-                
+
                 if (judge) {
                     if (isSelesai) {
                         judge.header.className = "judge-header bg-success text-light text-center";
@@ -1151,6 +1196,8 @@
         const ws = new WebSocket('ws://' + hostname + ':3000');
 
         $(document).ready(function() {
+            var diskualifikasi = new bootstrap.Modal(document.getElementById('diskualifikasiModal'));
+            diskualifikasi.hide();
             // Load semua data yang tersimpan
             loadAllData();
 
@@ -1280,6 +1327,53 @@
                         const sudut = message.pemenang;
                         const nilai = sudut === 'biru' ? message.nilai_biru : message.nilai_merah;
                         showWinnerModal(sudut, nilai);
+                    }
+
+                    if (message.type === 'diskualifikasi_tgr_broadcast') {
+                        console.log('🚫 Diskualifikasi diterima:', message.data);
+
+                        const sudut = message.data.sudut;
+                        const partai = message.data.partai;
+
+                        // Update modal dengan sudut yang didiskualifikasi
+                        const modalContent = document.querySelector('#diskualifikasiModal .modal-content');
+                        const sudutElement = document.querySelector('#diskualifikasiModal .sudut');
+                        const iconElement = document.querySelector('#diskualifikasiModal .fa-ban');
+
+                        // Tentukan warna background, teks, dan icon berdasarkan sudut
+                        if (sudut.toLowerCase() === 'biru') {
+                            modalContent.className = 'modal-content bg-primary bg-gradient';
+                            sudutElement.textContent = 'SUDUT BIRU';
+                            sudutElement.style.color = '#ffffff';
+                            sudutElement.style.textShadow = '0 0 30px rgba(0, 229, 255, 0.8)';
+                            if (iconElement) iconElement.style.color = '#00e5ff';
+                        } else if (sudut.toLowerCase() === 'merah') {
+                            modalContent.className = 'modal-content bg-danger bg-gradient';
+                            sudutElement.textContent = 'SUDUT MERAH';
+                            sudutElement.style.color = '#ffffff';
+                            sudutElement.style.textShadow = '0 0 30px rgba(255, 71, 87, 0.8)';
+                            if (iconElement) iconElement.style.color = '#ff4757';
+                        } else {
+                            modalContent.className = 'modal-content bg-dark bg-gradient';
+                            sudutElement.textContent = `SUDUT ${sudut.toUpperCase()}`;
+                            sudutElement.style.color = '#ffffff';
+                            if (iconElement) iconElement.style.color = '#ffffff';
+                        }
+
+                        // Tampilkan modal
+                        const diskualifikasiModal = new bootstrap.Modal(document.getElementById('diskualifikasiModal'));
+                        diskualifikasiModal.show();
+
+                        // Auto close setelah 5 detik
+                        setTimeout(() => {
+                            diskualifikasiModal.hide();
+                            // Bersihkan backdrop
+                            const backdrop = document.querySelector('.modal-backdrop');
+                            if (backdrop) backdrop.remove();
+                            document.body.classList.remove('modal-open');
+                            document.body.style.overflow = '';
+                            document.body.style.paddingRight = '';
+                        }, 3000);
                     }
 
                     if (message.type === 'ambil_nilai_terkini_monitor_success') {
@@ -1447,8 +1541,13 @@
 
                     if (message.type === "juri_selesai_menilai") {
                         console.log('📥 Juri selesai menilai:', message.data);
-                        const { sudut, id_juri, nama_juri, stamina } = message.data;
-                        
+                        const {
+                            sudut,
+                            id_juri,
+                            nama_juri,
+                            stamina
+                        } = message.data;
+
                         // Update status juri yang sudah selesai menilai
                         const juriId = parseInt(id_juri);
                         if (!isNaN(juriId) && juriId >= 1 && juriId <= 4) {
@@ -1458,19 +1557,19 @@
                                 existingData.stamina = stamina;
                                 const total = (9.90 - (existingData.wrong * 0.01)) + stamina;
                                 existingData.total = parseFloat(total);
-                                
+
                                 // Update tampilan
                                 const juriIndex = juriId - 1;
                                 if (judgeElements[juriIndex]) {
                                     judgeElements[juriIndex].score.textContent = total.toFixed(2);
                                 }
                             }
-                            
+
                             // Update warna juri menjadi hijau
                             updateJudgeDisplayFromServer();
                             saveAllData();
                         }
-                        
+
                         console.log(`✅ Juri ${nama_juri} (${id_juri}) selesai menilai dengan stamina +${stamina}`);
                     }
 

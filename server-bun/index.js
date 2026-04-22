@@ -563,6 +563,42 @@ ORDER BY peserta.nm_lengkap ASC;
             });
             break;
 
+          case "diskualifikasi_tgr":
+            console.log(`Diskualifikasi diterima untuk partai ${payload.partai} sudut ${payload.sudut}`);
+
+            const pemenangtgr = payload.sudut.toLowerCase() === 'biru' ? 'merah' : 'biru';
+
+            try {
+              // Gunakan query dengan connection pool
+              const [result] = await db.execute(
+                `UPDATE jadwal_tgr 
+             SET status = 'selesai', 
+                 pemenang = ? 
+             WHERE partai = ?`,
+                [pemenangtgr, payload.partai]
+              );
+
+              if (result.affectedRows > 0) {
+                console.log(`✅ Database updated: Partai ${payload.partai} - Pemenang: ${pemenang}`);
+
+                // Broadcast diskualifikasi
+                broadcast({
+                  type: "diskualifikasi_tgr_broadcast",
+                  data: {
+                    partai: payload.partai,
+                    sudut: payload.sudut,
+                    pemenang: pemenangtgr,
+                    timestamp: new Date().toISOString()
+                  }
+                });
+              } else {
+                console.log(`⚠️ Partai ${payload.partai} tidak ditemukan atau tidak aktif`);
+              }
+            } catch (error) {
+              console.error('❌ Error updating database:', error);
+            }
+            break;
+
           case "keputusan_dewan":
             broadcast({
               type: "keputusan_verifikasi",

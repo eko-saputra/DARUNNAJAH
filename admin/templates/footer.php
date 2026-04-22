@@ -12,7 +12,7 @@
     </div>
     <!-- container-scroller -->
     <!-- plugins:js -->
-    <!-- <script src="js/jquery-1.9.1.min.js"></script> -->
+    <script src="../assets/jquery/jquery-3.6.0.min.js"></script>
     <script src="assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->

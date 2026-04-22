@@ -288,6 +288,7 @@ $jadwal_tanding = mysqli_query($koneksi, $sqljadwal);
 
             function loadJadwal() {
                 const filterKelas = $('#golongan').val() + " " + $('#kategori').val() + " " + $('#kelas option:selected').text();
+                console.log("Filter Kelas:", filterKelas);
                 $.ajax({
                     url: 'get_jadwal.php',
                     method: 'GET',
